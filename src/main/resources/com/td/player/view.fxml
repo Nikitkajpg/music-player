@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox alignment="CENTER" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.td.player.Controller">
+
+    <MenuBar VBox.vgrow="NEVER" style="-fx-border-color: #000000">
+        <Menu text="File">
+            <MenuItem text="Add folder..." onAction="#onSelectButtonClick"/>
+            <MenuItem text="Preferences…"/>
+            <MenuItem text="Quit"/>
+        </Menu>
+        <Menu text="Help">
+            <MenuItem text="About MyHelloApp"/>
+        </Menu>
+    </MenuBar>
+
+    <VBox VBox.vgrow="ALWAYS" style="-fx-border-color: #222222; -fx-border-width: 2">
+        <AnchorPane prefHeight="78.0" prefWidth="640.0" style="-fx-border-color: #444444; -fx-border-width: 2">
+            <Button layoutX="301.0" layoutY="14.0" text="Play"/>
+            <Slider layoutX="52.0" layoutY="57.0" prefHeight="14.0" prefWidth="534.0"/>
+            <Slider layoutX="471.0" layoutY="32.0" prefHeight="14.0" prefWidth="58.0"/>
+            <Button layoutX="418.0" layoutY="27.0" text="Mute"/>
+        </AnchorPane>
+        <VBox fx:id="listVBox" VBox.vgrow="ALWAYS" style="-fx-border-color: #666666; -fx-border-width: 2"/>
+    </VBox>
+</VBox>
