@@ -1,11 +1,16 @@
 package com.td.player;
 
+import javafx.collections.ObservableMap;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+
+import java.util.Map;
 
 public class Music {
     private Media media;
     private MediaPlayer mediaPlayer;
+
+    private String artist, title;
 
     private int level;
 
@@ -14,6 +19,7 @@ public class Music {
         this.level = level;
 
         mediaPlayer = new MediaPlayer(media);
+
     }
 
     public int getLevel() {
@@ -38,5 +44,21 @@ public class Music {
 
     public void setMediaPlayer(MediaPlayer mediaPlayer) {
         this.mediaPlayer = mediaPlayer;
+    }
+
+    public String getArtist() {
+        return artist;
+    }
+
+    public void setArtist(String artist) {
+        this.artist = artist;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

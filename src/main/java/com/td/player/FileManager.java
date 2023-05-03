@@ -1,5 +1,6 @@
 package com.td.player;
 
+import javafx.scene.media.Media;
 import javafx.stage.DirectoryChooser;
 
 import java.io.File;
@@ -16,12 +17,15 @@ public class FileManager {
     private File dataDir, directoryListFile;
     private DirectoryChooser directoryChooser;
 
+    private ArrayList<Music> musicArrayList;
+
     public FileManager() {
         String programPath = System.getProperty("user.dir");
         dataDir = new File(programPath + "\\data");
         directoryListFile = new File(programPath + "\\data\\directories.cfg");
         pathArray = new ArrayList<>();
         directoryChooser = new DirectoryChooser();
+        musicArrayList = new ArrayList<>();
 
         createDirectories();
     }
@@ -114,5 +118,21 @@ public class FileManager {
     private void updateArray(String path) {
         pathArray.add(path);
         System.out.println("final: " + pathArray);
+
+        musicArrayList.clear();
+        for (String pathToDirectory : pathArray) {
+            File directoryWithMusic = new File(pathToDirectory);
+            File[] listOfMusicFiles = directoryWithMusic.listFiles(file -> file.getName().endsWith(".mp3"));
+            for (File listOfMusicFile : listOfMusicFiles) {
+                String mediaPath = "file:///" + listOfMusicFile.getAbsolutePath().
+                        replace("\\", "/").
+                        replace(" ", "%20");
+                musicArrayList.add(new Music(new Media(mediaPath), 0));
+            }
+        }
+    }
+
+    public ArrayList<Music> getMusicList() {
+        return musicArrayList;
     }
 }
