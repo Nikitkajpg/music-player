@@ -1,22 +1,20 @@
 package com.td.player;
 
-import javafx.collections.ObservableMap;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-
-import java.util.Map;
 
 public class Music {
     private Media media;
     private MediaPlayer mediaPlayer;
 
-    private String artist, title;
+    private String fileName, artist, title;
 
     private int level;
 
-    public Music(Media media, int level) {
+    public Music(Media media, int level, String fileName) {
         this.media = media;
         this.level = level;
+        this.fileName = fileName;
 
         mediaPlayer = new MediaPlayer(media);
 
@@ -60,5 +58,13 @@ public class Music {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }

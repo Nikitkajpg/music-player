@@ -14,7 +14,7 @@ public class FileManager {
     private boolean empty;
     private ArrayList<String> pathArray;
 
-    private File dataDir, directoryListFile;
+    private File dataDir, directoryListFile, playlistFile;
     private DirectoryChooser directoryChooser;
 
     private ArrayList<Music> musicArrayList;
@@ -23,6 +23,7 @@ public class FileManager {
         String programPath = System.getProperty("user.dir");
         dataDir = new File(programPath + "\\data");
         directoryListFile = new File(programPath + "\\data\\directories.cfg");
+        playlistFile = new File(programPath + "\\data\\playlist.dat");
         pathArray = new ArrayList<>();
         directoryChooser = new DirectoryChooser();
         musicArrayList = new ArrayList<>();
@@ -127,12 +128,16 @@ public class FileManager {
                 String mediaPath = "file:///" + listOfMusicFile.getAbsolutePath().
                         replace("\\", "/").
                         replace(" ", "%20");
-                musicArrayList.add(new Music(new Media(mediaPath), 0));
+                musicArrayList.add(new Music(new Media(mediaPath), 0, listOfMusicFile.getName()));
             }
         }
     }
 
     public ArrayList<Music> getMusicList() {
         return musicArrayList;
+    }
+
+    public ArrayList<String> getPathArray() {
+        return pathArray;
     }
 }

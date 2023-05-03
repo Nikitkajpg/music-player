@@ -1,58 +1,55 @@
 package com.td.player;
 
-import javafx.collections.MapChangeListener;
-import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 public class Controller {
     @FXML
-    private VBox listVBox;
+    private VBox musicListVBox, fileListVBox;
 
     private FileManager fileManager;
     private ArrayList<Music> musicArrayList;
-    private final Object object = new Object();
 
     @FXML
     private void initialize() {
         fileManager = new FileManager();
 
+        musicListVBox.getChildren().add(new Label("File name"));
         musicArrayList = fileManager.getMusicList();
+
+        ArrayList<String> pathArray = fileManager.getPathArray();
+        for (String path : pathArray) {
+            fileListVBox.getChildren().add(new Label(path));
+        }
         for (Music music : musicArrayList) {
-            music.getMediaPlayer().setOnReady(() -> {
-                ObservableMap<String, Object> metadata = music.getMedia().getMetadata();
-                for (Map.Entry<String, Object> item : metadata.entrySet()) {
-                    if (item.getKey().equals("artist")) {
-                        music.setArtist(item.getValue().toString());
-                    } else if (item.getKey().equals("title")) {
-                        music.setTitle(item.getValue().toString());
-                    }
-                }
-
-                if (music.getTitle() == null) {
-                    String[] strings = music.getMedia().getSource().split("/");
-                    String name = strings[strings.length - 1].
-                            replace("%20", " ").
-                            replace(".mp3", "");
-                    music.setTitle(name);
-                }
-                if (music.getArtist() == null) {
-                    music.setArtist("(No data)");
-                }
-
-                Label artistLabel = new Label(music.getArtist());
-                Label titleLabel = new Label(music.getTitle());
-
-                HBox hBox = new HBox(titleLabel, artistLabel);
-                hBox.setSpacing(5);
-                hBox.setStyle("-fx-border-color: #555555; -fx-border-width: 2");
-                listVBox.getChildren().add(hBox);
-            });
+//            music.getMediaPlayer().setOnReady(() -> {
+//                ObservableMap<String, Object> metadata = music.getMedia().getMetadata();
+//                for (Map.Entry<String, Object> item : metadata.entrySet()) {
+//                    if (item.getKey().equals("artist")) {
+//                        music.setArtist(item.getValue().toString());
+//                    } else if (item.getKey().equals("title")) {
+//                        music.setTitle(item.getValue().toString());
+//                    }
+//                }
+//
+//                if (music.getTitle() == null) {
+//                    music.setTitle(music.getFileName().replace(".mp3", ""));
+//                }
+//                if (music.getArtist() == null) {
+//                    music.setArtist("(No data)");
+//                }
+//
+//                Label artistLabel = new Label(music.getArtist());
+//                Label titleLabel = new Label(music.getTitle());
+//
+//                HBox hBox = new HBox(titleLabel, artistLabel);
+//                hBox.setSpacing(5);
+//                musicListVBox.getChildren().add(hBox);
+//            });
+            musicListVBox.getChildren().add(new Label(music.getFileName().replace(".mp3", "")));
         }
     }
 
