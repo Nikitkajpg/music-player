@@ -31,7 +31,7 @@
                 <VBox fx:id="musicListVBox" VBox.vgrow="ALWAYS" style="-fx-border-color: red; -fx-border-width: 2"/>
             </ScrollPane>
             <ScrollPane style="-fx-border-color: yellow; -fx-border-width: 2" minWidth="200">
-                <VBox VBox.vgrow="ALWAYS" style="-fx-border-color: red; -fx-border-width: 2"/>
+                <VBox fx:id="playlistVBox" VBox.vgrow="ALWAYS" style="-fx-border-color: red; -fx-border-width: 2"/>
             </ScrollPane>
         </SplitPane>
     </VBox>
