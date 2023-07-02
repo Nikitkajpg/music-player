@@ -1,0 +1,11 @@
+VBox {
+    -fx-background-color: #333333;
+}
+
+ScrollPane {
+    -fx-background-color: red;
+}
+
+Label {
+    -fx-text-fill: white;
+}
