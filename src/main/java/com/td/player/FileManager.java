@@ -1,129 +1,98 @@
 package com.td.player;
 
-import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
-import javafx.scene.media.Media;
 import javafx.stage.DirectoryChooser;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
-@SuppressWarnings("FieldMayBeFinal")
 public class FileManager {
-    private VBox musicListVBox, fileListVBox;
+    private MusicController musicController;
 
-    private ArrayList<String> pathArray = new ArrayList<>();
-    private ArrayList<String> playlistArrayList = new ArrayList<>();
-    private ArrayList<Music> musicArrayList = new ArrayList<>();
+    private File directoriesFile/*, playlistFile // todo playlist*/;
 
-    private File dataDir, directoriesFile, playlistFile;
-    private DirectoryChooser directoryChooser = new DirectoryChooser();
+    private ArrayList<String> pathToDirectoriesArray = new ArrayList<>();
 
-    private String directoriesFileName = "directories.cfg";
-    private String playlistFileName = "playlist.dat";
-
-    public FileManager(VBox musicListVBox, VBox fileListVBox) {
-        this.fileListVBox = fileListVBox;
-        this.musicListVBox = musicListVBox;
-        String programPath = System.getProperty("user.dir");
-        dataDir = new File(programPath + "\\data");
-        directoriesFile = new File(programPath + "\\data\\" + directoriesFileName);
-        playlistFile = new File(programPath + "\\data\\" + playlistFileName);
-
-        createDirectories();
+    public FileManager(MusicController musicController) {
+        this.musicController = musicController;
+        createFiles();
     }
 
-    private void createDirectories() {
-        try {
-            if (dataDir.mkdir()) {
-                System.out.println("dir not exists");
-            } else {
-                System.out.println("dir exists");
-            }
+    private void createFiles() {
+        File dataDir = new File(System.getProperty("user.dir") + "\\data");
+        directoriesFile = new File(System.getProperty("user.dir") + "\\data\\directories.cfg");
+//        playlistFile = new File(System.getProperty("user.dir") + "\\data\\playlist.dat"); // todo playlist
 
-            createFile(directoriesFile);
-            createFile(playlistFile);
+        try {
+            System.out.println("Data dir created: " + dataDir.mkdir());
+            System.out.println("Directories file created: " + directoriesFile.createNewFile());
+//            System.out.println("Playlist file created: " + playlistFile.createNewFile()); // todo playlist
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void createFile(File file) throws IOException {
-        if (file.createNewFile()) {
-            System.out.println(file.getName() + " file not exists");
-        } else {
-            System.out.println(file.getName() + " file exists");
-            if (file.length() == 0) {
-                System.out.println(file.getName() + " is empty");
-                if (file.getName().equals(playlistFileName)) {
-                    writeFavorite();
-                }
-            } else {
-                System.out.println(file.getName() + " file is not empty");
-                String line;
-                BufferedReader bufferedReader = new BufferedReader(
-                        new InputStreamReader(new FileInputStream(file)));
+    public ArrayList<String> getPathToDirectoriesArray() {
+        pathToDirectoriesArray = getLineArrayList(directoriesFile);
+        return pathToDirectoriesArray;
+    }
 
-                while ((line = bufferedReader.readLine()) != null) {
-                    if (file.getName().equals(playlistFileName)) {
-                        playlistArrayList.add(line);
-                    } else if (file.getName().equals(directoriesFileName)) {
-                        updateArray(line);
-                    }
-                }
+    private ArrayList<String> getLineArrayList(File file) {
+        ArrayList<String> arrayList = new ArrayList<>();
+        try {
+            String line;
+            BufferedReader bufferedReader = new BufferedReader(
+                    new InputStreamReader(new FileInputStream(file)));
+
+            while ((line = bufferedReader.readLine()) != null) {
+                arrayList.add(line);
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return arrayList;
+    }
+
+    public void fillMusicArray() {
+        for (String path : pathToDirectoriesArray) {
+            fill(path);
         }
     }
 
-    private void writeFavorite() {
-        try {
-            FileWriter fileWriter = new FileWriter(playlistFile);
-            fileWriter.write("Favorite\n");
-            for (int i = 0; i < musicArrayList.size(); i++) {
-                fileWriter.write(i + "::" + musicArrayList.get(i).getFileName() + "\n");
-            }
-            fileWriter.flush();
-            fileWriter.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public void fillMusicArray(String path) {
+        fill(path);
+    }
+
+    private void fill(String path) {
+        File musicDirectory = new File(path);
+        File[] listOfMusicFiles = musicDirectory.listFiles(file -> file.getName().endsWith(".mp3"));
+
+        for (File musicFile : Objects.requireNonNull(listOfMusicFiles)) {
+            String mediaPath = "file:///" + musicFile.getAbsolutePath().
+                    replace("\\", "/").
+                    replace(" ", "%20");
+            musicController.add(mediaPath, musicFile);
         }
     }
 
     public void selectDirectory() {
-        directoryChooser.setTitle("Select directory");
-        if (directoriesFile.length() != 0) {
-            directoryChooser.setInitialDirectory(new File(pathArray.get(0)));
-        }
-        File directoryFromChooser = directoryChooser.showDialog(Player.stage);
-        if (directoryFromChooser != null) {
-            writeFile(directoryFromChooser.getAbsolutePath());
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("Directory selection");
+        File directory = directoryChooser.showDialog(Player.stage);
+        String path = directory.getAbsolutePath();
+        if (isUnique(path, pathToDirectoriesArray)) {
+            pathToDirectoriesArray.add(path);
         } else {
-            System.out.println("chosen file is null");
+            System.out.println("Path already exists"); // todo output
         }
+        fillMusicArray(path);
     }
 
-    private void writeFile(String path) {
-        try {
-            FileWriter fileWriter = new FileWriter(directoriesFile, true);
-            if (pathIsUnique(path)) {
-                fileWriter.write(path + "\n");
-                fileListVBox.getChildren().add(new Label(path));
-                updateArray(path);
-            } else {
-                System.out.println("path in file already exists");
-            }
-            fileWriter.flush();
-            fileWriter.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private boolean pathIsUnique(String path) {
+    private boolean isUnique(String line, List<String> list) {
         boolean unique = true;
-        for (String s : pathArray) {
-            if (path.equals(s)) {
+        for (String s : list) {
+            if (line.equals(s)) {
                 unique = false;
                 break;
             }
@@ -131,24 +100,20 @@ public class FileManager {
         return unique;
     }
 
-    private void updateArray(String path) {
-        pathArray.add(path);
-        File directoryWithMusic = new File(path);
-        File[] listOfMusicFiles = directoryWithMusic.listFiles(file -> file.getName().endsWith(".mp3"));
-        for (File musicFile : Objects.requireNonNull(listOfMusicFiles)) {
-            String mediaPath = "file:///" + musicFile.getAbsolutePath().
-                    replace("\\", "/").
-                    replace(" ", "%20");
-            musicArrayList.add(new Music(new Media(mediaPath), 0, musicFile.getName()));
-            musicListVBox.getChildren().add(new Label(musicFile.getName().replace(".mp3", "")));
+    public void writeAllInf() {
+        writeDirs();
+    }
+
+    private void writeDirs() {
+        try {
+            FileWriter fileWriter = new FileWriter(directoriesFile);
+            for (String path : pathToDirectoriesArray) {
+                fileWriter.write(path + "\n");
+            }
+            fileWriter.flush();
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    }
-
-    public ArrayList<String> getPathArray() {
-        return pathArray;
-    }
-
-    public ArrayList<String> getPlaylistArrayList() {
-        return playlistArrayList;
     }
 }

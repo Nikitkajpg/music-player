@@ -3,21 +3,34 @@ package com.td.player;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
+import java.io.File;
+
 public class Music {
+    private int id;
     private Media media;
     private MediaPlayer mediaPlayer;
 
-    private String fileName, artist, title;
+    private String artist, title;
+    private File file;
 
     private int level;
 
-    public Music(Media media, int level, String fileName) {
+    public Music(int id, Media media, File file, int level) {
+        this.id = id;
         this.media = media;
         this.level = level;
-        this.fileName = fileName;
+        this.file = file;
 
         mediaPlayer = new MediaPlayer(media);
 
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getLevel() {
@@ -44,27 +57,11 @@ public class Music {
         this.mediaPlayer = mediaPlayer;
     }
 
-    public String getArtist() {
-        return artist;
+    public File getFile() {
+        return file;
     }
 
-    public void setArtist(String artist) {
-        this.artist = artist;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+    public void setFile(File file) {
+        this.file = file;
     }
 }

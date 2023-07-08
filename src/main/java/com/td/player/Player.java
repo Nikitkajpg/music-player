@@ -25,6 +25,9 @@ public class Player extends Application {
         stage.getIcons().add(new Image(Objects.requireNonNull(Player.class.getResourceAsStream("EMP128.png"))));
         stage.show();
 
+        Controller controller = fxmlLoader.getController();
+        stage.setOnCloseRequest(controller.getCloseEventHandler());
+
         Player.stage = stage;
     }
 

@@ -24,13 +24,13 @@
             <Button layoutX="418.0" layoutY="27.0" text="Mute"/>
         </AnchorPane>
         <SplitPane VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS">
-            <ScrollPane minWidth="100" maxWidth="200">
-                <VBox fx:id="fileListVBox" VBox.vgrow="ALWAYS"/>
+            <ScrollPane minWidth="50">
+                <VBox fx:id="dirsListVBox" VBox.vgrow="ALWAYS"/>
             </ScrollPane>
-            <ScrollPane minWidth="200">
+            <ScrollPane minWidth="50">
                 <VBox fx:id="musicListVBox" VBox.vgrow="ALWAYS"/>
             </ScrollPane>
-            <ScrollPane minWidth="200">
+            <ScrollPane minWidth="50">
                 <VBox fx:id="playlistVBox" VBox.vgrow="ALWAYS"/>
             </ScrollPane>
         </SplitPane>
