@@ -17,113 +17,122 @@ import java.util.ArrayList;
 // 4. созданы папка и полный directories
 
 //TODO:
-// 1. запись всех данных в файл с сериализацией
-// 2. работа с плейлистами
-// 3. вывод ошибок на экран
-// 4. уникальный id для песен
-// 5. генерация уровня песен на основе предпочтений
-// 6. при нажатии на кнопку play проигрывается активный плейлист. если активных
+// 1. работа с плейлистами
+// 2. вывод ошибок на экран
+// 3. уникальный id для песен
+// 4. генерация уровня песен на основе предпочтений
+// 5. при нажатии на кнопку play проигрывается активный плейлист. если активных
 // плейлистов нет, то проигрывается плейлист по умолчанию
-// 7. проигрывание песни по двойному клику
+// 6. при нажатии на трек правой кнопкой мыши можно удалить трек из компьютера
 
 public class Controller {
     @FXML
     private VBox musicListVBox, dirsListVBox, playlistVBox;
 
+    @FXML
+    private Button playButton;
+
     private FileManager fileManager;
     private MusicController musicController;
+    private MediaController mediaController;
 
     private ArrayList<String> pathToDirectoriesArray;
 
     @FXML
-    private void initialize() {
-        // инициализация
+    private void initialize() {                                             // инициализация
         musicController = new MusicController();
-        fileManager = new FileManager(musicController); // создание папочной структуры
-        pathToDirectoriesArray = fileManager.getPathToDirectoriesArray(); // получение списка папок с музыкой
-        fileManager.fillMusicArray(); // первоначальное заполнение списка музыки
-        updateAllInf(); // вывод списков на экран
+        mediaController = new MediaController(musicController, playButton);
+        fileManager = new FileManager(musicController);                     // создание папочной структуры
+        pathToDirectoriesArray = fileManager.getPathToDirectoriesArray();   // получение списка папок с музыкой
+        fileManager.fillMusicArray();                                       // первоначальное заполнение списка музыки
+        updateAllInf();                                                     // вывод обновленных списков на экран
     }
 
     private void updateAllInf() {
-        updateDirs();
-        updateTracks();
+        updateDirs();   // вывод списка папок
+        updateMusic();  // вывод списка музыки
 //        showPlaylists(); //todo playlist
     }
 
     private void updateDirs() {
         dirsListVBox.getChildren().clear();
         for (String path : pathToDirectoriesArray) {
-            dirsListVBox.getChildren().add(getDeleteLabel(path));
+            dirsListVBox.getChildren().add(getDirLabel(path));
         }
     }
 
-    private void updateTracks() {
+    private void updateMusic() {
         musicListVBox.getChildren().clear();
         for (Music music : musicController.getMusicArray()) {
-            musicListVBox.getChildren().add(new Label(music.getFile().getName()));
+            musicListVBox.getChildren().add(getTrackLabel(music.getFile().getName()));
         }
     }
 
-    @FXML
-    private void onSelectButtonClick() {
-        fileManager.selectDirectory();
-        updateAllInf();
-    }
-
-    public Label getDeleteLabel(String path) {
+    public Label getDirLabel(String path) {
         Label label = new Label(path);
         label.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                contextMenu(label, mouseEvent);
+                contextMenuForDir(label, mouseEvent);
             }
         });
         return label;
     }
 
-    private void contextMenu(Label label, MouseEvent mouseEvent) {
+    private void contextMenuForDir(Label label, MouseEvent mouseEvent) {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem menuItem = new MenuItem("Delete");
         menuItem.setOnAction(actionEvent -> {
-            dirsListVBox.getChildren().remove(label);
-            pathToDirectoriesArray.remove(label.getText());
-            musicController.deleteAll(label.getText());
-            updateTracks();
+            dirsListVBox.getChildren().remove(label);       // удаление метки из списка меток путей
+            pathToDirectoriesArray.remove(label.getText()); // удаление пути из списка путей
+            musicController.deleteByPath(label.getText());  // удаление музыки из списка музыки
+            updateMusic();                                  // вывод обновленного списка музыки на экран
         });
         contextMenu.getItems().add(menuItem);
         contextMenu.show(label, mouseEvent.getScreenX(), mouseEvent.getScreenY());
     }
 
+    private Label getTrackLabel(String name) {
+        Label label = new Label(name);
+        label.setOnMouseClicked(mouseEvent -> {
+            if (mouseEvent.getButton() == MouseButton.PRIMARY) {
+                if (mouseEvent.getClickCount() == 2) {
+                    if (mediaController.getCurrentMediaPlayer() != null) {
+                        mediaController.getCurrentMediaPlayer().stop();
+                    }
+                    mediaController.playByName(name);
+                }
+            }
+            if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+//                contextMenuForTrack();
+            }
+        });
+        return label;
+    }
+
+    // при закрытии окна вся информация записывается в файлы
     private final EventHandler<WindowEvent> closeEventHandler = windowEvent -> fileManager.writeAllInf();
 
     public EventHandler<WindowEvent> getCloseEventHandler() {
         return closeEventHandler;
     }
 
-            /*music.getMediaPlayer().setOnReady(() -> {
-                ObservableMap<String, Object> metadata = music.getMedia().getMetadata();
-                for (Map.Entry<String, Object> item : metadata.entrySet()) {
-                    if (item.getKey().equals("artist")) {
-                        music.setArtist(item.getValue().toString());
-                    } else if (item.getKey().equals("title")) {
-                        music.setTitle(item.getValue().toString());
-                    }
-                }
+    @FXML
+    private void onSelectButtonClick() {
+        fileManager.selectDirectory();
+        updateAllInf(); // вывод обновленных списков на экран
+    }
 
-                if (music.getTitle() == null) {
-                    music.setTitle(music.getFileName().replace(".mp3", ""));
-                }
-                if (music.getArtist() == null) {
-                    music.setArtist("(No data)");
-                }
+    @FXML
+    private void onPlayButtonClick() {
+        if (playButton.getText().equals("Pause")) {
+            mediaController.pause();
+        } else {
+            mediaController.play();
+        }
+    }
 
-                Label artistLabel = new Label(music.getArtist());
-                Label titleLabel = new Label(music.getTitle());
-
-                HBox hBox = new HBox(titleLabel, artistLabel);
-                hBox.setSpacing(5);
-                musicListVBox.getChildren().add(hBox);
-            });*/
-
-//        createPlaylist(playlistLineArray);
+    @FXML
+    private void onStopButtonClick() {
+        mediaController.stop();
+    }
 }

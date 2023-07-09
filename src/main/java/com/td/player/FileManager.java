@@ -10,7 +10,7 @@ import java.util.Objects;
 public class FileManager {
     private MusicController musicController;
 
-    private File directoriesFile/*, playlistFile // todo playlist*/;
+    private File directoriesFile/*, playlistFile //todo playlist*/;
 
     private ArrayList<String> pathToDirectoriesArray = new ArrayList<>();
 
@@ -33,7 +33,7 @@ public class FileManager {
         }
     }
 
-    public ArrayList<String> getPathToDirectoriesArray() {
+    public ArrayList<String> getPathToDirectoriesArray() { // получение списка папок с музыкой
         pathToDirectoriesArray = getLineArrayList(directoriesFile);
         return pathToDirectoriesArray;
     }
@@ -54,13 +54,13 @@ public class FileManager {
         return arrayList;
     }
 
-    public void fillMusicArray() {
+    public void fillMusicArray() { // выполняется при запуске программы
         for (String path : pathToDirectoriesArray) {
             fill(path);
         }
     }
 
-    public void fillMusicArray(String path) {
+    public void fillMusicArray(String path) { // выполняется при выборе папки с музыкой
         fill(path);
     }
 

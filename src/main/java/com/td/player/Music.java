@@ -22,7 +22,6 @@ public class Music {
         this.file = file;
 
         mediaPlayer = new MediaPlayer(media);
-
     }
 
     public int getId() {
@@ -63,5 +62,21 @@ public class Music {
 
     public void setFile(File file) {
         this.file = file;
+    }
+
+    public String getArtist() {
+        return artist;
+    }
+
+    public void setArtist(String artist) {
+        this.artist = artist;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }
