@@ -4,6 +4,7 @@ import com.td.player.elements.Playlist;
 
 import java.util.ArrayList;
 
+@SuppressWarnings("FieldMayBeFinal")
 public class PlaylistManager {
     private ArrayList<Playlist> playlistArray = new ArrayList<>();
 

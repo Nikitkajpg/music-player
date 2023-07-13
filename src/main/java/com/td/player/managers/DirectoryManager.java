@@ -1,10 +1,10 @@
 package com.td.player.managers;
 
 import com.td.player.elements.Directory;
-import com.td.player.elements.Playlist;
 
 import java.util.ArrayList;
 
+@SuppressWarnings("FieldMayBeFinal")
 public class DirectoryManager {
     private ArrayList<Directory> directoryArray = new ArrayList<>();
 

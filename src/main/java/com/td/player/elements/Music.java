@@ -1,11 +1,11 @@
 package com.td.player.elements;
 
-import com.td.player.elements.Element;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
 import java.io.File;
 
+@SuppressWarnings("FieldMayBeFinal")
 public class Music extends Element {
     private int id;
     private String title;

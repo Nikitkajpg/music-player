@@ -11,6 +11,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 
+@SuppressWarnings("FieldMayBeFinal")
 public class ViewController {
     private VBox dirsListVBox;
     private VBox musicListVBox;
@@ -20,7 +21,8 @@ public class ViewController {
 
     private MediaController mediaController;
 
-    public ViewController(DirectoryManager directoryManager, MusicManager musicManager, VBox dirsListVBox, VBox musicListVBox, MediaController mediaController) {
+    public ViewController(DirectoryManager directoryManager, MusicManager musicManager,
+                          VBox dirsListVBox, VBox musicListVBox, MediaController mediaController) {
         this.dirsListVBox = dirsListVBox;
         this.musicListVBox = musicListVBox;
         this.directoryManager = directoryManager;

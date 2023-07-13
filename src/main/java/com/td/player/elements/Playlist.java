@@ -1,10 +1,8 @@
 package com.td.player.elements;
 
-import com.td.player.elements.Element;
-import com.td.player.elements.Music;
-
 import java.util.ArrayList;
 
+@SuppressWarnings("FieldMayBeFinal")
 public class Playlist extends Element {
     private int id;
     private String name;

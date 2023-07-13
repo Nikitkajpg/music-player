@@ -14,6 +14,7 @@ public class FileController {
     private DirectoryManager directoryManager;
     private MusicManager musicManager;
     private File directoriesFile;
+    private File playlistFile;
 
     public FileController(DirectoryManager directoryManager, MusicManager musicManager) {
         this.directoryManager = directoryManager;
@@ -26,7 +27,7 @@ public class FileController {
     private void createFiles() {
         File dataDir = new File(System.getProperty("user.dir") + "\\data");
         directoriesFile = new File(System.getProperty("user.dir") + "\\data\\directories.ini");
-        File playlistFile = new File(System.getProperty("user.dir") + "\\data\\playlist.ini");
+        playlistFile = new File(System.getProperty("user.dir") + "\\data\\playlist.ini");
 
         try {
             System.out.println("Data dir created: " + dataDir.mkdir());
@@ -37,7 +38,7 @@ public class FileController {
         }
     }
 
-    private void fillDirectoryArray() {
+    private void fillDirectoryArray() { // чтение файла и добавление в список
         try {
             String path;
             BufferedReader bufferedReader = new BufferedReader(
@@ -62,12 +63,12 @@ public class FileController {
     }
 
     private void fill(String path) {
-        File[] fileList = new File(path).listFiles(file -> file.getName().endsWith("mp3"));
+        File[] fileList = new File(path).listFiles(file -> file.getName().endsWith("mp3")); // получаем список муз. файлов в папке
 
         for (File musicFile : Objects.requireNonNull(fileList)) {
             String mediaPath = "file:///" + musicFile.getAbsolutePath().
                     replace("\\", "/").
-                    replace(" ", "%20");
+                    replace(" ", "%20"); // путь к файлу для медиа
             musicManager.add("", "", musicFile, mediaPath);
         }
     }

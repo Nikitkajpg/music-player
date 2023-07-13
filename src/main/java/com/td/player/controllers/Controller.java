@@ -1,21 +1,13 @@
 package com.td.player.controllers;
 
-import com.td.player.elements.Music;
 import com.td.player.managers.DirectoryManager;
 import com.td.player.managers.MusicManager;
 import com.td.player.managers.PlaylistManager;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.WindowEvent;
-
-import java.util.ArrayList;
 
 //todo Тестирование:
 // 1. файлы не созданы
@@ -47,14 +39,14 @@ public class Controller {
     private ViewController viewController;
 
     @FXML
-    private void initialize() {                                             // инициализация
+    private void initialize() {
         musicManager = new MusicManager();
         directoryManager = new DirectoryManager();
         playlistManager = new PlaylistManager();
         mediaController = new MediaController(musicManager, playButton);
         viewController = new ViewController(directoryManager, musicManager, dirsListVBox, musicListVBox, mediaController);
-        fileController = new FileController(directoryManager, musicManager);                     // создание папочной структуры
-        viewController.update();                                                     // вывод обновленных списков на экран
+        fileController = new FileController(directoryManager, musicManager); // создание папочной структуры, первичное заполнение списков
+        viewController.update();                                             // вывод обновленных списков на экран
     }
 
     // при закрытии окна вся информация записывается в файлы
