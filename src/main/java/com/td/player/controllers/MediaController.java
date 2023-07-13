@@ -1,17 +1,19 @@
-package com.td.player;
+package com.td.player.controllers;
 
+import com.td.player.elements.Music;
+import com.td.player.managers.MusicManager;
 import javafx.scene.control.Button;
 import javafx.scene.media.MediaPlayer;
 
 @SuppressWarnings("FieldMayBeFinal")
 public class MediaController {
-    private MusicController musicController;
+    private MusicManager musicManager;
 
     private MediaPlayer currentMediaPlayer;
     private Button playButton;
 
-    public MediaController(MusicController musicController, Button playButton) {
-        this.musicController = musicController;
+    public MediaController(MusicManager musicManager, Button playButton) {
+        this.musicManager = musicManager;
         this.playButton = playButton;
     }
 
@@ -21,7 +23,7 @@ public class MediaController {
     }
 
     public void playByName(String name) {
-        Music music = musicController.getMusicByName(name);
+        Music music = musicManager.get(name);
         currentMediaPlayer = music.getMediaPlayer();
         currentMediaPlayer.setOnEndOfMedia(() -> {
             //todo

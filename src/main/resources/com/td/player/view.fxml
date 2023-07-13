@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <VBox alignment="CENTER" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.td.player.Controller" stylesheets="@css/main.css">
+      fx:controller="com.td.player.controllers.Controller" stylesheets="@css/main.css">
 
     <MenuBar VBox.vgrow="NEVER">
         <Menu text="File">
