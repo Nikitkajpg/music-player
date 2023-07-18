@@ -5,31 +5,30 @@ import com.td.player.managers.MusicManager;
 import com.td.player.managers.PlaylistManager;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.WindowEvent;
 
-//todo Тестирование:
-// 1. файлы не созданы
-// 2. создана только папка
-// 3. созданы папка и пустой directories
-// 4. созданы папка и полный directories
-
-//TODO:
-// 1. работа с плейлистами
-// 2. вывод ошибок на экран
-// 3. уникальный id для песен
-// 4. генерация уровня песен на основе предпочтений
-// 5. при нажатии на кнопку play проигрывается активный плейлист. если активных
-// плейлистов нет, то проигрывается плейлист по умолчанию
-// 6. при нажатии на трек правой кнопкой мыши можно удалить трек из компьютера
+// todo при удалении песни из плейлиста удаляются все плейлисты
+// todo окошки с delete не убираются при повторном вызове
 
 public class Controller {
     @FXML
-    private VBox musicListVBox, dirsListVBox, playlistVBox;
+    private VBox musicListVBox, dirsListVBox;
 
     @FXML
     private Button playButton;
+
+    @FXML
+    private Accordion accordion;
+
+    @FXML
+    private TextField textField;
 
     private FileController fileController;
     private DirectoryManager directoryManager;
@@ -44,9 +43,10 @@ public class Controller {
         directoryManager = new DirectoryManager();
         playlistManager = new PlaylistManager();
         mediaController = new MediaController(musicManager, playButton);
-        viewController = new ViewController(directoryManager, musicManager, dirsListVBox, musicListVBox, mediaController);
-        fileController = new FileController(directoryManager, musicManager); // создание папочной структуры, первичное заполнение списков
-        viewController.update();                                             // вывод обновленных списков на экран
+        // создание папочной структуры, первичное заполнение списков
+        fileController = new FileController(directoryManager, musicManager, playlistManager);
+        // вывод обновленных списков на экран
+        viewController = new ViewController(directoryManager, musicManager, playlistManager, dirsListVBox, musicListVBox, accordion, mediaController);
     }
 
     // при закрытии окна вся информация записывается в файлы
@@ -59,6 +59,7 @@ public class Controller {
     @FXML
     private void onSelectButtonClick() {
         fileController.selectDirectory();
+        playlistManager.updateDefaultPlaylist(musicManager);
         viewController.update(); // вывод обновленных списков на экран
     }
 
@@ -74,5 +75,22 @@ public class Controller {
     @FXML
     private void onStopButtonClick() {
         mediaController.stop();
+    }
+
+    @FXML
+    private void onNewPlaylistButtonClick() {
+        String playlistName = textField.getText();
+        if (playlistName != null && !playlistName.equals("")) {
+            viewController.createTitledPane(playlistName);
+            playlistManager.createPlaylist(playlistName);
+            textField.clear();
+        }
+    }
+
+    @FXML
+    private void onTextFieldKeyPressed(KeyEvent keyEvent) {
+        if (keyEvent.getCode().equals(KeyCode.ENTER)) {
+            onNewPlaylistButtonClick();
+        }
     }
 }

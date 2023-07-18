@@ -2,8 +2,11 @@ package com.td.player.controllers;
 
 import com.td.player.Player;
 import com.td.player.elements.Directory;
+import com.td.player.elements.Music;
+import com.td.player.elements.Playlist;
 import com.td.player.managers.DirectoryManager;
 import com.td.player.managers.MusicManager;
+import com.td.player.managers.PlaylistManager;
 import javafx.stage.DirectoryChooser;
 
 import java.io.*;
@@ -13,15 +16,20 @@ import java.util.Objects;
 public class FileController {
     private DirectoryManager directoryManager;
     private MusicManager musicManager;
+    private PlaylistManager playlistManager;
+
     private File directoriesFile;
     private File playlistFile;
 
-    public FileController(DirectoryManager directoryManager, MusicManager musicManager) {
+    public FileController(DirectoryManager directoryManager, MusicManager musicManager, PlaylistManager playlistManager) {
         this.directoryManager = directoryManager;
         this.musicManager = musicManager;
+        this.playlistManager = playlistManager;
         createFiles();
         fillDirectoryArray();
         fillMusicArray();
+        playlistManager.createDefaultPlaylist(musicManager);    // создание плейлиста по умолчанию
+        fillPlaylistArray();
     }
 
     private void createFiles() {
@@ -69,7 +77,31 @@ public class FileController {
             String mediaPath = "file:///" + musicFile.getAbsolutePath().
                     replace("\\", "/").
                     replace(" ", "%20"); // путь к файлу для медиа
-            musicManager.add("", "", musicFile, mediaPath);
+                musicManager.add("", "", musicFile, mediaPath);
+        }
+    }
+
+    private void fillPlaylistArray() {                          // чтение файла и добавление в список
+        try {
+            String line;
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(playlistFile)));
+            String name = "";
+            while ((line = bufferedReader.readLine()) != null) {
+                if (line.startsWith("::") && line.endsWith("::")) {
+                    line = line.replace("::", "");
+                    playlistManager.add(line);
+                    name = line;
+                } else {
+                    for (Music music : musicManager.getMusicArray()) {
+                        if (music.getFileName().equals(line)) {
+                            playlistManager.addToPlaylist(name, music);
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -80,21 +112,38 @@ public class FileController {
         String path = directory.getAbsolutePath();
         if (directoryManager.pathIsUnique(path)) {
             directoryManager.add(path);
-        } else {
-            System.out.println("Path already exists"); // todo output
         }
         fillMusicArray(path);
     }
 
     public void writeAllInf() {
-        writeDirs();
+        writeDir();
+        writePlaylist();
     }
 
-    private void writeDirs() {
+    private void writeDir() {
         try {
             FileWriter fileWriter = new FileWriter(directoriesFile);
             for (Directory directory : directoryManager.getDirectoryArray()) {
                 fileWriter.write(directory.getPath() + "\n");
+            }
+            fileWriter.flush();
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void writePlaylist() {
+        try {
+            FileWriter fileWriter = new FileWriter(playlistFile);
+            for (Playlist playlist : playlistManager.getPlaylistArray()) {
+                if (!playlist.getName().equals("All music")) {
+                    fileWriter.write("::" + playlist.getName() + "::" + "\n");
+                    for (Music music : playlist.getMusicArray()) {
+                        fileWriter.write(music.getFileName() + "\n");
+                    }
+                }
             }
             fileWriter.flush();
             fileWriter.close();

@@ -1,6 +1,8 @@
 package com.td.player.managers;
 
 import com.td.player.elements.Directory;
+import com.td.player.elements.Element;
+import com.td.player.util.Util;
 
 import java.util.ArrayList;
 
@@ -8,12 +10,8 @@ import java.util.ArrayList;
 public class DirectoryManager {
     private ArrayList<Directory> directoryArray = new ArrayList<>();
 
-    int setId() {
-        return 0;
-    }
-
     public void add(String path) {
-        Directory directory = new Directory(setId(), path);
+        Directory directory = new Directory(Util.setId(directoryArray), path);
         directoryArray.add(directory);
     }
 

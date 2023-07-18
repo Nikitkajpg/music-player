@@ -32,7 +32,13 @@
                 <VBox fx:id="musicListVBox" VBox.vgrow="ALWAYS"/>
             </ScrollPane>
             <ScrollPane minWidth="50">
-                <VBox fx:id="playlistVBox" VBox.vgrow="ALWAYS"/>
+                <VBox>
+                    <HBox>
+                        <Button text="New" onMouseClicked="#onNewPlaylistButtonClick"/>
+                        <TextField fx:id="textField" promptText="Name..." onKeyPressed="#onTextFieldKeyPressed"/>
+                    </HBox>
+                    <Accordion fx:id="accordion" VBox.vgrow="ALWAYS"/>
+                </VBox>
             </ScrollPane>
         </SplitPane>
     </VBox>

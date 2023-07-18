@@ -11,7 +11,7 @@ public class Music extends Element {
     private String title;
     private String artist;
     private int level;
-    private String path;
+    private String absolutePath;
     private String fileName;
     private MediaPlayer mediaPlayer;
 //    AudioEqualizer
@@ -23,7 +23,7 @@ public class Music extends Element {
         this.title = title;
         this.artist = artist;
         this.level = level;
-        this.path = file.getAbsolutePath();
+        this.absolutePath = file.getAbsolutePath();
         this.fileName = file.getName();
         this.mediaPlayer = new MediaPlayer(new Media(mediaPath));
     }
@@ -49,8 +49,8 @@ public class Music extends Element {
         return title;
     }
 
-    public String getPath() {
-        return path;
+    public String getAbsolutePath() {
+        return absolutePath;
     }
 
     public String getFileName() {

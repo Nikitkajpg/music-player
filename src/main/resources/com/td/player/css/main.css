@@ -9,3 +9,7 @@ ScrollPane {
 Label {
     -fx-text-fill: white;
 }
+
+HBox {
+    -fx-spacing: 10;
+}
