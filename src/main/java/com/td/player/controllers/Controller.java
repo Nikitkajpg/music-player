@@ -13,8 +13,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.WindowEvent;
 
-// todo окошки с delete не убираются при повторном вызове
-
 public class Controller {
     @FXML
     private VBox musicListVBox, dirsListVBox;
