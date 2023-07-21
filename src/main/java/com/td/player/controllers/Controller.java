@@ -8,14 +8,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.WindowEvent;
 
-// todo при удалении песни из плейлиста удаляются все плейлисты
 // todo окошки с delete не убираются при повторном вызове
+// todo в пустой плейлист не добавляется песня, если плейлист создан в текущем сеансе
 
 public class Controller {
     @FXML

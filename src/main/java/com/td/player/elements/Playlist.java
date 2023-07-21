@@ -28,8 +28,12 @@ public class Playlist extends Element {
         }
     }
 
-    public void delete(int id) {
+    public void deleteById(int id) {
         musicArray.removeIf(music -> music.getId() == id);
+    }
+
+    public void deleteByName(String name) {
+        musicArray.removeIf(music -> music.getFileName().equals(name));
     }
 
     @Override

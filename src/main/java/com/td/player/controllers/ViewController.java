@@ -6,12 +6,9 @@ import com.td.player.elements.Playlist;
 import com.td.player.managers.DirectoryManager;
 import com.td.player.managers.MusicManager;
 import com.td.player.managers.PlaylistManager;
-import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 
 @SuppressWarnings("FieldMayBeFinal")
 public class ViewController {
@@ -62,8 +59,8 @@ public class ViewController {
 
     private void contextMenuForDir(Label label, MouseEvent mouseEvent) {
         ContextMenu contextMenu = new ContextMenu();
-        MenuItem menuItem = new MenuItem("Delete");
-        menuItem.setOnAction(actionEvent -> {
+        MenuItem deleteMenuItem = new MenuItem("Delete directory");
+        deleteMenuItem.setOnAction(actionEvent -> {
             dirsListVBox.getChildren().remove(label);       // удаление метки из списка меток путей
             directoryManager.delete(label.getText()); // удаление пути из списка путей
             musicManager.delete(label.getText());  // удаление музыки с этим путем из списка музыки
@@ -71,7 +68,7 @@ public class ViewController {
             updateMusic();                                  // вывод обновленного списка музыки на экран
             updatePlaylists();
         });
-        contextMenu.getItems().add(menuItem);
+        contextMenu.getItems().add(deleteMenuItem);
         contextMenu.show(label, mouseEvent.getScreenX(), mouseEvent.getScreenY());
     }
 
@@ -113,8 +110,12 @@ public class ViewController {
         for (Playlist playlist : playlistManager.getPlaylistArray()) {
             TitledPane titledPane = new TitledPane();
             titledPane.setText(playlist.getName());
-            titledPane.setOnMouseClicked(mouseEvent -> actionForTitledPane(mouseEvent, titledPane));
             VBox vBox = new VBox();
+            titledPane.setOnMouseClicked(mouseEvent -> {
+                if (!titledPane.isExpanded() || vBox.getChildren().isEmpty()) {
+                    actionForTitledPane(mouseEvent, titledPane);
+                }
+            });
 
             vBox.setOnDragOver(dragEvent -> {
                 // data is dragged over the target
@@ -155,18 +156,56 @@ public class ViewController {
             });
 
             for (Music music : playlist.getMusicArray()) {
-                vBox.getChildren().add(new Label(music.getFileName()));
+                vBox.getChildren().add(getPlaylistLabel(music.getFileName(), vBox, playlist, titledPane));
             }
             titledPane.setContent(vBox);
             accordion.getPanes().add(titledPane);
         }
     }
 
+    private Label getPlaylistLabel(String fileName, VBox vBox, Playlist playlist, TitledPane titledPane) {
+        Label label = new Label(fileName);
+        label.setOnMouseClicked(mouseEvent -> {
+            if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+                contextMenuForPlaylistLabel(label, mouseEvent, vBox, playlist, titledPane);
+            }
+        });
+        return label;
+    }
+
+    private void contextMenuForPlaylistLabel(Label label, MouseEvent mouseEvent, VBox vBox, Playlist playlist, TitledPane titledPane) {
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem deletePlaylistMenuItem = new MenuItem("Delete playlist");
+        deletePlaylistMenuItem.setOnAction(actionEvent -> {
+            playlistManager.deleteByName(titledPane.getText());
+            updatePlaylists();
+        });
+
+        MenuItem renamePlaylistMenuItem = new MenuItem("Rename playlist");
+        renamePlaylistMenuItem.setOnAction(actionEvent -> {
+            //todo
+        });
+
+        MenuItem deleteMusicMenuItem = new MenuItem("Delete music");
+        deleteMusicMenuItem.setOnAction(actionEvent -> {
+            playlist.deleteByName(label.getText());
+            vBox.getChildren().remove(label);
+        });
+        contextMenu.getItems().addAll(deletePlaylistMenuItem, renamePlaylistMenuItem, deleteMusicMenuItem);
+        contextMenu.show(label, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+    }
+
     public void createTitledPane(String playlistName) {
         TitledPane titledPane = new TitledPane();
         titledPane.setText(playlistName);
-        titledPane.setContent(new VBox());
-        titledPane.setOnMouseClicked(mouseEvent -> actionForTitledPane(mouseEvent, titledPane));
+        VBox vBox = new VBox();
+        vBox.setMinHeight(15);
+        titledPane.setContent(vBox);
+        titledPane.setOnMouseClicked(mouseEvent -> {
+            if (!titledPane.isExpanded() || vBox.getChildren().isEmpty()) {
+                actionForTitledPane(mouseEvent, titledPane);
+            }
+        });
         accordion.getPanes().add(titledPane);
     }
 
@@ -178,7 +217,7 @@ public class ViewController {
 
     private void contextMenuForPlaylist(TitledPane titledPane, MouseEvent mouseEvent) {
         ContextMenu contextMenu = new ContextMenu();
-        MenuItem menuItem = new MenuItem("Delete");
+        MenuItem menuItem = new MenuItem("Delete playlist");
         menuItem.setOnAction(actionEvent -> {
             playlistManager.deleteByName(titledPane.getText());
             updatePlaylists();
