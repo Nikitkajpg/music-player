@@ -7,7 +7,6 @@ import java.io.File;
 
 @SuppressWarnings("FieldMayBeFinal")
 public class Music extends Element {
-    private int id;
     private String title;
     private String artist;
     private int level;
@@ -18,8 +17,7 @@ public class Music extends Element {
 //    AudioSpectrumListener
 
 
-    public Music(int id, String title, String artist, int level, File file, String mediaPath) {
-        this.id = id;
+    public Music(String title, String artist, int level, File file, String mediaPath) {
         this.title = title;
         this.artist = artist;
         this.level = level;
@@ -30,11 +28,6 @@ public class Music extends Element {
 
     public void setLevel(int level) {
         this.level = level;
-    }
-
-    @Override
-    public int getId() {
-        return id;
     }
 
     public MediaPlayer getMediaPlayer() {

@@ -6,12 +6,10 @@ import java.util.ArrayList;
 
 @SuppressWarnings("FieldMayBeFinal")
 public class Playlist extends Element {
-    private int id;
     private String name;
     private ArrayList<Music> musicArray = new ArrayList<>();
 
-    public Playlist(int id, String name) {
-        this.id = id;
+    public Playlist(String name) {
         this.name = name;
     }
 
@@ -28,17 +26,8 @@ public class Playlist extends Element {
         }
     }
 
-    public void deleteById(int id) {
-        musicArray.removeIf(music -> music.getId() == id);
-    }
-
     public void deleteByName(String name) {
         musicArray.removeIf(music -> music.getFileName().equals(name));
-    }
-
-    @Override
-    public int getId() {
-        return 0;
     }
 
     public String getName() {

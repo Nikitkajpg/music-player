@@ -11,12 +11,7 @@ public class PlaylistManager {
     private ArrayList<Playlist> playlistArray = new ArrayList<>();
 
     public void add(String name) {
-        Playlist playlist = new Playlist(Util.setId(playlistArray), name);
-        playlistArray.add(playlist);
-    }
-
-    public void deleteById(int id) {
-        playlistArray.removeIf(playlist -> playlist.getId() == id);
+        playlistArray.add(new Playlist(name));
     }
 
     public void deleteByPath(String path) {
@@ -30,13 +25,8 @@ public class PlaylistManager {
         playlistArray.removeIf(playlist -> playlist.getName().equals(name));
     }
 
-    public Playlist get(int id) {
-        for (Playlist playlist : playlistArray) {
-            if (playlist.getId() == id) {
-                return playlist;
-            }
-        }
-        return null;
+    public Playlist getLastPlaylist() {
+        return playlistArray.get(playlistArray.size() - 1);
     }
 
     public ArrayList<Playlist> getPlaylistArray() {
@@ -53,7 +43,7 @@ public class PlaylistManager {
     }
 
     public void createDefaultPlaylist(MusicManager musicManager) {
-        Playlist playlist = new Playlist(Util.setId(playlistArray), "All music");
+        Playlist playlist = new Playlist("All music");
         for (Music music : musicManager.getMusicArray()) {
             playlist.add(music);
         }
@@ -69,6 +59,6 @@ public class PlaylistManager {
     }
 
     public void createPlaylist(String playlistName) {
-        playlistArray.add(new Playlist(Util.setId(playlistArray), playlistName));
+        playlistArray.add(new Playlist(playlistName));
     }
 }

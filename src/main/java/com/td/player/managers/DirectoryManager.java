@@ -11,25 +11,12 @@ public class DirectoryManager {
     private ArrayList<Directory> directoryArray = new ArrayList<>();
 
     public void add(String path) {
-        Directory directory = new Directory(Util.setId(directoryArray), path);
+        Directory directory = new Directory(path);
         directoryArray.add(directory);
-    }
-
-    public void delete(int id) {
-        directoryArray.removeIf(directory -> directory.getId() == id);
     }
 
     public void delete(String path) {
         directoryArray.removeIf(directory -> directory.getPath().equals(path));
-    }
-
-    public Directory get(int id) {
-        for (Directory directory : directoryArray) {
-            if (directory.getId() == id) {
-                return directory;
-            }
-        }
-        return null;
     }
 
     public ArrayList<Directory> getDirectoryArray() {

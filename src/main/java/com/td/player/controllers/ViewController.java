@@ -117,43 +117,7 @@ public class ViewController {
                 }
             });
 
-            vBox.setOnDragOver(dragEvent -> {
-                // data is dragged over the target
-                // accept it only if it is  not dragged from the same node and if it has a string data
-                if (dragEvent.getGestureSource() != vBox && dragEvent.getDragboard().hasString()) {
-                    // allow for both copying and moving, whatever user chooses
-                    dragEvent.acceptTransferModes(TransferMode.COPY_OR_MOVE);
-                }
-                dragEvent.consume();
-            });
-            vBox.setOnDragEntered(dragEvent -> {
-                // the drag-and-drop gesture entered the target
-                // show to the user that it is an actual gesture target
-                if (dragEvent.getGestureSource() != vBox &&
-                        dragEvent.getDragboard().hasString()) {
-                    vBox.setStyle("-fx-background-color: green");
-                }
-                dragEvent.consume();
-            });
-            vBox.setOnDragExited(dragEvent -> {
-                // mouse moved away, remove the graphical cues
-                vBox.setStyle("-fx-background-color: #333333");
-                dragEvent.consume();
-            });
-            vBox.setOnDragDropped(dragEvent -> {
-                // data dropped
-                // if there is a string data on dragBoard, read it and use it
-                Dragboard dragboard = dragEvent.getDragboard();
-                boolean success = false;
-                if (dragboard.hasString()) {
-                    vBox.getChildren().add(new Label(dragboard.getString()));
-                    playlist.addByName(dragboard.getString(), musicManager);
-                    success = true;
-                }
-                // let the source know whether the string was successfully transferred and used
-                dragEvent.setDropCompleted(success);
-                dragEvent.consume();
-            });
+            dragAndDrop(vBox, playlist);
 
             for (Music music : playlist.getMusicArray()) {
                 vBox.getChildren().add(getPlaylistLabel(music.getFileName(), vBox, playlist, titledPane));
@@ -199,6 +163,8 @@ public class ViewController {
         TitledPane titledPane = new TitledPane();
         titledPane.setText(playlistName);
         VBox vBox = new VBox();
+        playlistManager.createPlaylist(playlistName);
+        dragAndDrop(vBox, playlistManager.getLastPlaylist());
         vBox.setMinHeight(15);
         titledPane.setContent(vBox);
         titledPane.setOnMouseClicked(mouseEvent -> {
@@ -224,5 +190,45 @@ public class ViewController {
         });
         contextMenu.getItems().add(menuItem);
         contextMenu.show(titledPane, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+    }
+
+    private void dragAndDrop(VBox vBox, Playlist playlist) {
+        vBox.setOnDragOver(dragEvent -> {
+            // data is dragged over the target
+            // accept it only if it is  not dragged from the same node and if it has a string data
+            if (dragEvent.getGestureSource() != vBox && dragEvent.getDragboard().hasString()) {
+                // allow for both copying and moving, whatever user chooses
+                dragEvent.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+            }
+            dragEvent.consume();
+        });
+        vBox.setOnDragEntered(dragEvent -> {
+            // the drag-and-drop gesture entered the target
+            // show to the user that it is an actual gesture target
+            if (dragEvent.getGestureSource() != vBox &&
+                    dragEvent.getDragboard().hasString()) {
+                vBox.setStyle("-fx-background-color: green");
+            }
+            dragEvent.consume();
+        });
+        vBox.setOnDragExited(dragEvent -> {
+            // mouse moved away, remove the graphical cues
+            vBox.setStyle("-fx-background-color: #333333");
+            dragEvent.consume();
+        });
+        vBox.setOnDragDropped(dragEvent -> {
+            // data dropped
+            // if there is a string data on dragBoard, read it and use it
+            Dragboard dragboard = dragEvent.getDragboard();
+            boolean success = false;
+            if (dragboard.hasString()) {
+                vBox.getChildren().add(new Label(dragboard.getString()));
+                playlist.addByName(dragboard.getString(), musicManager);
+                success = true;
+            }
+            // let the source know whether the string was successfully transferred and used
+            dragEvent.setDropCompleted(success);
+            dragEvent.consume();
+        });
     }
 }

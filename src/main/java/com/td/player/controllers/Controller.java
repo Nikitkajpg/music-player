@@ -14,7 +14,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.WindowEvent;
 
 // todo окошки с delete не убираются при повторном вызове
-// todo в пустой плейлист не добавляется песня, если плейлист создан в текущем сеансе
 
 public class Controller {
     @FXML
@@ -81,7 +80,6 @@ public class Controller {
         String playlistName = textField.getText();
         if (playlistName != null && !playlistName.equals("")) {
             viewController.createTitledPane(playlistName);
-            playlistManager.createPlaylist(playlistName);
             textField.clear();
         }
     }
