@@ -1,15 +1,15 @@
 VBox {
-    -fx-background-color: #333333;
+    /*-fx-background-color: #333333;*/
 }
 
 ScrollPane {
-    -fx-background-color: red;
+    /*-fx-background-color: red;*/
 }
 
 Label {
-    -fx-text-fill: white;
+    /*-fx-text-fill: white;*/
 }
 
 HBox {
-    -fx-spacing: 10;
+    /*-fx-spacing: 10;*/
 }

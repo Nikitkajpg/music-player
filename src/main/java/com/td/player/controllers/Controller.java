@@ -1,24 +1,30 @@
 package com.td.player.controllers;
 
+import com.td.player.Player;
 import com.td.player.managers.DirectoryManager;
 import com.td.player.managers.MusicManager;
 import com.td.player.managers.PlaylistManager;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.WindowEvent;
+import javafx.stage.Stage;
 
 public class Controller {
     @FXML
-    private VBox musicListVBox, dirsListVBox;
+    private VBox musicListVBox, dirsListVBox, playlistVBox;
 
     @FXML
-    private Button playButton;
+    private BorderPane topMenuBorderPane;
+
+    @FXML
+    private Button playButton, addDirButton;
 
     @FXML
     private Accordion accordion;
@@ -26,12 +32,18 @@ public class Controller {
     @FXML
     private TextField textField;
 
+    @FXML
+    private ScrollPane dirScrollPane, playlistScrollPane;
+
     private FileController fileController;
     private DirectoryManager directoryManager;
     private MusicManager musicManager;
     private PlaylistManager playlistManager;
     private MediaController mediaController;
     private ViewController viewController;
+
+    private double xOffset = 0;
+    private double yOffset = 0;
 
     @FXML
     private void initialize() {
@@ -43,20 +55,44 @@ public class Controller {
         fileController = new FileController(directoryManager, musicManager, playlistManager);
         // вывод обновленных списков на экран
         viewController = new ViewController(directoryManager, musicManager, playlistManager, dirsListVBox, musicListVBox, accordion, mediaController);
+
+        addDirButton.prefWidthProperty().bind(dirScrollPane.widthProperty());
+        playlistVBox.prefWidthProperty().bind(playlistScrollPane.widthProperty());
+        textField.prefWidthProperty().bind(playlistScrollPane.widthProperty());
     }
 
-    // при закрытии окна вся информация записывается в файлы
-    private final EventHandler<WindowEvent> closeEventHandler = windowEvent -> fileController.writeAllInf();
-
-    public EventHandler<WindowEvent> getCloseEventHandler() {
-        return closeEventHandler;
+    public void dragStage(Stage stage) {
+        topMenuBorderPane.setOnMousePressed(mouseEvent -> {
+            xOffset = mouseEvent.getSceneX();
+            yOffset = mouseEvent.getSceneY();
+        });
+        topMenuBorderPane.setOnMouseDragged(mouseEvent -> {
+            stage.setX(mouseEvent.getScreenX() - xOffset);
+            stage.setY(mouseEvent.getScreenY() - yOffset);
+        });
     }
 
     @FXML
-    private void onSelectButtonClick() {
+    private void onAddDirButtonClick() {
         fileController.selectDirectory();
         playlistManager.updateDefaultPlaylist(musicManager);
         viewController.update(); // вывод обновленных списков на экран
+    }
+
+    @FXML
+    private void onAddPlaylistButtonClick() {
+        String playlistName = textField.getText();
+        if (playlistName != null && !playlistName.equals("")) {
+            viewController.createTitledPane(playlistName);
+            textField.clear();
+        }
+    }
+
+    @FXML
+    private void onTextFieldKeyPressed(KeyEvent keyEvent) {
+        if (keyEvent.getCode().equals(KeyCode.ENTER)) {
+            onAddDirButtonClick();
+        }
     }
 
     @FXML
@@ -74,18 +110,13 @@ public class Controller {
     }
 
     @FXML
-    private void onNewPlaylistButtonClick() {
-        String playlistName = textField.getText();
-        if (playlistName != null && !playlistName.equals("")) {
-            viewController.createTitledPane(playlistName);
-            textField.clear();
-        }
+    private void onExitButtonClick() {
+        fileController.writeAllInf();
+        Player.stage.close();
     }
 
     @FXML
-    private void onTextFieldKeyPressed(KeyEvent keyEvent) {
-        if (keyEvent.getCode().equals(KeyCode.ENTER)) {
-            onNewPlaylistButtonClick();
-        }
+    private void onMinimizeButtonClick() {
+        Player.stage.setIconified(true);
     }
 }

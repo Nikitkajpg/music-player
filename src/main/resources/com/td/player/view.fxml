@@ -1,20 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <VBox alignment="CENTER" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.td.player.controllers.Controller" stylesheets="@css/main.css">
 
-    <MenuBar VBox.vgrow="NEVER">
-        <Menu text="File">
-            <MenuItem text="Add folder..." onAction="#onSelectButtonClick"/>
-            <MenuItem text="Preferences…"/>
-            <MenuItem text="Quit"/>
-        </Menu>
-        <Menu text="Help">
-            <MenuItem text="About MyHelloApp"/>
-        </Menu>
-    </MenuBar>
+    <BorderPane fx:id="topMenuBorderPane">
+        <left>
+            <ImageView fitWidth="30" preserveRatio="true">
+                <Image url="@img/EMP2_2.png"/>
+            </ImageView>
+        </left>
+        <right>
+            <HBox>
+                <HBox>
+                    <Button>
+                        <tooltip>
+                            <Tooltip text="Settings"/>
+                        </tooltip>
+                        <graphic>
+                            <ImageView>
+                                <Image url="@img/settings.png"/>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                    <Button>
+                        <tooltip>
+                            <Tooltip text="Theme"/>
+                        </tooltip>
+                        <graphic>
+                            <ImageView>
+                                <Image url="@img/theme.png"/>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                </HBox>
+                <HBox>
+                    <Button onAction="#onMinimizeButtonClick">
+                        <tooltip>
+                            <Tooltip text="Minimize"/>
+                        </tooltip>
+                        <graphic>
+                            <ImageView>
+                                <Image url="@img/minimize.png"/>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                    <Button onAction="#onExitButtonClick">
+                        <tooltip>
+                            <Tooltip text="Exit"/>
+                        </tooltip>
+                        <graphic>
+                            <ImageView>
+                                <Image url="@img/exit.png"/>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                </HBox>
+            </HBox>
+        </right>
+    </BorderPane>
 
     <VBox VBox.vgrow="ALWAYS">
         <AnchorPane prefHeight="78.0" prefWidth="640.0">
@@ -25,16 +71,37 @@
             <Button layoutX="418.0" layoutY="27.0" text="Mute"/>
         </AnchorPane>
         <SplitPane VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS">
-            <ScrollPane minWidth="50">
-                <VBox fx:id="dirsListVBox" VBox.vgrow="ALWAYS"/>
+            <ScrollPane fx:id="dirScrollPane" minWidth="50">
+                <VBox>
+                    <Button fx:id="addDirButton" onAction="#onAddDirButtonClick">
+                        <tooltip>
+                            <Tooltip text="Add directory"/>
+                        </tooltip>
+                        <graphic>
+                            <ImageView>
+                                <Image url="@img/add.png"/>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                    <VBox fx:id="dirsListVBox" VBox.vgrow="ALWAYS"/>
+                </VBox>
             </ScrollPane>
             <ScrollPane minWidth="50">
                 <VBox fx:id="musicListVBox" VBox.vgrow="ALWAYS"/>
             </ScrollPane>
-            <ScrollPane minWidth="50">
-                <VBox>
+            <ScrollPane fx:id="playlistScrollPane" minWidth="50">
+                <VBox fx:id="playlistVBox">
                     <HBox>
-                        <Button text="New" onMouseClicked="#onNewPlaylistButtonClick"/>
+                        <Button onMouseClicked="#onAddPlaylistButtonClick" minWidth="60" maxWidth="100">
+                            <tooltip>
+                                <Tooltip text="Add new playlist"/>
+                            </tooltip>
+                            <graphic>
+                                <ImageView>
+                                    <Image url="@img/add.png"/>
+                                </ImageView>
+                            </graphic>
+                        </Button>
                         <TextField fx:id="textField" promptText="Name..." onKeyPressed="#onTextFieldKeyPressed"/>
                     </HBox>
                     <Accordion fx:id="accordion" VBox.vgrow="ALWAYS"/>
