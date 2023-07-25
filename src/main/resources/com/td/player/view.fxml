@@ -72,7 +72,7 @@
         </AnchorPane>
         <SplitPane VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS">
             <ScrollPane fx:id="dirScrollPane" minWidth="50">
-                <VBox>
+                <VBox fx:id="dirVBox">
                     <Button fx:id="addDirButton" onAction="#onAddDirButtonClick">
                         <tooltip>
                             <Tooltip text="Add directory"/>
@@ -86,7 +86,7 @@
                     <VBox fx:id="dirsListVBox" VBox.vgrow="ALWAYS"/>
                 </VBox>
             </ScrollPane>
-            <ScrollPane minWidth="50">
+            <ScrollPane fx:id="musicScrollPane" minWidth="50">
                 <VBox fx:id="musicListVBox" VBox.vgrow="ALWAYS"/>
             </ScrollPane>
             <ScrollPane fx:id="playlistScrollPane" minWidth="50">

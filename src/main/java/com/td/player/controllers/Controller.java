@@ -12,13 +12,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class Controller {
     @FXML
-    private VBox musicListVBox, dirsListVBox, playlistVBox;
+    private VBox musicListVBox, dirsListVBox, playlistVBox, dirVBox;
 
     @FXML
     private BorderPane topMenuBorderPane;
@@ -33,7 +32,7 @@ public class Controller {
     private TextField textField;
 
     @FXML
-    private ScrollPane dirScrollPane, playlistScrollPane;
+    private ScrollPane dirScrollPane, playlistScrollPane, musicScrollPane;
 
     private FileController fileController;
     private DirectoryManager directoryManager;
@@ -56,7 +55,13 @@ public class Controller {
         // вывод обновленных списков на экран
         viewController = new ViewController(directoryManager, musicManager, playlistManager, dirsListVBox, musicListVBox, accordion, mediaController);
 
+        widthProperties();
+    }
+
+    private void widthProperties() {
         addDirButton.prefWidthProperty().bind(dirScrollPane.widthProperty());
+        dirVBox.prefWidthProperty().bind(dirScrollPane.widthProperty());
+        musicListVBox.prefWidthProperty().bind(musicScrollPane.widthProperty());
         playlistVBox.prefWidthProperty().bind(playlistScrollPane.widthProperty());
         textField.prefWidthProperty().bind(playlistScrollPane.widthProperty());
     }

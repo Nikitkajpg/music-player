@@ -6,9 +6,15 @@ import com.td.player.elements.Playlist;
 import com.td.player.managers.DirectoryManager;
 import com.td.player.managers.MusicManager;
 import com.td.player.managers.PlaylistManager;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.VBox;
+
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 
 @SuppressWarnings("FieldMayBeFinal")
 public class ViewController {
@@ -120,6 +126,9 @@ public class ViewController {
                     }
                     mediaController.playByName(name);
                 }
+            } else if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+                currentContextMenu.hide();
+                contextMenuForMusic(label, mouseEvent);
             }
         });
         label.setOnDragDetected(mouseEvent -> {
@@ -157,7 +166,32 @@ public class ViewController {
             updateMusic();                                  // вывод обновленного списка музыки на экран
             updatePlaylists();
         });
-        contextMenu.getItems().add(deleteMenuItem);
+        MenuItem showMenuItem = new MenuItem("Show in explorer");
+        showMenuItem.setOnAction(event -> {
+            File directory = new File(label.getText());
+            try {
+                Desktop.getDesktop().open(directory);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        contextMenu.getItems().addAll(showMenuItem, deleteMenuItem);
+        contextMenu.show(label, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+        currentContextMenu = contextMenu;
+    }
+
+    private void contextMenuForMusic(Label label, MouseEvent mouseEvent) {
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem showMenuItem = new MenuItem("Show in explorer");
+        showMenuItem.setOnAction(event -> {
+            File directory = new File(musicManager.get(label.getText()).getAbsolutePath());
+            try {
+                Runtime.getRuntime().exec("explorer /select, " + directory.getAbsolutePath());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        contextMenu.getItems().add(showMenuItem);
         contextMenu.show(label, mouseEvent.getScreenX(), mouseEvent.getScreenY());
         currentContextMenu = contextMenu;
     }
@@ -165,7 +199,7 @@ public class ViewController {
     private void contextMenuForPlaylistLabel(Label label, MouseEvent mouseEvent, VBox vBox, Playlist playlist, TitledPane titledPane) {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem deletePlaylistMenuItem = new MenuItem("Delete playlist");
-        deletePlaylistMenuItem.setOnAction(actionEvent -> {
+        deletePlaylistMenuItem.setOnAction(event -> {
             playlistManager.deleteByName(titledPane.getText());
             updatePlaylists();
         });

@@ -2,6 +2,7 @@ module com.td.player {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.media;
+    requires java.desktop;
 
     opens com.td.player to javafx.fxml;
     exports com.td.player;
