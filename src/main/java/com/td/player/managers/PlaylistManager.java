@@ -61,4 +61,13 @@ public class PlaylistManager {
     public void createPlaylist(String playlistName) {
         playlistArray.add(new Playlist(playlistName));
     }
+
+    public void renamePlaylist(String oldName, String newName) {
+        for (Playlist playlist : playlistArray) {
+            if (playlist.getName().equals(oldName)) {
+                playlist.setName(newName);
+                break;
+            }
+        }
+    }
 }

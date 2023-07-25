@@ -6,21 +6,30 @@ import com.td.player.elements.Playlist;
 import com.td.player.managers.DirectoryManager;
 import com.td.player.managers.MusicManager;
 import com.td.player.managers.PlaylistManager;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.*;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.VBox;
 
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 @SuppressWarnings("FieldMayBeFinal")
 public class ViewController {
     private VBox dirsListVBox;
     private VBox musicListVBox;
     private Accordion accordion;
+    private Button addPlaylistButton;
+    private TextField textField;
+    private Button renamePlaylistButton;
+    private TitledPane currentTitledPane = new TitledPane();
     private ContextMenu currentContextMenu = new ContextMenu();
 
     private DirectoryManager directoryManager;
@@ -29,7 +38,9 @@ public class ViewController {
 
     private MediaController mediaController;
 
-    public ViewController(DirectoryManager directoryManager, MusicManager musicManager, PlaylistManager playlistManager, VBox dirsListVBox, VBox musicListVBox, Accordion accordion, MediaController mediaController) {
+    public ViewController(DirectoryManager directoryManager, MusicManager musicManager, PlaylistManager playlistManager,
+                          VBox dirsListVBox, VBox musicListVBox, Accordion accordion, MediaController mediaController,
+                          Button addPlaylistButton, TextField textField, Button renamePlaylistButton) {
         this.dirsListVBox = dirsListVBox;
         this.musicListVBox = musicListVBox;
         this.directoryManager = directoryManager;
@@ -37,6 +48,9 @@ public class ViewController {
         this.playlistManager = playlistManager;
         this.accordion = accordion;
         this.mediaController = mediaController;
+        this.addPlaylistButton = addPlaylistButton;
+        this.textField = textField;
+        this.renamePlaylistButton = renamePlaylistButton;
         update();
     }
 
@@ -207,6 +221,10 @@ public class ViewController {
         MenuItem renamePlaylistMenuItem = new MenuItem("Rename playlist");
         renamePlaylistMenuItem.setOnAction(actionEvent -> {
             //todo
+            renamePlaylistButton.setDisable(false);
+            addPlaylistButton.setDisable(true);
+            textField.requestFocus();
+            currentTitledPane = titledPane;
         });
 
         MenuItem deleteMusicMenuItem = new MenuItem("Delete music");
@@ -221,14 +239,27 @@ public class ViewController {
 
     private void contextMenuForPlaylist(TitledPane titledPane, MouseEvent mouseEvent) {
         ContextMenu contextMenu = new ContextMenu();
-        MenuItem menuItem = new MenuItem("Delete playlist");
-        menuItem.setOnAction(actionEvent -> {
+        MenuItem deletePlaylistMenuItem = new MenuItem("Delete playlist");
+        deletePlaylistMenuItem.setOnAction(actionEvent -> {
             playlistManager.deleteByName(titledPane.getText());
             updatePlaylists();
         });
-        contextMenu.getItems().add(menuItem);
+
+        MenuItem renamePlaylistMenuItem = new MenuItem("Rename playlist");
+        renamePlaylistMenuItem.setOnAction(actionEvent -> {
+            //todo
+        });
+
+        contextMenu.getItems().addAll(renamePlaylistMenuItem, deletePlaylistMenuItem);
         contextMenu.show(titledPane, mouseEvent.getScreenX(), mouseEvent.getScreenY());
         currentContextMenu = contextMenu;
+    }
+
+    public void renameTitledPane(String playlistName) {
+        playlistManager.renamePlaylist(currentTitledPane.getText(), playlistName);
+        currentTitledPane.setText(playlistName);
+        renamePlaylistButton.setDisable(true);
+        addPlaylistButton.setDisable(false);
     }
 
     private void dragAndDrop(VBox vBox, Playlist playlist) {

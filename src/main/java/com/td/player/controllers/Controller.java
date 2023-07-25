@@ -23,7 +23,7 @@ public class Controller {
     private BorderPane topMenuBorderPane;
 
     @FXML
-    private Button playButton, addDirButton;
+    private Button playButton, addDirButton, addPlaylistButton, renamePlaylistButton;
 
     @FXML
     private Accordion accordion;
@@ -53,7 +53,8 @@ public class Controller {
         // создание папочной структуры, первичное заполнение списков
         fileController = new FileController(directoryManager, musicManager, playlistManager);
         // вывод обновленных списков на экран
-        viewController = new ViewController(directoryManager, musicManager, playlistManager, dirsListVBox, musicListVBox, accordion, mediaController);
+        viewController = new ViewController(directoryManager, musicManager, playlistManager, dirsListVBox,
+                musicListVBox, accordion, mediaController, addPlaylistButton, textField, renamePlaylistButton);
 
         widthProperties();
     }
@@ -96,7 +97,20 @@ public class Controller {
     @FXML
     private void onTextFieldKeyPressed(KeyEvent keyEvent) {
         if (keyEvent.getCode().equals(KeyCode.ENTER)) {
-            onAddDirButtonClick();
+            if (!addPlaylistButton.isDisable()) {
+                onAddPlaylistButtonClick();
+            } else {
+                onRenamePlaylistButtonClick();
+            }
+        }
+    }
+
+    @FXML
+    private void onRenamePlaylistButtonClick() {
+        String playlistName = textField.getText();
+        if (playlistName != null && !playlistName.equals("")) {
+            viewController.renameTitledPane(playlistName);
+            textField.clear();
         }
     }
 
