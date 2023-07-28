@@ -21,7 +21,7 @@ public class Player extends Application {
         stage.setScene(scene);
         stage.setHeight(600);
         stage.setWidth(800);
-        stage.getIcons().add(new Image(String.valueOf(Player.class.getResource("img/EMP3_1.png"))));
+        stage.getIcons().add(new Image(String.valueOf(Player.class.getResource("img/EMP3_2.png"))));
         stage.initStyle(StageStyle.UNDECORATED);
         stage.show();
 

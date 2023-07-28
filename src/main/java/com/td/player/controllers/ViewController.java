@@ -6,20 +6,9 @@ import com.td.player.elements.Playlist;
 import com.td.player.managers.DirectoryManager;
 import com.td.player.managers.MusicManager;
 import com.td.player.managers.PlaylistManager;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.*;
-import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.VBox;
-
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.util.Objects;
 
 @SuppressWarnings("FieldMayBeFinal")
 public class ViewController {
@@ -30,11 +19,11 @@ public class ViewController {
     private TextField textField;
     private Button renamePlaylistButton;
     private TitledPane currentTitledPane = new TitledPane();
-    private ContextMenu currentContextMenu = new ContextMenu();
 
     private DirectoryManager directoryManager;
     private MusicManager musicManager;
     private PlaylistManager playlistManager;
+    private ContextMenuController contextMenuController;
 
     private MediaController mediaController;
 
@@ -51,6 +40,7 @@ public class ViewController {
         this.addPlaylistButton = addPlaylistButton;
         this.textField = textField;
         this.renamePlaylistButton = renamePlaylistButton;
+        contextMenuController = new ContextMenuController(directoryManager, musicManager, playlistManager);
         update();
     }
 
@@ -60,21 +50,21 @@ public class ViewController {
         updatePlaylists();
     }
 
-    private void updateDirs() {
+    public void updateDirs() {
         dirsListVBox.getChildren().clear();
         for (Directory directory : directoryManager.getDirectoryArray()) {
             dirsListVBox.getChildren().add(getDirLabel(directory.getPath()));
         }
     }
 
-    private void updateMusic() {
+    public void updateMusic() {
         musicListVBox.getChildren().clear();
         for (Music music : musicManager.getMusicArray()) {
             musicListVBox.getChildren().add(getMusicLabel(music.getFileName()));
         }
     }
 
-    private void updatePlaylists() {
+    public void updatePlaylists() {
         accordion.getPanes().clear();
         for (Playlist playlist : playlistManager.getPlaylistArray()) {
             TitledPane titledPane = new TitledPane();
@@ -89,7 +79,7 @@ public class ViewController {
             dragAndDrop(vBox, playlist);
 
             for (Music music : playlist.getMusicArray()) {
-                vBox.getChildren().add(getPlaylistLabel(music.getFileName(), vBox, playlist, titledPane));
+                vBox.getChildren().add(getPlaylistLabel(music.getFileName(), playlist, titledPane));
             }
             titledPane.setContent(vBox);
             accordion.getPanes().add(titledPane);
@@ -114,8 +104,7 @@ public class ViewController {
 
     private void actionForTitledPane(MouseEvent mouseEvent, TitledPane titledPane) {
         if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-            currentContextMenu.hide();
-            contextMenuForPlaylist(titledPane, mouseEvent);
+            contextMenuController.show(titledPane, mouseEvent, this);
         }
     }
 
@@ -123,8 +112,7 @@ public class ViewController {
         Label label = new Label(path);
         label.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                currentContextMenu.hide();
-                contextMenuForDir(label, mouseEvent);
+                contextMenuController.show(label, mouseEvent, this);
             }
         });
         return label;
@@ -141,8 +129,7 @@ public class ViewController {
                     mediaController.playByName(name);
                 }
             } else if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                currentContextMenu.hide();
-                contextMenuForMusic(label, mouseEvent);
+                contextMenuController.show(label, mouseEvent);
             }
         });
         label.setOnDragDetected(mouseEvent -> {
@@ -158,101 +145,14 @@ public class ViewController {
         return label;
     }
 
-    private Label getPlaylistLabel(String fileName, VBox vBox, Playlist playlist, TitledPane titledPane) {
+    private Label getPlaylistLabel(String fileName, Playlist playlist, TitledPane titledPane) {
         Label label = new Label(fileName);
         label.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                currentContextMenu.hide();
-                contextMenuForPlaylistLabel(label, mouseEvent, vBox, playlist, titledPane);
+                contextMenuController.show(playlist, label, titledPane, mouseEvent, this);
             }
         });
         return label;
-    }
-
-    private void contextMenuForDir(Label label, MouseEvent mouseEvent) {
-        ContextMenu contextMenu = new ContextMenu();
-        MenuItem deleteMenuItem = new MenuItem("Delete directory");
-        deleteMenuItem.setOnAction(actionEvent -> {
-            dirsListVBox.getChildren().remove(label);       // удаление метки из списка меток путей
-            directoryManager.delete(label.getText()); // удаление пути из списка путей
-            musicManager.delete(label.getText());  // удаление музыки с этим путем из списка музыки
-            playlistManager.deleteByPath(label.getText()); // удаление всей музыки с этим путем из списка плейлистов
-            updateMusic();                                  // вывод обновленного списка музыки на экран
-            updatePlaylists();
-        });
-        MenuItem showMenuItem = new MenuItem("Show in explorer");
-        showMenuItem.setOnAction(event -> {
-            File directory = new File(label.getText());
-            try {
-                Desktop.getDesktop().open(directory);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-        contextMenu.getItems().addAll(showMenuItem, deleteMenuItem);
-        contextMenu.show(label, mouseEvent.getScreenX(), mouseEvent.getScreenY());
-        currentContextMenu = contextMenu;
-    }
-
-    private void contextMenuForMusic(Label label, MouseEvent mouseEvent) {
-        ContextMenu contextMenu = new ContextMenu();
-        MenuItem showMenuItem = new MenuItem("Show in explorer");
-        showMenuItem.setOnAction(event -> {
-            File directory = new File(musicManager.get(label.getText()).getAbsolutePath());
-            try {
-                Runtime.getRuntime().exec("explorer /select, " + directory.getAbsolutePath());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
-        contextMenu.getItems().add(showMenuItem);
-        contextMenu.show(label, mouseEvent.getScreenX(), mouseEvent.getScreenY());
-        currentContextMenu = contextMenu;
-    }
-
-    private void contextMenuForPlaylistLabel(Label label, MouseEvent mouseEvent, VBox vBox, Playlist playlist, TitledPane titledPane) {
-        ContextMenu contextMenu = new ContextMenu();
-        MenuItem deletePlaylistMenuItem = new MenuItem("Delete playlist");
-        deletePlaylistMenuItem.setOnAction(event -> {
-            playlistManager.deleteByName(titledPane.getText());
-            updatePlaylists();
-        });
-
-        MenuItem renamePlaylistMenuItem = new MenuItem("Rename playlist");
-        renamePlaylistMenuItem.setOnAction(actionEvent -> {
-            //todo
-            renamePlaylistButton.setDisable(false);
-            addPlaylistButton.setDisable(true);
-            textField.requestFocus();
-            currentTitledPane = titledPane;
-        });
-
-        MenuItem deleteMusicMenuItem = new MenuItem("Delete music");
-        deleteMusicMenuItem.setOnAction(actionEvent -> {
-            playlist.deleteByName(label.getText());
-            vBox.getChildren().remove(label);
-        });
-        contextMenu.getItems().addAll(deletePlaylistMenuItem, renamePlaylistMenuItem, deleteMusicMenuItem);
-        contextMenu.show(label, mouseEvent.getScreenX(), mouseEvent.getScreenY());
-        currentContextMenu = contextMenu;
-    }
-
-    private void contextMenuForPlaylist(TitledPane titledPane, MouseEvent mouseEvent) {
-        ContextMenu contextMenu = new ContextMenu();
-        MenuItem deletePlaylistMenuItem = new MenuItem("Delete playlist");
-        deletePlaylistMenuItem.setOnAction(actionEvent -> {
-            playlistManager.deleteByName(titledPane.getText());
-            updatePlaylists();
-        });
-
-        MenuItem renamePlaylistMenuItem = new MenuItem("Rename playlist");
-        renamePlaylistMenuItem.setOnAction(actionEvent -> {
-            //todo
-        });
-
-        contextMenu.getItems().addAll(renamePlaylistMenuItem, deletePlaylistMenuItem);
-        contextMenu.show(titledPane, mouseEvent.getScreenX(), mouseEvent.getScreenY());
-        currentContextMenu = contextMenu;
     }
 
     public void renameTitledPane(String playlistName) {
@@ -300,5 +200,12 @@ public class ViewController {
             dragEvent.setDropCompleted(success);
             dragEvent.consume();
         });
+    }
+
+    public void methodToRename(boolean renameDisable, boolean addDisable, TitledPane titledPane) {
+        renamePlaylistButton.setDisable(renameDisable);
+        addPlaylistButton.setDisable(addDisable);
+        textField.requestFocus();
+        currentTitledPane = titledPane;
     }
 }

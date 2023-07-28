@@ -1,15 +1,23 @@
-VBox {
-    /*-fx-background-color: #333333;*/
+#settingsButton {
+    -fx-graphic: url("../img/settings.png");
 }
 
-ScrollPane {
-    /*-fx-background-color: red;*/
+#themeButton {
+    -fx-graphic: url("../img/theme.png");
 }
 
-Label {
-    /*-fx-text-fill: white;*/
+#minimizeButton {
+    -fx-graphic: url("../img/minimize.png");
 }
 
-HBox {
-    /*-fx-spacing: 10;*/
+#exitButton {
+    -fx-graphic: url("../img/exit.png");
+}
+
+#addDirButton, #addPlaylistButton {
+    -fx-graphic: url("../img/add.png");
+}
+
+#renamePlaylistButton {
+    -fx-graphic: url("../img/rename.png");
 }

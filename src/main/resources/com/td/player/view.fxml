@@ -9,53 +9,33 @@
     <BorderPane fx:id="topMenuBorderPane">
         <left>
             <ImageView fitWidth="30" preserveRatio="true">
-                <Image url="@img/EMP3_1.png"/>
+                <Image url="@img/EMP3_2.png"/>
             </ImageView>
         </left>
         <right>
             <HBox>
                 <HBox>
-                    <Button>
+                    <Button fx:id="settingsButton">
                         <tooltip>
                             <Tooltip text="Settings"/>
                         </tooltip>
-                        <graphic>
-                            <ImageView>
-                                <Image url="@img/settings.png"/>
-                            </ImageView>
-                        </graphic>
                     </Button>
-                    <Button>
+                    <Button fx:id="themeButton">
                         <tooltip>
                             <Tooltip text="Theme"/>
                         </tooltip>
-                        <graphic>
-                            <ImageView>
-                                <Image url="@img/theme.png"/>
-                            </ImageView>
-                        </graphic>
                     </Button>
                 </HBox>
                 <HBox>
-                    <Button onAction="#onMinimizeButtonClick">
+                    <Button fx:id="minimizeButton" onAction="#onMinimizeButtonClick">
                         <tooltip>
                             <Tooltip text="Minimize"/>
                         </tooltip>
-                        <graphic>
-                            <ImageView>
-                                <Image url="@img/minimize.png"/>
-                            </ImageView>
-                        </graphic>
                     </Button>
-                    <Button onAction="#onExitButtonClick">
+                    <Button fx:id="exitButton" onAction="#onExitButtonClick">
                         <tooltip>
                             <Tooltip text="Exit"/>
                         </tooltip>
-                        <graphic>
-                            <ImageView>
-                                <Image url="@img/exit.png"/>
-                            </ImageView>
-                        </graphic>
                     </Button>
                 </HBox>
             </HBox>
@@ -77,11 +57,6 @@
                         <tooltip>
                             <Tooltip text="Add directory"/>
                         </tooltip>
-                        <graphic>
-                            <ImageView>
-                                <Image url="@img/add.png"/>
-                            </ImageView>
-                        </graphic>
                     </Button>
                     <VBox fx:id="dirsListVBox" VBox.vgrow="ALWAYS"/>
                 </VBox>
@@ -96,22 +71,12 @@
                             <tooltip>
                                 <Tooltip text="Add new playlist"/>
                             </tooltip>
-                            <graphic>
-                                <ImageView>
-                                    <Image url="@img/add.png"/>
-                                </ImageView>
-                            </graphic>
                         </Button>
                         <TextField fx:id="textField" promptText="Name..." onKeyPressed="#onTextFieldKeyPressed"/>
                         <Button fx:id="renamePlaylistButton" onMouseClicked="#onRenamePlaylistButtonClick" minWidth="60" maxWidth="60" disable="true">
                             <tooltip>
                                 <Tooltip text="Rename playlist"/>
                             </tooltip>
-                            <graphic>
-                                <ImageView>
-                                    <Image url="@img/rename.png"/>
-                                </ImageView>
-                            </graphic>
                         </Button>
                     </HBox>
                     <Accordion fx:id="accordion" VBox.vgrow="ALWAYS"/>

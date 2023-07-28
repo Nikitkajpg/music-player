@@ -1,8 +1,6 @@
 package com.td.player.managers;
 
 import com.td.player.elements.Directory;
-import com.td.player.elements.Element;
-import com.td.player.util.Util;
 
 import java.util.ArrayList;
 
@@ -15,7 +13,7 @@ public class DirectoryManager {
         directoryArray.add(directory);
     }
 
-    public void delete(String path) {
+    public void deleteByPath(String path) {
         directoryArray.removeIf(directory -> directory.getPath().equals(path));
     }
 

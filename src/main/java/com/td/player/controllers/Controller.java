@@ -111,6 +111,9 @@ public class Controller {
         if (playlistName != null && !playlistName.equals("")) {
             viewController.renameTitledPane(playlistName);
             textField.clear();
+        } else {
+            addPlaylistButton.setDisable(false);
+            renamePlaylistButton.setDisable(true);
         }
     }
 
