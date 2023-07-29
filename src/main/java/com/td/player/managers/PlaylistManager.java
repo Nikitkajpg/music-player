@@ -69,4 +69,17 @@ public class PlaylistManager {
             }
         }
     }
+
+    public boolean isUnique(String name) {
+        for (Playlist playlist : playlistArray) {
+            if (playlist.getName().equals(name)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public Playlist getDefaultPlaylist() {
+        return playlistArray.get(0);
+    }
 }

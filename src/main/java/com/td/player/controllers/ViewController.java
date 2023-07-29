@@ -78,9 +78,12 @@ public class ViewController {
 
             dragAndDrop(vBox, playlist);
 
+            VBox labelsVBox = new VBox();
             for (Music music : playlist.getMusicArray()) {
-                vBox.getChildren().add(getPlaylistLabel(music.getFileName(), playlist, titledPane));
+                labelsVBox.getChildren().add(getPlaylistTitleLabel(music.getTitle(), playlist, titledPane));
+                labelsVBox.getChildren().add(new Label(music.getArtist()));
             }
+            vBox.getChildren().add(labelsVBox);
             titledPane.setContent(vBox);
             accordion.getPanes().add(titledPane);
         }
@@ -123,9 +126,6 @@ public class ViewController {
         label.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.PRIMARY) {
                 if (mouseEvent.getClickCount() == 2) {
-                    if (mediaController.getCurrentMediaPlayer() != null) {
-                        mediaController.getCurrentMediaPlayer().stop();
-                    }
                     mediaController.playByName(name);
                 }
             } else if (mouseEvent.getButton() == MouseButton.SECONDARY) {
@@ -145,7 +145,7 @@ public class ViewController {
         return label;
     }
 
-    private Label getPlaylistLabel(String fileName, Playlist playlist, TitledPane titledPane) {
+    private Label getPlaylistTitleLabel(String fileName, Playlist playlist, TitledPane titledPane) {
         Label label = new Label(fileName);
         label.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
@@ -207,5 +207,15 @@ public class ViewController {
         addPlaylistButton.setDisable(addDisable);
         textField.requestFocus();
         currentTitledPane = titledPane;
+    }
+
+    public String getExpandedPlaylistName() {
+        for (int i = 0; i < accordion.getPanes().size(); i++) {
+            TitledPane titledPane = accordion.getPanes().get(i);
+            if (titledPane.isExpanded()) {
+                return titledPane.getText();
+            }
+        }
+        return null;
     }
 }

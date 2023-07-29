@@ -49,13 +49,13 @@ public class Controller {
         musicManager = new MusicManager();
         directoryManager = new DirectoryManager();
         playlistManager = new PlaylistManager();
-        mediaController = new MediaController(musicManager, playButton);
+        mediaController = new MediaController(musicManager, playlistManager, playButton);
         // создание папочной структуры, первичное заполнение списков
         fileController = new FileController(directoryManager, musicManager, playlistManager);
         // вывод обновленных списков на экран
         viewController = new ViewController(directoryManager, musicManager, playlistManager, dirsListVBox,
                 musicListVBox, accordion, mediaController, addPlaylistButton, textField, renamePlaylistButton);
-
+        mediaController.setViewController(viewController);
         widthProperties();
     }
 
@@ -88,7 +88,7 @@ public class Controller {
     @FXML
     private void onAddPlaylistButtonClick() {
         String playlistName = textField.getText();
-        if (playlistName != null && !playlistName.equals("")) {
+        if (playlistName != null && !playlistName.equals("") && playlistManager.isUnique(playlistName)) {
             viewController.createTitledPane(playlistName);
             textField.clear();
         }
@@ -108,12 +108,14 @@ public class Controller {
     @FXML
     private void onRenamePlaylistButtonClick() {
         String playlistName = textField.getText();
-        if (playlistName != null && !playlistName.equals("")) {
-            viewController.renameTitledPane(playlistName);
-            textField.clear();
-        } else {
-            addPlaylistButton.setDisable(false);
-            renamePlaylistButton.setDisable(true);
+        if (playlistManager.isUnique(playlistName)) {
+            if (playlistName != null && !playlistName.equals("")) {
+                viewController.renameTitledPane(playlistName);
+                textField.clear();
+            } else {
+                addPlaylistButton.setDisable(false);
+                renamePlaylistButton.setDisable(true);
+            }
         }
     }
 
