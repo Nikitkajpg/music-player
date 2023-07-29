@@ -44,8 +44,9 @@
 
     <VBox VBox.vgrow="ALWAYS">
         <AnchorPane prefHeight="78.0" prefWidth="640.0">
-            <Button fx:id="stopButton" onMouseClicked="#onStopButtonClick" layoutX="250.0" layoutY="14.0" text="Stop"/>
+            <Button fx:id="previousButton" onMouseClicked="#onPreviousButtonClick" layoutX="200" layoutY="14" text="Previous"/>
             <Button fx:id="playButton" onMouseClicked="#onPlayButtonClick" layoutX="301.0" layoutY="14.0" text="Play"/>
+            <Button fx:id="nextButton" onMouseClicked="#onNextButtonClick" layoutX="350" layoutY="14" text="Next"/>
             <Slider layoutX="52.0" layoutY="57.0" prefHeight="14.0" prefWidth="534.0"/>
             <Slider layoutX="471.0" layoutY="32.0" prefHeight="14.0" prefWidth="58.0"/>
             <Button layoutX="418.0" layoutY="27.0" text="Mute"/>

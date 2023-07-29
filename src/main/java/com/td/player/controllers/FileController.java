@@ -28,7 +28,7 @@ public class FileController {
         createFiles();
         fillDirectoryArray();
         fillMusicArray();
-        playlistManager.createDefaultPlaylist(musicManager);    // создание плейлиста по умолчанию
+        playlistManager.createDefaultPlaylist(musicManager);
         fillPlaylistArray();
     }
 
@@ -46,7 +46,7 @@ public class FileController {
         }
     }
 
-    private void fillDirectoryArray() { // чтение файла и добавление в список
+    private void fillDirectoryArray() {
         try {
             String path;
             BufferedReader bufferedReader = new BufferedReader(
@@ -81,7 +81,7 @@ public class FileController {
         }
     }
 
-    private void fillPlaylistArray() {                          // чтение файла и добавление в список
+    private void fillPlaylistArray() {
         try {
             String line;
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(playlistFile)));

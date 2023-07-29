@@ -13,6 +13,8 @@ public class MediaController {
     private PlaylistManager playlistManager;
     private ViewController viewController;
 
+    private Music currentMusic;
+    private Playlist currentPlayList;
     private MediaPlayer currentMediaPlayer;
     private Button playButton;
 
@@ -30,24 +32,28 @@ public class MediaController {
             if (playlistName != null) {
                 for (Playlist p : playlistManager.getPlaylistArray()) {
                     if (p.getName().equals(playlistName)) {
-                        playPlaylist(p);
+                        currentPlayList = p;
+                        playPlaylist();
                         break;
                     }
                 }
             } else {
-                playPlaylist(playlistManager.getDefaultPlaylist());
+                currentPlayList = playlistManager.getDefaultPlaylist();
+                playPlaylist();
             }
         }
         playButton.setText("Pause");
     }
 
-    private void playPlaylist(Playlist playlist) {
-        if (playlist.getMusicArray().size() > 0) {
-            int id = 0;
-            currentMediaPlayer = playlist.getMusicArray().get(id).getMediaPlayer();
+    private void playPlaylist() {
+        if (currentPlayList.getMusicArray().size() > 0) {
+            currentMusic = currentPlayList.getMusicArray().get(0);
+            currentMediaPlayer = currentMusic.getMediaPlayer();
+            currentMediaPlayer.setOnEndOfMedia(this::next);
             currentMediaPlayer.play();
         } else {
-            playPlaylist(playlistManager.getDefaultPlaylist());
+            currentPlayList = playlistManager.getDefaultPlaylist();
+            playPlaylist();
         }
     }
 
@@ -55,7 +61,10 @@ public class MediaController {
         if (currentMediaPlayer != null) {
             currentMediaPlayer.stop();
         }
-        currentMediaPlayer = musicManager.get(name).getMediaPlayer();
+        currentPlayList = playlistManager.getDefaultPlaylist();
+        currentMusic = musicManager.get(name);
+        currentMediaPlayer = currentMusic.getMediaPlayer();
+        currentMediaPlayer.setOnEndOfMedia(this::next);
         currentMediaPlayer.play();
         playButton.setText("Pause");
     }
@@ -65,9 +74,24 @@ public class MediaController {
         playButton.setText("Play");
     }
 
-    public void stop() {
-        currentMediaPlayer.stop();
-        playButton.setText("Play");
+    public void next() {
+        if (currentMediaPlayer != null) {
+            currentMediaPlayer.stop();
+        }
+        currentMusic = currentPlayList.next(currentMusic);
+        currentMediaPlayer = currentMusic.getMediaPlayer();
+        currentMediaPlayer.setOnEndOfMedia(this::next);
+        currentMediaPlayer.play();
+    }
+
+    public void previous() {
+        if (currentMediaPlayer != null) {
+            currentMediaPlayer.stop();
+        }
+        currentMusic = currentPlayList.previous(currentMusic);
+        currentMediaPlayer = currentMusic.getMediaPlayer();
+        currentMediaPlayer.setOnEndOfMedia(this::next);
+        currentMediaPlayer.play();
     }
 
     public void setViewController(ViewController viewController) {

@@ -50,9 +50,7 @@ public class Controller {
         directoryManager = new DirectoryManager();
         playlistManager = new PlaylistManager();
         mediaController = new MediaController(musicManager, playlistManager, playButton);
-        // создание папочной структуры, первичное заполнение списков
         fileController = new FileController(directoryManager, musicManager, playlistManager);
-        // вывод обновленных списков на экран
         viewController = new ViewController(directoryManager, musicManager, playlistManager, dirsListVBox,
                 musicListVBox, accordion, mediaController, addPlaylistButton, textField, renamePlaylistButton);
         mediaController.setViewController(viewController);
@@ -82,7 +80,7 @@ public class Controller {
     private void onAddDirButtonClick() {
         fileController.selectDirectory();
         playlistManager.updateDefaultPlaylist(musicManager);
-        viewController.update(); // вывод обновленных списков на экран
+        viewController.update();
     }
 
     @FXML
@@ -129,8 +127,13 @@ public class Controller {
     }
 
     @FXML
-    private void onStopButtonClick() {
-        mediaController.stop();
+    private void onPreviousButtonClick() {
+        mediaController.previous();
+    }
+
+    @FXML
+    private void onNextButtonClick() {
+        mediaController.next();
     }
 
     @FXML
