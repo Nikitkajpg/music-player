@@ -82,4 +82,13 @@ public class PlaylistManager {
     public Playlist getDefaultPlaylist() {
         return playlistArray.get(0);
     }
+
+    public Playlist getPlaylistByName(String name) {
+        for (Playlist playlist : playlistArray) {
+            if (playlist.getName().equals(name)) {
+                return playlist;
+            }
+        }
+        return getDefaultPlaylist();
+    }
 }

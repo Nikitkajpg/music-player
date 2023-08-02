@@ -16,12 +16,11 @@ public class Player extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(Player.class.getResource("view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(Player.class.getResource("views/view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 320, 240);
         stage.setScene(scene);
         stage.setHeight(600);
         stage.setWidth(800);
-        stage.getIcons().add(new Image(String.valueOf(Player.class.getResource("img/EMP3_2.png"))));
         stage.initStyle(StageStyle.UNDECORATED);
         stage.show();
 

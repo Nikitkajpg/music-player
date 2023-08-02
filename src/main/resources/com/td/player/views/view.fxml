@@ -4,12 +4,12 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <VBox alignment="CENTER" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.td.player.controllers.Controller" stylesheets="@css/main.css">
+      fx:controller="com.td.player.controllers.Controller" stylesheets="@../css/main.css">
 
     <BorderPane fx:id="topMenuBorderPane">
         <left>
             <ImageView fitWidth="30" preserveRatio="true">
-                <Image url="@img/EMP3_2.png"/>
+                <Image url="@../img/EMP3_2.png"/>
             </ImageView>
         </left>
         <right>

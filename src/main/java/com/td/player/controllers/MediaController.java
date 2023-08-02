@@ -45,7 +45,10 @@ public class MediaController {
         playButton.setText("Pause");
     }
 
-    private void playPlaylist() {
+    public void playPlaylist() {
+        if (currentMediaPlayer != null) {
+            currentMediaPlayer.stop();
+        }
         if (currentPlayList.getMusicArray().size() > 0) {
             currentMusic = currentPlayList.getMusicArray().get(0);
             currentMediaPlayer = currentMusic.getMediaPlayer();
@@ -96,5 +99,13 @@ public class MediaController {
 
     public void setViewController(ViewController viewController) {
         this.viewController = viewController;
+    }
+
+    public Playlist getCurrentPlayList() {
+        return currentPlayList;
+    }
+
+    public void setCurrentPlayList(Playlist currentPlayList) {
+        this.currentPlayList = currentPlayList;
     }
 }

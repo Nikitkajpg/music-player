@@ -16,19 +16,21 @@ import java.io.IOException;
 
 @SuppressWarnings("FieldMayBeFinal")
 public class ContextMenuController {
+    private MediaController mediaController;
     private DirectoryManager directoryManager;
     private MusicManager musicManager;
     private PlaylistManager playlistManager;
 
     private ContextMenu currentContextMenu = new ContextMenu();
 
-    public ContextMenuController(DirectoryManager directoryManager, MusicManager musicManager, PlaylistManager playlistManager) {
+    public ContextMenuController(DirectoryManager directoryManager, MusicManager musicManager, PlaylistManager playlistManager, MediaController mediaController) {
         this.directoryManager = directoryManager;
         this.musicManager = musicManager;
         this.playlistManager = playlistManager;
+        this.mediaController = mediaController;
     }
 
-    public void show(Label label, MouseEvent mouseEvent) {
+    public void showMusicCM(Label label, MouseEvent mouseEvent) {
         currentContextMenu.hide();
         ContextMenu contextMenu = new ContextMenu();
         MenuItem showMenuItem = new MenuItem("Show in explorer");
@@ -46,7 +48,7 @@ public class ContextMenuController {
         currentContextMenu = contextMenu;
     }
 
-    public void show(Label label, MouseEvent mouseEvent, ViewController viewController) {
+    public void showDirCM(Label label, MouseEvent mouseEvent, ViewController viewController) {
         currentContextMenu.hide();
         ContextMenu contextMenu = new ContextMenu();
         MenuItem deleteMenuItem = new MenuItem("Delete directory");
@@ -70,7 +72,8 @@ public class ContextMenuController {
         currentContextMenu = contextMenu;
     }
 
-    public void show(Playlist playlist, Label label, TitledPane titledPane, MouseEvent mouseEvent, ViewController viewController) {
+    public void showTitledPaneLabelCM(Playlist playlist, Label label, TitledPane titledPane, MouseEvent mouseEvent, ViewController viewController) {
+        currentContextMenu.hide();
         ContextMenu contextMenu = new ContextMenu();
         contextMenu.getItems().addAll(
                 getDeletePlaylistMenuItem(titledPane, viewController),
@@ -80,13 +83,24 @@ public class ContextMenuController {
         currentContextMenu = contextMenu;
     }
 
-    public void show(TitledPane titledPane, MouseEvent mouseEvent, ViewController viewController) {
+    public void showTitledMenuCM(TitledPane titledPane, MouseEvent mouseEvent, ViewController viewController) {
+        currentContextMenu.hide();
         ContextMenu contextMenu = new ContextMenu();
         contextMenu.getItems().addAll(
                 getRenameMenuItem(titledPane, viewController),
-                getDeletePlaylistMenuItem(titledPane, viewController));
+                getDeletePlaylistMenuItem(titledPane, viewController),
+                getPlayMenuItem(titledPane, viewController));
         contextMenu.show(titledPane, mouseEvent.getScreenX(), mouseEvent.getScreenY());
         currentContextMenu = contextMenu;
+    }
+
+    private MenuItem getPlayMenuItem(TitledPane titledPane, ViewController viewController) {
+        MenuItem playMenuItem = new MenuItem("Play playlist");
+        playMenuItem.setOnAction(actionEvent -> {
+            mediaController.setCurrentPlayList(playlistManager.getPlaylistByName(titledPane.getText()));
+            mediaController.playPlaylist();
+        });
+        return playMenuItem;
     }
 
     private MenuItem getDeleteMusicMenuItem(Label label, Playlist playlist, ViewController viewController) {

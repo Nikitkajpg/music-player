@@ -40,7 +40,8 @@ public class ViewController {
         this.addPlaylistButton = addPlaylistButton;
         this.textField = textField;
         this.renamePlaylistButton = renamePlaylistButton;
-        contextMenuController = new ContextMenuController(directoryManager, musicManager, playlistManager);
+        contextMenuController = new ContextMenuController(directoryManager, musicManager,
+                playlistManager, mediaController);
         update();
     }
 
@@ -70,11 +71,6 @@ public class ViewController {
             TitledPane titledPane = new TitledPane();
             titledPane.setText(playlist.getName());
             VBox vBox = new VBox();
-            titledPane.setOnMouseClicked(mouseEvent -> {
-                if (!titledPane.isExpanded() || vBox.getChildren().isEmpty()) {
-                    actionForTitledPane(mouseEvent, titledPane);
-                }
-            });
 
             dragAndDrop(vBox, playlist);
 
@@ -84,6 +80,14 @@ public class ViewController {
                 labelsVBox.getChildren().add(new Label(music.getArtist()));
             }
             vBox.getChildren().add(labelsVBox);
+            titledPane.setOnMouseClicked(mouseEvent -> {
+                    actionForTitledPane(mouseEvent, titledPane);
+            });
+            labelsVBox.setOnMouseClicked(mouseEvent -> {
+                if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+                    mouseEvent.consume();
+                }
+            });
             titledPane.setContent(vBox);
             accordion.getPanes().add(titledPane);
         }
@@ -107,7 +111,7 @@ public class ViewController {
 
     private void actionForTitledPane(MouseEvent mouseEvent, TitledPane titledPane) {
         if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-            contextMenuController.show(titledPane, mouseEvent, this);
+            contextMenuController.showTitledMenuCM(titledPane, mouseEvent, this);
         }
     }
 
@@ -115,7 +119,7 @@ public class ViewController {
         Label label = new Label(path);
         label.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                contextMenuController.show(label, mouseEvent, this);
+                contextMenuController.showDirCM(label, mouseEvent, this);
             }
         });
         return label;
@@ -129,7 +133,7 @@ public class ViewController {
                     mediaController.playByName(name);
                 }
             } else if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                contextMenuController.show(label, mouseEvent);
+                contextMenuController.showMusicCM(label, mouseEvent);
             }
         });
         label.setOnDragDetected(mouseEvent -> {
@@ -149,7 +153,7 @@ public class ViewController {
         Label label = new Label(fileName);
         label.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                contextMenuController.show(playlist, label, titledPane, mouseEvent, this);
+                contextMenuController.showTitledPaneLabelCM(playlist, label, titledPane, mouseEvent, this);
             }
         });
         return label;
