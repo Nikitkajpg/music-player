@@ -13,6 +13,7 @@ public class Music extends Element {
     private String absolutePath;
     private String fileName;
     private Media media;
+    private MediaPlayer mediaPlayer;
 //    AudioEqualizer
 //    AudioSpectrumListener
 
@@ -23,7 +24,7 @@ public class Music extends Element {
         this.absolutePath = file.getAbsolutePath();
         this.fileName = file.getName();
         media = new Media(mediaPath);
-
+        mediaPlayer = new MediaPlayer(media);
 //        setData();
     }
 
@@ -40,7 +41,7 @@ public class Music extends Element {
     }
 
     public MediaPlayer getMediaPlayer() {
-        return new MediaPlayer(media);
+        return mediaPlayer;
     }
 
     public String getArtist() {

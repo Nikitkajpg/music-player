@@ -33,6 +33,9 @@ public class ContextMenuController {
     public void showMusicCM(Label label, MouseEvent mouseEvent) {
         currentContextMenu.hide();
         ContextMenu contextMenu = new ContextMenu();
+        MenuItem playMusicMenuItem = new MenuItem("Play music");
+        playMusicMenuItem.setOnAction(actionEvent -> mediaController.playByName(label.getText()));
+
         MenuItem showMenuItem = new MenuItem("Show in explorer");
         showMenuItem.setOnAction(actionEvent -> {
             File directory = new File(musicManager.get(label.getText()).getAbsolutePath());
@@ -43,7 +46,7 @@ public class ContextMenuController {
                 throw new RuntimeException(e);
             }
         });
-        contextMenu.getItems().add(showMenuItem);
+        contextMenu.getItems().addAll(playMusicMenuItem, showMenuItem);
         contextMenu.show(label, mouseEvent.getScreenX(), mouseEvent.getScreenY());
         currentContextMenu = contextMenu;
     }
@@ -76,8 +79,7 @@ public class ContextMenuController {
         currentContextMenu.hide();
         ContextMenu contextMenu = new ContextMenu();
         contextMenu.getItems().addAll(
-                getDeletePlaylistMenuItem(titledPane, viewController),
-                getRenameMenuItem(titledPane, viewController),
+                getPlayMusicMenuItem(label, titledPane),
                 getDeleteMusicMenuItem(label, playlist, viewController));
         contextMenu.show(label, mouseEvent.getScreenX(), mouseEvent.getScreenY());
         currentContextMenu = contextMenu;
@@ -89,17 +91,14 @@ public class ContextMenuController {
         contextMenu.getItems().addAll(
                 getRenameMenuItem(titledPane, viewController),
                 getDeletePlaylistMenuItem(titledPane, viewController),
-                getPlayMenuItem(titledPane, viewController));
+                getPlayMenuItem(titledPane));
         contextMenu.show(titledPane, mouseEvent.getScreenX(), mouseEvent.getScreenY());
         currentContextMenu = contextMenu;
     }
 
-    private MenuItem getPlayMenuItem(TitledPane titledPane, ViewController viewController) {
+    private MenuItem getPlayMenuItem(TitledPane titledPane) {
         MenuItem playMenuItem = new MenuItem("Play playlist");
-        playMenuItem.setOnAction(actionEvent -> {
-            mediaController.setCurrentPlayList(playlistManager.getPlaylistByName(titledPane.getText()));
-            mediaController.playPlaylist();
-        });
+        playMenuItem.setOnAction(actionEvent -> mediaController.playPlaylistByName(titledPane.getText()));
         return playMenuItem;
     }
 
@@ -110,6 +109,12 @@ public class ContextMenuController {
             viewController.updatePlaylists();
         });
         return deleteMusicMenuItem;
+    }
+
+    private MenuItem getPlayMusicMenuItem(Label label, TitledPane titledPane) {
+        MenuItem playMusicMenuItem = new MenuItem("Play music");
+        playMusicMenuItem.setOnAction(actionEvent -> mediaController.playInPlaylist(label.getText(), titledPane.getText()));
+        return playMusicMenuItem;
     }
 
     private MenuItem getDeletePlaylistMenuItem(TitledPane titledPane, ViewController viewController) {

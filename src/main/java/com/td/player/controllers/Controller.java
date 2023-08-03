@@ -53,7 +53,6 @@ public class Controller {
         fileController = new FileController(directoryManager, musicManager, playlistManager);
         viewController = new ViewController(directoryManager, musicManager, playlistManager, dirsListVBox,
                 musicListVBox, accordion, mediaController, addPlaylistButton, textField, renamePlaylistButton);
-        mediaController.setViewController(viewController);
         widthProperties();
     }
 
@@ -128,12 +127,12 @@ public class Controller {
 
     @FXML
     private void onPreviousButtonClick() {
-        mediaController.previous();
+        mediaController.switchMusic(false);
     }
 
     @FXML
     private void onNextButtonClick() {
-        mediaController.next();
+        mediaController.switchMusic(true);
     }
 
     @FXML

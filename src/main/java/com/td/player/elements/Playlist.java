@@ -42,7 +42,7 @@ public class Playlist extends Element {
         return musicArray;
     }
 
-    public Music next(Music currentMusic) {
+    public Music getNext(Music currentMusic) {
         for (int i = 0; i < musicArray.size(); i++) {
             if (currentMusic.equals(musicArray.get(i))) {
                 if (i + 1 < musicArray.size()) {
@@ -53,7 +53,7 @@ public class Playlist extends Element {
         return musicArray.get(0);
     }
 
-    public Music previous(Music currentMusic) {
+    public Music getPrevious(Music currentMusic) {
         for (int i = 0; i < musicArray.size(); i++) {
             if (currentMusic.equals(musicArray.get(i))) {
                 if (i - 1 >= 0) {
@@ -61,6 +61,6 @@ public class Playlist extends Element {
                 }
             }
         }
-        return musicArray.get(0);
+        return musicArray.get(musicArray.size() - 1);
     }
 }
