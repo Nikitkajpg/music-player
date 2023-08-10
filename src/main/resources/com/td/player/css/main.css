@@ -1,3 +1,35 @@
+/*#mainVBox {
+    -fx-background-image: url("../img/background.png");
+}*/
+
+/*#listVBox {
+    -fx-background-color: rgba(100, 100, 100, 0.4);
+}*/
+
+#previousButton {
+    -fx-graphic: url("../img/previous.png");
+}
+
+#nextButton {
+    -fx-graphic: url("../img/next.png");
+}
+
+#playButton {
+    -fx-graphic: url("../img/play.png");
+}
+
+#muteButton {
+    -fx-graphic: url("../img/volume.png");
+}
+
+#addDirButton, #addPlaylistButton {
+    -fx-graphic: url("../img/add.png");
+}
+
+#renamePlaylistButton {
+    -fx-graphic: url("../img/rename.png");
+}
+
 #settingsButton {
     -fx-graphic: url("../img/settings.png");
 }
@@ -14,10 +46,3 @@
     -fx-graphic: url("../img/exit.png");
 }
 
-#addDirButton, #addPlaylistButton {
-    -fx-graphic: url("../img/add.png");
-}
-
-#renamePlaylistButton {
-    -fx-graphic: url("../img/rename.png");
-}

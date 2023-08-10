@@ -5,10 +5,7 @@ import com.td.player.managers.DirectoryManager;
 import com.td.player.managers.MusicManager;
 import com.td.player.managers.PlaylistManager;
 import javafx.fxml.FXML;
-import javafx.scene.control.Accordion;
-import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
@@ -17,7 +14,7 @@ import javafx.stage.Stage;
 
 public class Controller {
     @FXML
-    private VBox musicListVBox, dirsListVBox, playlistVBox, dirVBox;
+    private VBox musicListVBox, dirsListVBox, playlistVBox;
 
     @FXML
     private BorderPane topMenuBorderPane;
@@ -34,6 +31,9 @@ public class Controller {
     @FXML
     private ScrollPane dirScrollPane, playlistScrollPane, musicScrollPane;
 
+    @FXML
+    private Slider timeSlider;
+
     private FileController fileController;
     private DirectoryManager directoryManager;
     private MusicManager musicManager;
@@ -44,24 +44,25 @@ public class Controller {
     private double xOffset = 0;
     private double yOffset = 0;
 
+    private boolean changing;
+
     @FXML
     private void initialize() {
         musicManager = new MusicManager();
         directoryManager = new DirectoryManager();
         playlistManager = new PlaylistManager();
-        mediaController = new MediaController(musicManager, playlistManager, playButton);
-        fileController = new FileController(directoryManager, musicManager, playlistManager);
-        viewController = new ViewController(directoryManager, musicManager, playlistManager, dirsListVBox,
-                musicListVBox, accordion, mediaController, addPlaylistButton, textField, renamePlaylistButton);
+        mediaController = new MediaController(this);
+        fileController = new FileController(this);
+        viewController = new ViewController(this);
         widthProperties();
     }
 
     private void widthProperties() {
         addDirButton.prefWidthProperty().bind(dirScrollPane.widthProperty());
-        dirVBox.prefWidthProperty().bind(dirScrollPane.widthProperty());
-        musicListVBox.prefWidthProperty().bind(musicScrollPane.widthProperty());
+        musicListVBox.prefWidthProperty().bind(musicScrollPane.widthProperty().subtract(23));
         playlistVBox.prefWidthProperty().bind(playlistScrollPane.widthProperty());
         textField.prefWidthProperty().bind(playlistScrollPane.widthProperty());
+        dirsListVBox.prefWidthProperty().bind(dirScrollPane.widthProperty().subtract(20));
     }
 
     public void dragStage(Stage stage) {
@@ -144,5 +145,53 @@ public class Controller {
     @FXML
     private void onMinimizeButtonClick() {
         Player.stage.setIconified(true);
+    }
+
+    public DirectoryManager getDirectoryManager() {
+        return directoryManager;
+    }
+
+    public MusicManager getMusicManager() {
+        return musicManager;
+    }
+
+    public PlaylistManager getPlaylistManager() {
+        return playlistManager;
+    }
+
+    public Button getPlayButton() {
+        return playButton;
+    }
+
+    public VBox getDirsListVBox() {
+        return dirsListVBox;
+    }
+
+    public VBox getMusicListVBox() {
+        return musicListVBox;
+    }
+
+    public Accordion getAccordion() {
+        return accordion;
+    }
+
+    public MediaController getMediaController() {
+        return mediaController;
+    }
+
+    public Button getAddPlaylistButton() {
+        return addPlaylistButton;
+    }
+
+    public TextField getTextField() {
+        return textField;
+    }
+
+    public Button getRenamePlaylistButton() {
+        return renamePlaylistButton;
+    }
+
+    public Slider getTimeSlider() {
+        return timeSlider;
     }
 }

@@ -21,10 +21,10 @@ public class FileController {
     private File directoriesFile;
     private File playlistFile;
 
-    public FileController(DirectoryManager directoryManager, MusicManager musicManager, PlaylistManager playlistManager) {
-        this.directoryManager = directoryManager;
-        this.musicManager = musicManager;
-        this.playlistManager = playlistManager;
+    public FileController(Controller controller) {
+        directoryManager = controller.getDirectoryManager();
+        musicManager = controller.getMusicManager();
+        playlistManager = controller.getPlaylistManager();
         createFiles();
         fillDirectoryArray();
         fillMusicArray();

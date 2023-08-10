@@ -4,7 +4,9 @@ import com.td.player.elements.Music;
 import com.td.player.elements.Playlist;
 import com.td.player.managers.MusicManager;
 import com.td.player.managers.PlaylistManager;
+import javafx.application.Platform;
 import javafx.scene.control.Button;
+import javafx.util.Duration;
 
 @SuppressWarnings("FieldMayBeFinal")
 public class MediaController {
@@ -15,10 +17,15 @@ public class MediaController {
     private Playlist currentPlayList;
     private Button playButton;
 
-    public MediaController(MusicManager musicManager, PlaylistManager playlistManager, Button playButton) {
-        this.musicManager = musicManager;
-        this.playlistManager = playlistManager;
-        this.playButton = playButton;
+    private Controller controller;
+    private Duration duration;
+
+    public MediaController(Controller controller) {
+        this.controller = controller;
+        musicManager = controller.getMusicManager();
+        playlistManager = controller.getPlaylistManager();
+        playButton = controller.getPlayButton();
+        addTimeSliderListener();
     }
 
     public void play() {
@@ -28,6 +35,8 @@ public class MediaController {
                 currentMusic = currentPlayList.getMusicArray().get(0);
                 currentMusic.getMediaPlayer().play();
                 currentMusic.getMediaPlayer().setOnEndOfMedia(() -> switchMusic(true));
+                duration = currentMusic.getMediaPlayer().getMedia().getDuration();
+                addMediaPlayerListener();
             }
         } else if (currentMusic != null) {
             currentMusic.getMediaPlayer().play();
@@ -46,9 +55,7 @@ public class MediaController {
         }
         currentPlayList = playlistManager.getPlaylistByName(name);
         currentMusic = currentPlayList.getMusicArray().get(0);
-        currentMusic.getMediaPlayer().play();
-        currentMusic.getMediaPlayer().setOnEndOfMedia(() -> switchMusic(true));
-        playButton.setText("Pause");
+        methodToPlay();
     }
 
     public void playInPlaylist(String musicName, String playlistName) {
@@ -57,9 +64,7 @@ public class MediaController {
         }
         currentPlayList = playlistManager.getPlaylistByName(playlistName);
         currentMusic = musicManager.get(musicName);
-        currentMusic.getMediaPlayer().play();
-        currentMusic.getMediaPlayer().setOnEndOfMedia(() -> switchMusic(true));
-        playButton.setText("Pause");
+        methodToPlay();
     }
 
     public void playByName(String name) {
@@ -68,9 +73,7 @@ public class MediaController {
         }
         currentPlayList = playlistManager.getDefaultPlaylist();
         currentMusic = musicManager.get(name);
-        currentMusic.getMediaPlayer().play();
-        currentMusic.getMediaPlayer().setOnEndOfMedia(() -> switchMusic(true));
-        playButton.setText("Pause");
+        methodToPlay();
     }
 
     public void switchMusic(boolean next) {
@@ -81,9 +84,39 @@ public class MediaController {
             } else {
                 currentMusic = currentPlayList.getPrevious(currentMusic);
             }
-            currentMusic.getMediaPlayer().play();
-            currentMusic.getMediaPlayer().setOnEndOfMedia(() -> switchMusic(true));
-            playButton.setText("Pause");
+            methodToPlay();
         }
+    }
+
+    private void methodToPlay() {
+        currentMusic.getMediaPlayer().play();
+        currentMusic.getMediaPlayer().setOnEndOfMedia(() -> switchMusic(true));
+        duration = currentMusic.getMediaPlayer().getMedia().getDuration();
+        addMediaPlayerListener();
+        playButton.setText("Pause");
+    }
+
+    private void addMediaPlayerListener() {
+        controller.getTimeSlider().setOnMousePressed(mouseEvent -> currentMusic.getMediaPlayer()
+                .seek(duration.multiply(controller.getTimeSlider().getValue() / 100)));
+        currentMusic.getMediaPlayer().currentTimeProperty().addListener(
+                observable -> Platform.runLater(() -> {
+                            Duration currentTime = currentMusic.getMediaPlayer().getCurrentTime();
+                            if (!controller.getTimeSlider().isValueChanging()) {
+                                controller.getTimeSlider().setValue(currentTime.divide(duration.toMillis()).toMillis() * 100.0);
+                            }
+                        }
+                )
+        );
+    }
+
+    private void addTimeSliderListener() {
+        controller.getTimeSlider().valueProperty().addListener(observable -> {
+            if (controller.getTimeSlider().isValueChanging()) {
+                controller.getTimeSlider().setOnMouseReleased(mouseEvent ->
+                        currentMusic.getMediaPlayer().seek(duration.multiply(controller.getTimeSlider().getValue() / 100))
+                );
+            }
+        });
     }
 }
