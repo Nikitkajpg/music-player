@@ -32,7 +32,10 @@ public class Controller {
     private ScrollPane dirScrollPane, playlistScrollPane, musicScrollPane;
 
     @FXML
-    private Slider timeSlider;
+    private Slider timeSlider, volumeSlider;
+
+    @FXML
+    private Label titleLabel, artistLabel;
 
     private FileController fileController;
     private DirectoryManager directoryManager;
@@ -43,8 +46,6 @@ public class Controller {
 
     private double xOffset = 0;
     private double yOffset = 0;
-
-    private boolean changing;
 
     @FXML
     private void initialize() {
@@ -147,6 +148,11 @@ public class Controller {
         Player.stage.setIconified(true);
     }
 
+    @FXML
+    private void onMaximizeButtonClick() {
+        Player.stage.setMaximized(!Player.stage.isMaximized());
+    }
+
     public DirectoryManager getDirectoryManager() {
         return directoryManager;
     }
@@ -193,5 +199,21 @@ public class Controller {
 
     public Slider getTimeSlider() {
         return timeSlider;
+    }
+
+    public Slider getVolumeSlider() {
+        return volumeSlider;
+    }
+
+    public ViewController getViewController() {
+        return viewController;
+    }
+
+    public Label getTitleLabel() {
+        return titleLabel;
+    }
+
+    public Label getArtistLabel() {
+        return artistLabel;
     }
 }

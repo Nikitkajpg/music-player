@@ -26,6 +26,7 @@ public class MediaController {
         playlistManager = controller.getPlaylistManager();
         playButton = controller.getPlayButton();
         addTimeSliderListener();
+        addVolumeSliderListener();
     }
 
     public void play() {
@@ -94,6 +95,8 @@ public class MediaController {
         duration = currentMusic.getMediaPlayer().getMedia().getDuration();
         addMediaPlayerListener();
         playButton.setText("Pause");
+        controller.getTitleLabel().setText(currentMusic.getTitle());
+        controller.getArtistLabel().setText(currentMusic.getArtist());
     }
 
     private void addMediaPlayerListener() {
@@ -104,6 +107,10 @@ public class MediaController {
                             Duration currentTime = currentMusic.getMediaPlayer().getCurrentTime();
                             if (!controller.getTimeSlider().isValueChanging()) {
                                 controller.getTimeSlider().setValue(currentTime.divide(duration.toMillis()).toMillis() * 100.0);
+                            }
+                            if (!controller.getVolumeSlider().isValueChanging()) {
+                                controller.getVolumeSlider().setValue(
+                                        (int) Math.round(currentMusic.getMediaPlayer().getVolume() * 100));
                             }
                         }
                 )
@@ -116,6 +123,14 @@ public class MediaController {
                 controller.getTimeSlider().setOnMouseReleased(mouseEvent ->
                         currentMusic.getMediaPlayer().seek(duration.multiply(controller.getTimeSlider().getValue() / 100))
                 );
+            }
+        });
+    }
+
+    private void addVolumeSliderListener() {
+        controller.getVolumeSlider().valueProperty().addListener(observable -> {
+            if (controller.getVolumeSlider().isValueChanging()) {
+                currentMusic.getMediaPlayer().setVolume(controller.getVolumeSlider().getValue() / 100);
             }
         });
     }

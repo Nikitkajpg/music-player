@@ -42,6 +42,10 @@
     -fx-graphic: url("../img/minimize.png");
 }
 
+#maximizeButton {
+    -fx-graphic: url("../img/maximize.png");
+}
+
 #exitButton {
     -fx-graphic: url("../img/exit.png");
 }

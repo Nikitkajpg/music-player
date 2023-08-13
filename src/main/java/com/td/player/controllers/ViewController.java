@@ -67,18 +67,18 @@ public class ViewController {
 
             dragAndDrop(vBox, playlist, titledPane);
 
-            VBox labelsVBox = new VBox();
             for (Music music : playlist.getMusicArray()) {
+                VBox labelsVBox = new VBox();
                 labelsVBox.getChildren().add(getPlaylistTitleLabel(music.getTitle(), playlist, titledPane));
                 labelsVBox.getChildren().add(new Label(music.getArtist()));
+                labelsVBox.setOnMouseClicked(mouseEvent -> {
+                    if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+                        mouseEvent.consume();
+                    }
+                });
+                vBox.getChildren().add(labelsVBox);
             }
-            vBox.getChildren().add(labelsVBox);
             titledPane.setOnMouseClicked(mouseEvent -> actionForTitledPane(mouseEvent, titledPane));
-            labelsVBox.setOnMouseClicked(mouseEvent -> {
-                if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                    mouseEvent.consume();
-                }
-            });
             titledPane.setContent(vBox);
             accordion.getPanes().add(titledPane);
         }
