@@ -79,6 +79,15 @@ public class PlaylistManager {
         return true;
     }
 
+    public boolean isUniqueInPlaylist(Playlist playlist, String name) {
+        for (Music music : playlist.getMusicArray()) {
+            if (music.getTitle().equals(name)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public Playlist getDefaultPlaylist() {
         return playlistArray.get(0);
     }

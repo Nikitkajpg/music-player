@@ -78,8 +78,8 @@
         </BorderPane>
     </VBox>
 
-    <SplitPane VBox.vgrow="ALWAYS" dividerPositions="0.2, 0.7">
-        <VBox fx:id="dirVBox">
+    <SplitPane VBox.vgrow="ALWAYS">
+        <VBox>
             <Button fx:id="addDirButton" onAction="#onAddDirButtonClick">
                 <tooltip>
                     <Tooltip text="Add directory"/>
@@ -92,30 +92,40 @@
         </VBox>
         <VBox>
             <Label text="Music files"/>
-            <ScrollPane fx:id="musicScrollPane" minWidth="50" vbarPolicy="ALWAYS">
-                <VBox fx:id="musicListVBox" VBox.vgrow="ALWAYS"/>
+            <ScrollPane fx:id="musicScrollPane" minWidth="50" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
+                <VBox fx:id="musicListVBox"/>
             </ScrollPane>
         </VBox>
         <VBox fx:id="playlistVBox">
             <HBox>
-                <Button fx:id="addPlaylistButton" onMouseClicked="#onAddPlaylistButtonClick" minWidth="60"
-                        maxWidth="60">
+                <Button fx:id="addPlaylistButton" onMouseClicked="#onAddPlaylistButtonClick">
                     <tooltip>
                         <Tooltip text="Add new playlist"/>
                     </tooltip>
                 </Button>
-                <TextField fx:id="textField" promptText="Name..." onKeyPressed="#onTextFieldKeyPressed" minWidth="60"/>
-                <Button fx:id="renamePlaylistButton" onMouseClicked="#onRenamePlaylistButtonClick" minWidth="60"
-                        maxWidth="60" disable="true">
+                <TextField fx:id="textField" promptText="Name..." onKeyPressed="#onTextFieldKeyPressed"/>
+                <Button fx:id="renamePlaylistButton" onMouseClicked="#onRenamePlaylistButtonClick" disable="true">
                     <tooltip>
                         <Tooltip text="Rename playlist"/>
                     </tooltip>
                 </Button>
             </HBox>
-            <Label text="Playlists"/>
-            <ScrollPane fx:id="playlistScrollPane" minWidth="50" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
-                <Accordion fx:id="accordion" VBox.vgrow="ALWAYS"/>
-            </ScrollPane>
+            <BorderPane>
+                <left>
+                    <Label text="Playlists" BorderPane.alignment="CENTER"/>
+                </left>
+                <right>
+                    <Label text="Music" BorderPane.alignment="CENTER"/>
+                </right>
+            </BorderPane>
+            <SplitPane VBox.vgrow="ALWAYS">
+                <ScrollPane>
+                    <VBox fx:id="playlistNamesVBox"/>
+                </ScrollPane>
+                <ScrollPane>
+                    <VBox fx:id="playlistMusicVBox"/>
+                </ScrollPane>
+            </SplitPane>
         </VBox>
     </SplitPane>
 </VBox>

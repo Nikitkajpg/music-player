@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 
 public class Controller {
     @FXML
-    private VBox musicListVBox, dirsListVBox, playlistVBox;
+    private VBox musicListVBox, dirsListVBox, playlistVBox, playlistNamesVBox, playlistMusicVBox;
 
     @FXML
     private BorderPane topMenuBorderPane;
@@ -23,13 +23,10 @@ public class Controller {
     private Button playButton, addDirButton, addPlaylistButton, renamePlaylistButton;
 
     @FXML
-    private Accordion accordion;
-
-    @FXML
     private TextField textField;
 
     @FXML
-    private ScrollPane dirScrollPane, playlistScrollPane, musicScrollPane;
+    private ScrollPane dirScrollPane, musicScrollPane;
 
     @FXML
     private Slider timeSlider, volumeSlider;
@@ -61,8 +58,6 @@ public class Controller {
     private void widthProperties() {
         addDirButton.prefWidthProperty().bind(dirScrollPane.widthProperty());
         musicListVBox.prefWidthProperty().bind(musicScrollPane.widthProperty().subtract(23));
-        playlistVBox.prefWidthProperty().bind(playlistScrollPane.widthProperty());
-        textField.prefWidthProperty().bind(playlistScrollPane.widthProperty());
         dirsListVBox.prefWidthProperty().bind(dirScrollPane.widthProperty().subtract(20));
     }
 
@@ -88,7 +83,7 @@ public class Controller {
     private void onAddPlaylistButtonClick() {
         String playlistName = textField.getText();
         if (playlistName != null && !playlistName.equals("") && playlistManager.isUnique(playlistName)) {
-            viewController.createTitledPane(playlistName);
+            viewController.createPlaylistNameButton(playlistName);
             textField.clear();
         }
     }
@@ -177,10 +172,6 @@ public class Controller {
         return musicListVBox;
     }
 
-    public Accordion getAccordion() {
-        return accordion;
-    }
-
     public MediaController getMediaController() {
         return mediaController;
     }
@@ -215,5 +206,13 @@ public class Controller {
 
     public Label getArtistLabel() {
         return artistLabel;
+    }
+
+    public VBox getPlaylistNamesVBox() {
+        return playlistNamesVBox;
+    }
+
+    public VBox getPlaylistMusicVBox() {
+        return playlistMusicVBox;
     }
 }

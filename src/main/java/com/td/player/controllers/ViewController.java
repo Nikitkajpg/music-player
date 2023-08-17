@@ -1,21 +1,26 @@
 package com.td.player.controllers;
 
+import com.td.player.controllers.ContextMenuController;
+import com.td.player.controllers.Controller;
+import com.td.player.controllers.MediaController;
 import com.td.player.elements.Directory;
 import com.td.player.elements.Music;
 import com.td.player.elements.Playlist;
 import com.td.player.managers.MusicManager;
 import com.td.player.managers.PlaylistManager;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.input.*;
 import javafx.scene.layout.VBox;
 
 @SuppressWarnings("FieldMayBeFinal")
 public class ViewController {
-    private Accordion accordion;
     private Button addPlaylistButton;
     private Button renamePlaylistButton;
-    private TitledPane currentTitledPane = new TitledPane();
+    private Button currentButton = new Button();
     private Slider musicSlider;
+    private VBox playlistNamesVBox, playlistMusicVBox;
 
     private Controller controller;
     private MusicManager musicManager;
@@ -28,11 +33,12 @@ public class ViewController {
         this.controller = controller;
         musicManager = controller.getMusicManager();
         playlistManager = controller.getPlaylistManager();
-        accordion = controller.getAccordion();
         mediaController = controller.getMediaController();
         addPlaylistButton = controller.getAddPlaylistButton();
         renamePlaylistButton = controller.getRenamePlaylistButton();
         musicSlider = controller.getTimeSlider();
+        playlistNamesVBox = controller.getPlaylistNamesVBox();
+        playlistMusicVBox = controller.getPlaylistMusicVBox();
         contextMenuController = new ContextMenuController(
                 controller.getDirectoryManager(), musicManager, playlistManager, mediaController);
         update();
@@ -59,51 +65,63 @@ public class ViewController {
     }
 
     public void updatePlaylists() {
-        accordion.getPanes().clear();
+        playlistNamesVBox.getChildren().clear();
+        playlistMusicVBox.getChildren().clear();
+
         for (Playlist playlist : playlistManager.getPlaylistArray()) {
-            TitledPane titledPane = new TitledPane();
-            titledPane.setText(playlist.getName());
-            VBox vBox = new VBox();
+            Button button = new Button(playlist.getName());
 
-            dragAndDrop(vBox, playlist, titledPane);
+            dragAndDrop(playlist, button);
 
-            for (Music music : playlist.getMusicArray()) {
-                VBox labelsVBox = new VBox();
-                labelsVBox.getChildren().add(getPlaylistTitleLabel(music.getTitle(), playlist, titledPane));
-                labelsVBox.getChildren().add(new Label(music.getArtist()));
-                labelsVBox.setOnMouseClicked(mouseEvent -> {
-                    if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                        mouseEvent.consume();
-                    }
-                });
-                vBox.getChildren().add(labelsVBox);
-            }
-            titledPane.setOnMouseClicked(mouseEvent -> actionForTitledPane(mouseEvent, titledPane));
-            titledPane.setContent(vBox);
-            accordion.getPanes().add(titledPane);
+            button.setOnMouseClicked(mouseEvent -> actionForPlaylistLabel(mouseEvent, button));
+            actionForShowingPlaylist(button, playlist);
+            playlistNamesVBox.getChildren().add(button);
         }
     }
 
-    public void createTitledPane(String playlistName) {
-        TitledPane titledPane = new TitledPane();
-        titledPane.setText(playlistName);
-        VBox vBox = new VBox();
+    public void removeSongFromPlaylist(Label label) {
+        for (int i = 0; i < playlistMusicVBox.getChildren().size() - 1; i++) {
+            VBox vBox = (VBox) playlistMusicVBox.getChildren().get(i);
+            Label musicLabel = (Label) vBox.getChildren().get(0);
+            if (musicLabel.getText().equals(label.getText())) {
+                playlistMusicVBox.getChildren().remove(vBox);
+            }
+        }
+    }
+
+    public void createPlaylistNameButton(String playlistName) {
+        Button button = new Button(playlistName);
         playlistManager.createPlaylist(playlistName);
-        dragAndDrop(vBox, playlistManager.getLastPlaylist(), titledPane);
-        vBox.setMinHeight(15);
-        titledPane.setContent(vBox);
-        titledPane.setOnMouseClicked(mouseEvent -> {
-            if (!titledPane.isExpanded() || vBox.getChildren().isEmpty()) {
-                actionForTitledPane(mouseEvent, titledPane);
+
+        dragAndDrop(playlistManager.getLastPlaylist(), button);
+
+        button.setOnMouseClicked(mouseEvent -> {
+            if (playlistMusicVBox.getChildren().isEmpty()) {
+                actionForPlaylistLabel(mouseEvent, button);
             }
         });
-        accordion.getPanes().add(titledPane);
+        actionForShowingPlaylist(button, playlistManager.getPlaylistByName(playlistName));
+        playlistNamesVBox.getChildren().add(button);
     }
 
-    private void actionForTitledPane(MouseEvent mouseEvent, TitledPane titledPane) {
+    private void actionForPlaylistLabel(MouseEvent mouseEvent, Button button) {
         if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-            contextMenuController.showTitledMenuCM(titledPane, mouseEvent, this);
+            contextMenuController.showPlaylistButtonCM(button, mouseEvent, this);
         }
+    }
+
+    private void actionForShowingPlaylist(Button button, Playlist playlist) {
+        button.setOnAction(actionEvent -> {
+            playlistMusicVBox.getChildren().clear();
+            for (Music music : playlist.getMusicArray()) {
+                VBox vBox = new VBox();
+                Label titleLabel = getPlaylistSongLabel(music.getTitle(), playlist, button);
+                Label artistLabel = new Label(music.getArtist());
+                vBox.getChildren().addAll(titleLabel, artistLabel);
+                playlistMusicVBox.getChildren().add(vBox);
+            }
+            playlistMusicVBox.getChildren().add(new Label("Put song here..."));
+        });
     }
 
     private Label getDirLabel(String path) {
@@ -140,11 +158,11 @@ public class ViewController {
         return label;
     }
 
-    private Label getPlaylistTitleLabel(String fileName, Playlist playlist, TitledPane titledPane) {
+    private Label getPlaylistSongLabel(String fileName, Playlist playlist, Button button) {
         Label label = new Label(fileName);
         label.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                contextMenuController.showTitledPaneLabelCM(playlist, label, titledPane, mouseEvent, this);
+                contextMenuController.showPlaylistSongLabelCM(playlist, label, button, mouseEvent, this);
             } else if (mouseEvent.getButton() == MouseButton.PRIMARY) {
                 if (mouseEvent.getClickCount() == 2) {
                     mediaController.playInPlaylist(label.getText(), playlist.getName());
@@ -155,45 +173,45 @@ public class ViewController {
     }
 
     public void renameTitledPane(String playlistName) {
-        playlistManager.renamePlaylist(currentTitledPane.getText(), playlistName);
-        currentTitledPane.setText(playlistName);
+        playlistManager.renamePlaylist(currentButton.getText(), playlistName);
+        currentButton.setText(playlistName);
         renamePlaylistButton.setDisable(true);
         addPlaylistButton.setDisable(false);
     }
 
-    private void dragAndDrop(VBox vBox, Playlist playlist, TitledPane titledPane) {
-        vBox.setOnDragOver(dragEvent -> {
+    private void dragAndDrop(Playlist playlist, Button button) {
+        playlistMusicVBox.setOnDragOver(dragEvent -> {
             // data is dragged over the target
             // accept it only if it is  not dragged from the same node and if it has a string data
-            if (dragEvent.getGestureSource() != vBox && dragEvent.getDragboard().hasString()) {
+            if (dragEvent.getGestureSource() != playlistMusicVBox && dragEvent.getDragboard().hasString()) {
                 // allow for both copying and moving, whatever user chooses
                 dragEvent.acceptTransferModes(TransferMode.COPY_OR_MOVE);
             }
             dragEvent.consume();
         });
-        vBox.setOnDragEntered(dragEvent -> {
+        playlistMusicVBox.setOnDragEntered(dragEvent -> {
             // the drag-and-drop gesture entered the target
             // show to the user that it is an actual gesture target
-            if (dragEvent.getGestureSource() != vBox && dragEvent.getDragboard().hasString()) {
+            if (dragEvent.getGestureSource() != playlistMusicVBox && dragEvent.getDragboard().hasString()) {
 //                vBox.setStyle("-fx-background-color: green");
             }
             dragEvent.consume();
         });
-        vBox.setOnDragExited(dragEvent -> {
+        playlistMusicVBox.setOnDragExited(dragEvent -> {
             // mouse moved away, remove the graphical cues
 //            vBox.setStyle("-fx-background-color: #333333");
             dragEvent.consume();
         });
-        vBox.setOnDragDropped(dragEvent -> {
+        playlistMusicVBox.setOnDragDropped(dragEvent -> {
             // data dropped
             // if there is a string data on dragBoard, read it and use it
             Dragboard dragboard = dragEvent.getDragboard();
             boolean success = false;
-            if (dragboard.hasString()) {
+            if (dragboard.hasString() && playlistManager.isUniqueInPlaylist(playlist, dragboard.getString())) {
                 VBox labelsVBox = new VBox();
-                labelsVBox.getChildren().addAll(getPlaylistTitleLabel(dragboard.getString(), playlist, titledPane),
+                labelsVBox.getChildren().addAll(getPlaylistSongLabel(dragboard.getString(), playlist, button),
                         new Label(musicManager.get(dragboard.getString()).getArtist()));
-                vBox.getChildren().add(labelsVBox);
+                playlistMusicVBox.getChildren().add(playlistMusicVBox.getChildren().size() - 1, labelsVBox);
                 playlist.addByName(dragboard.getString(), musicManager);
                 success = true;
             }
@@ -203,10 +221,10 @@ public class ViewController {
         });
     }
 
-    public void methodToRename(boolean renameDisable, boolean addDisable, TitledPane titledPane) {
+    public void methodToRename(boolean renameDisable, boolean addDisable, Button button) {
         renamePlaylistButton.setDisable(renameDisable);
         addPlaylistButton.setDisable(addDisable);
         controller.getTextField().requestFocus();
-        currentTitledPane = titledPane;
+        currentButton = button;
     }
 }
