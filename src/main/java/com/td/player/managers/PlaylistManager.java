@@ -24,10 +24,6 @@ public class PlaylistManager {
         playlistArray.removeIf(playlist -> playlist.getName().equals(name));
     }
 
-    public Playlist getLastPlaylist() {
-        return playlistArray.get(playlistArray.size() - 1);
-    }
-
     public ArrayList<Playlist> getPlaylistArray() {
         return playlistArray;
     }
@@ -57,8 +53,10 @@ public class PlaylistManager {
         }
     }
 
-    public void createPlaylist(String playlistName) {
-        playlistArray.add(new Playlist(playlistName));
+    public Playlist createAndGetPlaylist(String playlistName) {
+        Playlist playlist = new Playlist(playlistName);
+        playlistArray.add(playlist);
+        return playlist;
     }
 
     public void renamePlaylist(String oldName, String newName) {

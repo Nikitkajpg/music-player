@@ -27,6 +27,15 @@ public class MusicManager {
         return null;
     }
 
+    public String getTitleByFileName(String filename) {
+        for (Music music : musicArray) {
+            if (music.getFileName().equals(filename)) {
+                return music.getTitle();
+            }
+        }
+        return null;
+    }
+
     public ArrayList<Music> getMusicArray() {
         return musicArray;
     }

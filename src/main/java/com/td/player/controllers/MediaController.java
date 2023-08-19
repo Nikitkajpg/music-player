@@ -24,7 +24,7 @@ public class MediaController {
         this.controller = controller;
         musicManager = controller.getMusicManager();
         playlistManager = controller.getPlaylistManager();
-        playButton = controller.getPlayButton();
+        playButton = controller.playButton;
         addTimeSliderListener();
         addVolumeSliderListener();
     }
@@ -95,21 +95,21 @@ public class MediaController {
         duration = currentMusic.getMediaPlayer().getMedia().getDuration();
         addMediaPlayerListener();
         playButton.setText("Pause");
-        controller.getTitleLabel().setText(currentMusic.getTitle());
-        controller.getArtistLabel().setText(currentMusic.getArtist());
+        controller.titleLabel.setText(currentMusic.getTitle());
+        controller.artistLabel.setText(currentMusic.getArtist());
     }
 
     private void addMediaPlayerListener() {
-        controller.getTimeSlider().setOnMousePressed(mouseEvent -> currentMusic.getMediaPlayer()
-                .seek(duration.multiply(controller.getTimeSlider().getValue() / 100)));
+        controller.timeSlider.setOnMousePressed(mouseEvent -> currentMusic.getMediaPlayer()
+                .seek(duration.multiply(controller.timeSlider.getValue() / 100)));
         currentMusic.getMediaPlayer().currentTimeProperty().addListener(
                 observable -> Platform.runLater(() -> {
                             Duration currentTime = currentMusic.getMediaPlayer().getCurrentTime();
-                            if (!controller.getTimeSlider().isValueChanging()) {
-                                controller.getTimeSlider().setValue(currentTime.divide(duration.toMillis()).toMillis() * 100.0);
+                            if (!controller.timeSlider.isValueChanging()) {
+                                controller.timeSlider.setValue(currentTime.divide(duration.toMillis()).toMillis() * 100.0);
                             }
-                            if (!controller.getVolumeSlider().isValueChanging()) {
-                                controller.getVolumeSlider().setValue(
+                            if (!controller.volumeSlider.isValueChanging()) {
+                                controller.volumeSlider.setValue(
                                         (int) Math.round(currentMusic.getMediaPlayer().getVolume() * 100));
                             }
                         }
@@ -118,19 +118,19 @@ public class MediaController {
     }
 
     private void addTimeSliderListener() {
-        controller.getTimeSlider().valueProperty().addListener(observable -> {
-            if (controller.getTimeSlider().isValueChanging()) {
-                controller.getTimeSlider().setOnMouseReleased(mouseEvent ->
-                        currentMusic.getMediaPlayer().seek(duration.multiply(controller.getTimeSlider().getValue() / 100))
+        controller.timeSlider.valueProperty().addListener(observable -> {
+            if (controller.timeSlider.isValueChanging()) {
+                controller.timeSlider.setOnMouseReleased(mouseEvent ->
+                        currentMusic.getMediaPlayer().seek(duration.multiply(controller.timeSlider.getValue() / 100))
                 );
             }
         });
     }
 
     private void addVolumeSliderListener() {
-        controller.getVolumeSlider().valueProperty().addListener(observable -> {
-            if (controller.getVolumeSlider().isValueChanging()) {
-                currentMusic.getMediaPlayer().setVolume(controller.getVolumeSlider().getValue() / 100);
+        controller.volumeSlider.valueProperty().addListener(observable -> {
+            if (controller.volumeSlider.isValueChanging()) {
+                currentMusic.getMediaPlayer().setVolume(controller.volumeSlider.getValue() / 100);
             }
         });
     }

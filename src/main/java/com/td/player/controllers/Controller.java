@@ -14,25 +14,25 @@ import javafx.stage.Stage;
 
 public class Controller {
     @FXML
-    private VBox musicListVBox, dirsListVBox, playlistVBox, playlistNamesVBox, playlistMusicVBox;
+    public VBox musicListVBox, dirsListVBox, playlistVBox, playlistNamesVBox, playlistMusicVBox;
 
     @FXML
-    private BorderPane topMenuBorderPane;
+    public BorderPane topMenuBorderPane;
 
     @FXML
-    private Button playButton, addDirButton, addPlaylistButton, renamePlaylistButton;
+    public Button playButton, addDirButton, addPlaylistButton, renamePlaylistButton;
 
     @FXML
-    private TextField textField;
+    public TextField textField;
 
     @FXML
-    private ScrollPane dirScrollPane, musicScrollPane;
+    public ScrollPane dirScrollPane, musicScrollPane;
 
     @FXML
-    private Slider timeSlider, volumeSlider;
+    public Slider timeSlider, volumeSlider;
 
     @FXML
-    private Label titleLabel, artistLabel;
+    public Label titleLabel, artistLabel;
 
     private FileController fileController;
     private DirectoryManager directoryManager;
@@ -76,7 +76,7 @@ public class Controller {
     private void onAddDirButtonClick() {
         fileController.selectDirectory();
         playlistManager.updateDefaultPlaylist(musicManager);
-        viewController.update();
+        viewController.showLists();
     }
 
     @FXML
@@ -101,10 +101,10 @@ public class Controller {
 
     @FXML
     private void onRenamePlaylistButtonClick() {
-        String playlistName = textField.getText();
-        if (playlistManager.isUnique(playlistName)) {
-            if (playlistName != null && !playlistName.equals("")) {
-                viewController.renameTitledPane(playlistName);
+        String newPlaylistName = textField.getText();
+        if (playlistManager.isUnique(newPlaylistName)) {
+            if (newPlaylistName != null && !newPlaylistName.equals("")) {
+                viewController.renamePlaylist(newPlaylistName);
                 textField.clear();
             } else {
                 addPlaylistButton.setDisable(false);
@@ -160,59 +160,7 @@ public class Controller {
         return playlistManager;
     }
 
-    public Button getPlayButton() {
-        return playButton;
-    }
-
-    public VBox getDirsListVBox() {
-        return dirsListVBox;
-    }
-
-    public VBox getMusicListVBox() {
-        return musicListVBox;
-    }
-
     public MediaController getMediaController() {
         return mediaController;
-    }
-
-    public Button getAddPlaylistButton() {
-        return addPlaylistButton;
-    }
-
-    public TextField getTextField() {
-        return textField;
-    }
-
-    public Button getRenamePlaylistButton() {
-        return renamePlaylistButton;
-    }
-
-    public Slider getTimeSlider() {
-        return timeSlider;
-    }
-
-    public Slider getVolumeSlider() {
-        return volumeSlider;
-    }
-
-    public ViewController getViewController() {
-        return viewController;
-    }
-
-    public Label getTitleLabel() {
-        return titleLabel;
-    }
-
-    public Label getArtistLabel() {
-        return artistLabel;
-    }
-
-    public VBox getPlaylistNamesVBox() {
-        return playlistNamesVBox;
-    }
-
-    public VBox getPlaylistMusicVBox() {
-        return playlistMusicVBox;
     }
 }
