@@ -59,20 +59,24 @@
                 </HBox>
             </top>
             <right>
-                <HBox BorderPane.alignment="CENTER">
-                    <Button fx:id="muteButton"/>
-                    <Slider fx:id="volumeSlider"/>
-                </HBox>
-            </right>
-            <bottom>
-                <Slider fx:id="timeSlider"/>
-            </bottom>
-            <left>
                 <HBox>
                     <Button mnemonicParsing="false" text="Mode"/>
                     <Button mnemonicParsing="false" text="Mode"/>
                     <Button mnemonicParsing="false" text="Mode"/>
                     <Button mnemonicParsing="false" text="Mode"/>
+                </HBox>
+            </right>
+            <bottom>
+                <HBox>
+                    <Label fx:id="currentTimeLabel" text="00.00"/>
+                    <Slider fx:id="timeSlider"/>
+                    <Label fx:id="endTimeLabel" text="00.00"/>
+                </HBox>
+            </bottom>
+            <left>
+                <HBox BorderPane.alignment="CENTER">
+                    <Button fx:id="muteButton"/>
+                    <Slider fx:id="volumeSlider"/>
                 </HBox>
             </left>
         </BorderPane>
@@ -119,10 +123,10 @@
                 </right>
             </BorderPane>
             <SplitPane VBox.vgrow="ALWAYS">
-                <ScrollPane>
+                <ScrollPane fx:id="playlistNamesScrollPane">
                     <VBox fx:id="playlistNamesVBox"/>
                 </ScrollPane>
-                <ScrollPane>
+                <ScrollPane fx:id="playlistMusicScrollPane">
                     <VBox fx:id="playlistMusicVBox"/>
                 </ScrollPane>
             </SplitPane>

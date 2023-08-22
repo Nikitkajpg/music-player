@@ -6,7 +6,6 @@ import com.td.player.managers.DirectoryManager;
 import com.td.player.managers.MusicManager;
 import com.td.player.managers.PlaylistManager;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.input.*;
 import javafx.scene.layout.VBox;
 
@@ -14,7 +13,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
-public class ActionsUtil {
+public class Actions {
     public static void openDirectory(Button button) {
         File directory = new File(button.getText());
         try {
@@ -53,28 +52,32 @@ public class ActionsUtil {
         mouseEvent.consume();
     }
 
-    public static void onDragOver(DragEvent dragEvent, VBox playlistMusicVBox) {
+    public static void onDragOver(DragEvent dragEvent, VBox playlistMusicVBox, Playlist playlist) {
         // data is dragged over the target
         // accept it only if it is  not dragged from the same node and if it has a string data
-        if (dragEvent.getGestureSource() != playlistMusicVBox && dragEvent.getDragboard().hasString()) {
+        if (dragEvent.getGestureSource() != playlistMusicVBox && dragEvent.getDragboard().hasString() &&
+                !playlist.getName().equals("All music")) {
             // allow for both copying and moving, whatever user chooses
             dragEvent.acceptTransferModes(TransferMode.COPY_OR_MOVE);
         }
         dragEvent.consume();
     }
 
-    public static void onDragEntered(DragEvent dragEvent, VBox playlistMusicVBox) {
+    public static void onDragEntered(DragEvent dragEvent, VBox playlistMusicVBox, Playlist playlist) {
         // the drag-and-drop gesture entered the target
         // show to the user that it is an actual gesture target
-        if (dragEvent.getGestureSource() != playlistMusicVBox && dragEvent.getDragboard().hasString()) {
+        if (dragEvent.getGestureSource() != playlistMusicVBox && dragEvent.getDragboard().hasString() &&
+                !playlist.getName().equals("All music")) {
             playlistMusicVBox.setStyle("-fx-background-color: green");
         }
         dragEvent.consume();
     }
 
-    public static void onDragExited(DragEvent dragEvent, VBox vBox) {
+    public static void onDragExited(DragEvent dragEvent, VBox vBox, Playlist playlist) {
         // mouse moved away, remove the graphical cues
-        vBox.setStyle("-fx-background-color: #333333");
+        if (!playlist.getName().equals("All music")) {
+            vBox.setStyle("-fx-background-color: #333333");
+        }
         dragEvent.consume();
     }
 
@@ -89,7 +92,7 @@ public class ActionsUtil {
             VBox labelsVBox = new VBox();
             labelsVBox.getChildren().addAll(
                     viewController.getPlaylistMusicButton(musicManager.getTitleByFileName(dragboard.getString()), playlist, button),
-                    new Label(musicManager.get(dragboard.getString()).getArtist()));
+                    new Button(musicManager.get(dragboard.getString()).getArtist()));
             playlistMusicVBox.getChildren().add(playlistMusicVBox.getChildren().size(), labelsVBox);
             playlist.addByName(dragboard.getString(), musicManager);
             success = true;

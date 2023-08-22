@@ -4,7 +4,7 @@ import com.td.player.elements.Playlist;
 import com.td.player.managers.DirectoryManager;
 import com.td.player.managers.MusicManager;
 import com.td.player.managers.PlaylistManager;
-import com.td.player.util.ActionsUtil;
+import com.td.player.util.Actions;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -33,7 +33,7 @@ public class ContextMenuController {
         MenuItem playMusicMenuItem = new MenuItem("Play music");
         playMusicMenuItem.setOnAction(actionEvent -> mediaController.playByName(button.getText()));
         MenuItem showMenuItem = new MenuItem("Show in explorer");
-        showMenuItem.setOnAction(actionEvent -> ActionsUtil.openFile(musicManager, button));
+        showMenuItem.setOnAction(actionEvent -> Actions.openFile(musicManager, button));
         contextMenu.getItems().addAll(playMusicMenuItem, showMenuItem);
         contextMenu.show(button, mouseEvent.getScreenX(), mouseEvent.getScreenY());
         currentContextMenu = contextMenu;
@@ -44,7 +44,7 @@ public class ContextMenuController {
         currentContextMenu.hide();
         ContextMenu contextMenu = new ContextMenu();
         MenuItem deleteMenuItem = new MenuItem("Delete directory");
-        deleteMenuItem.setOnAction(actionEvent -> ActionsUtil.deleteDirectory(directoryManager, musicManager, viewController, button, playlistManager));
+        deleteMenuItem.setOnAction(actionEvent -> Actions.deleteDirectory(directoryManager, musicManager, viewController, button, playlistManager));
         contextMenu.getItems().add(deleteMenuItem);
         contextMenu.show(button, mouseEvent.getScreenX(), mouseEvent.getScreenY());
         currentContextMenu = contextMenu;

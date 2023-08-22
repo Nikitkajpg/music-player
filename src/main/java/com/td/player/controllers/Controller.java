@@ -26,13 +26,13 @@ public class Controller {
     public TextField textField;
 
     @FXML
-    public ScrollPane dirScrollPane, musicScrollPane;
+    public ScrollPane dirScrollPane, musicScrollPane, playlistNamesScrollPane, playlistMusicScrollPane;
 
     @FXML
     public Slider timeSlider, volumeSlider;
 
     @FXML
-    public Label titleLabel, artistLabel;
+    public Label titleLabel, artistLabel, currentTimeLabel, endTimeLabel;
 
     private FileController fileController;
     private DirectoryManager directoryManager;
@@ -52,13 +52,26 @@ public class Controller {
         mediaController = new MediaController(this);
         fileController = new FileController(this);
         viewController = new ViewController(this);
+        volumeSlider.setValue(volumeSlider.getMax());
         widthProperties();
     }
 
     private void widthProperties() {
         addDirButton.prefWidthProperty().bind(dirScrollPane.widthProperty());
-        musicListVBox.prefWidthProperty().bind(musicScrollPane.widthProperty().subtract(23));
-        dirsListVBox.prefWidthProperty().bind(dirScrollPane.widthProperty().subtract(20));
+        widthPropertyForLists(dirsListVBox, dirScrollPane);
+        widthPropertyForLists(musicListVBox, musicScrollPane);
+        widthPropertyForLists(playlistMusicVBox, playlistMusicScrollPane);
+        widthPropertyForLists(playlistNamesVBox, playlistNamesScrollPane);
+//        musicListVBox.prefWidthProperty().bind(musicScrollPane.widthProperty().subtract(23));
+//        dirsListVBox.prefWidthProperty().bind(dirScrollPane.widthProperty().subtract(20));
+        textField.prefWidthProperty().bind(playlistVBox.widthProperty());
+    }
+
+    private void widthPropertyForLists(VBox vBox, ScrollPane scrollPane) {
+        for (int i = 0; i < vBox.getChildren().size(); i++) {
+            Button button = (Button) vBox.getChildren().get(i);
+            button.prefWidthProperty().bind(scrollPane.widthProperty());
+        }
     }
 
     public void dragStage(Stage stage) {

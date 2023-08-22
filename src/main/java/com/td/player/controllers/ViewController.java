@@ -5,7 +5,7 @@ import com.td.player.elements.Music;
 import com.td.player.elements.Playlist;
 import com.td.player.managers.MusicManager;
 import com.td.player.managers.PlaylistManager;
-import com.td.player.util.ActionsUtil;
+import com.td.player.util.Actions;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.*;
@@ -72,7 +72,7 @@ public class ViewController {
 
     private Button getDirButton(String path) {
         Button button = new Button(path);
-        button.setOnAction(actionEvent -> ActionsUtil.openDirectory(button));
+        button.setOnAction(actionEvent -> Actions.openDirectory(button));
         button.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
                 contextMenuController.showDirCM(button, mouseEvent, this);
@@ -89,7 +89,7 @@ public class ViewController {
                 contextMenuController.showMusicCM(button, mouseEvent);
             }
         });
-        button.setOnDragDetected(mouseEvent -> ActionsUtil.onDragDetected(mouseEvent, button));
+        button.setOnDragDetected(mouseEvent -> Actions.onDragDetected(mouseEvent, button));
         return button;
     }
 
@@ -104,6 +104,17 @@ public class ViewController {
         return musicButton;
     }
 
+    public Button getPlaylistMusicArtistButton(Playlist playlist, Button button, Button musicButton) {
+        Button artistButton = new Button(musicManager.getByTitle(musicButton.getText()).getArtist());
+        artistButton.setOnAction(actionEvent -> mediaController.playInPlaylist(musicButton.getText(), playlist.getName()));
+        artistButton.setOnMouseClicked(mouseEvent -> {
+            if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+                contextMenuController.showPlaylistMusicButtonCM(playlist, artistButton, button, mouseEvent, this);
+            }
+        });
+        return artistButton;
+    }
+
     private void actionForShowingPlaylist(Button button, Playlist playlist) {
         currentButton = button;
         dragAndDrop(playlist, button);
@@ -111,11 +122,15 @@ public class ViewController {
         for (Music music : playlist.getMusicArray()) {
             VBox vBox = new VBox();
             Button titleButton = getPlaylistMusicButton(music.getTitle(), playlist, button);
-            Button artistButton = new Button(music.getArtist());
+            Button artistButton = getPlaylistMusicArtistButton(playlist, button, titleButton);
             vBox.getChildren().addAll(titleButton, artistButton);
             playlistMusicVBox.getChildren().add(vBox);
+            titleButton.prefWidthProperty().bind(controller.playlistMusicScrollPane.widthProperty());
+            artistButton.prefWidthProperty().bind(controller.playlistMusicScrollPane.widthProperty());
         }
-        playlistMusicVBox.getChildren().add(new Label("Put song here..."));
+        if (!playlist.getName().equals("All music")) {
+            playlistMusicVBox.getChildren().add(new Label("Put song here..."));
+        }
     }
 
     public void removeSongFromPlaylist(Button button) {
@@ -160,10 +175,10 @@ public class ViewController {
     }
 
     private void dragAndDrop(Playlist playlist, Button button) {
-        playlistMusicVBox.setOnDragOver(dragEvent -> ActionsUtil.onDragOver(dragEvent, playlistMusicVBox));
-        playlistMusicVBox.setOnDragEntered(dragEvent -> ActionsUtil.onDragEntered(dragEvent, playlistMusicVBox));
-        playlistMusicVBox.setOnDragExited(dragEvent -> ActionsUtil.onDragExited(dragEvent, playlistMusicVBox));
-        playlistMusicVBox.setOnDragDropped(dragEvent -> ActionsUtil.onDragDropped(
+        playlistMusicVBox.setOnDragOver(dragEvent -> Actions.onDragOver(dragEvent, playlistMusicVBox, playlist));
+        playlistMusicVBox.setOnDragEntered(dragEvent -> Actions.onDragEntered(dragEvent, playlistMusicVBox, playlist));
+        playlistMusicVBox.setOnDragExited(dragEvent -> Actions.onDragExited(dragEvent, playlistMusicVBox, playlist));
+        playlistMusicVBox.setOnDragDropped(dragEvent -> Actions.onDragDropped(
                 dragEvent, playlistManager, playlist, musicManager, playlistMusicVBox, button, this));
     }
 

@@ -37,12 +37,29 @@ public class MediaController {
                 currentMusic.getMediaPlayer().play();
                 currentMusic.getMediaPlayer().setOnEndOfMedia(() -> switchMusic(true));
                 duration = currentMusic.getMediaPlayer().getMedia().getDuration();
+
+                controller.endTimeLabel.setText(getTotalTime(duration));
+                controller.titleLabel.setText(currentMusic.getTitle());
+                controller.artistLabel.setText(currentMusic.getArtist());
+
                 addMediaPlayerListener();
             }
         } else if (currentMusic != null) {
             currentMusic.getMediaPlayer().play();
         }
         playButton.setText("Pause");
+
+    }
+
+    private String getTotalTime(Duration duration) {
+        int seconds = (int) duration.toSeconds();
+        String time;
+        if (seconds / 3600 < 1) {
+            time = String.format("%02d:%02d", (seconds % 3600) / 60, seconds % 60);
+        } else {
+            time = String.format("%2d:%02d:%02d", seconds / 3600, (seconds % 3600) / 60, seconds % 60);
+        }
+        return time;
     }
 
     public void pause() {
@@ -64,7 +81,7 @@ public class MediaController {
             currentMusic.getMediaPlayer().stop();
         }
         currentPlayList = playlistManager.getPlaylistByName(playlistName);
-        currentMusic = musicManager.get(musicName);
+        currentMusic = musicManager.getByTitle(musicName);
         methodToPlay();
     }
 
@@ -93,6 +110,7 @@ public class MediaController {
         currentMusic.getMediaPlayer().play();
         currentMusic.getMediaPlayer().setOnEndOfMedia(() -> switchMusic(true));
         duration = currentMusic.getMediaPlayer().getMedia().getDuration();
+        controller.endTimeLabel.setText(getTotalTime(duration));
         addMediaPlayerListener();
         playButton.setText("Pause");
         controller.titleLabel.setText(currentMusic.getTitle());
@@ -107,6 +125,7 @@ public class MediaController {
                             Duration currentTime = currentMusic.getMediaPlayer().getCurrentTime();
                             if (!controller.timeSlider.isValueChanging()) {
                                 controller.timeSlider.setValue(currentTime.divide(duration.toMillis()).toMillis() * 100.0);
+                                controller.currentTimeLabel.setText(getTotalTime(currentTime));
                             }
                             if (!controller.volumeSlider.isValueChanging()) {
                                 controller.volumeSlider.setValue(
