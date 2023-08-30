@@ -20,6 +20,7 @@ public class FileController {
 
     private File directoriesFile;
     private File playlistFile;
+    private File levelsFile;
 
     public FileController(Controller controller) {
         directoryManager = controller.getDirectoryManager();
@@ -28,6 +29,7 @@ public class FileController {
         createFiles();
         fillDirectoryArray();
         fillMusicArray();
+        fillMusicWithLevels();
         playlistManager.createDefaultPlaylist(musicManager);
         fillPlaylistArray();
     }
@@ -36,11 +38,13 @@ public class FileController {
         File dataDir = new File(System.getProperty("user.dir") + "\\data");
         directoriesFile = new File(System.getProperty("user.dir") + "\\data\\directories.ini");
         playlistFile = new File(System.getProperty("user.dir") + "\\data\\playlist.ini");
+        levelsFile = new File(System.getProperty("user.dir") + "\\data\\levels.ini");
 
         try {
             System.out.println("Data dir created: " + dataDir.mkdir());
             System.out.println("Directories file created: " + directoriesFile.createNewFile());
             System.out.println("Playlist file created: " + playlistFile.createNewFile());
+            System.out.println("Levels file created: " + levelsFile.createNewFile());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -77,7 +81,24 @@ public class FileController {
             String mediaPath = "file:///" + musicFile.getAbsolutePath().
                     replace("\\", "/").
                     replace(" ", "%20"); // путь к файлу для медиа
+//                musicManager.add("", "", 5, musicFile, mediaPath);
                 musicManager.add("", "", musicFile, mediaPath);
+        }
+    }
+
+    private void fillMusicWithLevels() {
+        try {
+            String level;
+            int count = 0;
+            BufferedReader bufferedReader = new BufferedReader(
+                    new InputStreamReader(new FileInputStream(levelsFile)));
+
+            while ((level = bufferedReader.readLine()) != null) {
+                musicManager.getMusicArray().get(count).setLevel(Integer.parseInt(level));
+                count++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -119,6 +140,7 @@ public class FileController {
     public void writeAllInf() {
         writeDir();
         writePlaylist();
+        writeLevels();
     }
 
     private void writeDir() {
@@ -144,6 +166,19 @@ public class FileController {
                         fileWriter.write(music.getFileName() + "\n");
                     }
                 }
+            }
+            fileWriter.flush();
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void writeLevels() {
+        try {
+            FileWriter fileWriter = new FileWriter(levelsFile);
+            for (Music music : musicManager.getMusicArray()) {
+                fileWriter.write(music.getLevel() + "\n");
             }
             fileWriter.flush();
             fileWriter.close();

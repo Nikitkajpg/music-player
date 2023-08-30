@@ -27,19 +27,19 @@ public class MusicManager {
         return null;
     }
 
-    public Music getByTitle(String title) {
+    public String getTitleByFileName(String filename) {
         for (Music music : musicArray) {
-            if (music.getTitle().equals(title)) {
-                return  music;
+            if (music.getFileName().equals(filename)) {
+                return music.getTitle();
             }
         }
         return null;
     }
 
-    public String getTitleByFileName(String filename) {
+    public Music getMusicByFileName(String fileName) {
         for (Music music : musicArray) {
-            if (music.getFileName().equals(filename)) {
-                return music.getTitle();
+            if (music.getFileName().equals(fileName)) {
+                return music;
             }
         }
         return null;

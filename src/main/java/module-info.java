@@ -12,4 +12,5 @@ module com.td.player {
     opens com.td.player.managers to javafx.fxml;
     exports com.td.player.controllers;
     opens com.td.player.controllers to javafx.fxml;
+    exports com.td.player.util;
 }

@@ -4,6 +4,7 @@ import com.td.player.Player;
 import com.td.player.managers.DirectoryManager;
 import com.td.player.managers.MusicManager;
 import com.td.player.managers.PlaylistManager;
+import com.td.player.util.Mode;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
@@ -29,10 +30,16 @@ public class Controller {
     public ScrollPane dirScrollPane, musicScrollPane, playlistNamesScrollPane, playlistMusicScrollPane;
 
     @FXML
+    private SplitPane splitPane;
+
+    @FXML
     public Slider timeSlider, volumeSlider;
 
     @FXML
     public Label titleLabel, artistLabel, currentTimeLabel, endTimeLabel;
+
+    @FXML
+    public ToggleButton preferenceToggleButton;
 
     private FileController fileController;
     private DirectoryManager directoryManager;
@@ -40,6 +47,7 @@ public class Controller {
     private PlaylistManager playlistManager;
     private MediaController mediaController;
     private ViewController viewController;
+    public Mode mode = Mode.DEFAULT;
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -49,8 +57,8 @@ public class Controller {
         musicManager = new MusicManager();
         directoryManager = new DirectoryManager();
         playlistManager = new PlaylistManager();
-        mediaController = new MediaController(this);
         fileController = new FileController(this);
+        mediaController = new MediaController(this);
         viewController = new ViewController(this);
         volumeSlider.setValue(volumeSlider.getMax());
         widthProperties();
@@ -159,6 +167,20 @@ public class Controller {
     @FXML
     private void onMaximizeButtonClick() {
         Player.stage.setMaximized(!Player.stage.isMaximized());
+    }
+
+    @FXML
+    private void onPreferenceToggleButtonClick() {
+        if (preferenceToggleButton.isSelected()) {
+            splitPane.setDisable(true);
+            mode = Mode.PREFERENCE;
+            mediaController.play();
+        } else {
+            splitPane.setDisable(false);
+            mode = Mode.DEFAULT;
+            mediaController.play();
+
+        }
     }
 
     public DirectoryManager getDirectoryManager() {

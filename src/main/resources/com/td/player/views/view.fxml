@@ -60,10 +60,10 @@
             </top>
             <right>
                 <HBox>
-                    <Button mnemonicParsing="false" text="Mode"/>
-                    <Button mnemonicParsing="false" text="Mode"/>
-                    <Button mnemonicParsing="false" text="Mode"/>
-                    <Button mnemonicParsing="false" text="Mode"/>
+                    <ToggleButton fx:id="preferenceToggleButton" text="Preference" onAction="#onPreferenceToggleButtonClick"/>
+                    <Button text="Random"/>
+                    <Button text="Reverse"/>
+                    <Button text="MODE"/>
                 </HBox>
             </right>
             <bottom>
@@ -82,7 +82,7 @@
         </BorderPane>
     </VBox>
 
-    <SplitPane VBox.vgrow="ALWAYS">
+    <SplitPane fx:id="splitPane" VBox.vgrow="ALWAYS">
         <VBox>
             <Button fx:id="addDirButton" onAction="#onAddDirButtonClick">
                 <tooltip>

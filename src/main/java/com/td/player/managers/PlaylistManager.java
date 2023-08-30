@@ -37,6 +37,18 @@ public class PlaylistManager {
         }
     }
 
+    public Playlist createPreferencePlaylist(MusicManager musicManager) {
+        Playlist preferencePlaylist = new Playlist("Preference");
+        for (int i = 10; i >= 0; i--) {
+            for (Music music : musicManager.getMusicArray()) {
+                if (music.getLevel() == i) {
+                    preferencePlaylist.add(music);
+                }
+            }
+        }
+        return preferencePlaylist;
+    }
+
     public void createDefaultPlaylist(MusicManager musicManager) {
         Playlist playlist = new Playlist("All music");
         for (Music music : musicManager.getMusicArray()) {

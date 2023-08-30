@@ -12,7 +12,6 @@ public class Music extends Element {
     private int level;
     private String absolutePath;
     private String fileName;
-    private Media media;
     private MediaPlayer mediaPlayer;
 //    AudioEqualizer
 //    AudioSpectrumListener
@@ -23,8 +22,7 @@ public class Music extends Element {
         this.level = level;
         this.absolutePath = file.getAbsolutePath();
         this.fileName = file.getName();
-        media = new Media(mediaPath);
-        mediaPlayer = new MediaPlayer(media);
+        mediaPlayer = new MediaPlayer(new Media(mediaPath));
         setData();
     }
 
@@ -77,6 +75,22 @@ public class Music extends Element {
 
     public void setArtist(String artist) {
         this.artist = artist;
+    }
+
+    public void upgradeLevel() {
+        if (level < 10) {
+            level++;
+        } else {
+            level = 10;
+        }
+    }
+
+    public void downgradeLevel() {
+        if (level > 0) {
+            level--;
+        } else {
+            level = 0;
+        }
     }
 }
 

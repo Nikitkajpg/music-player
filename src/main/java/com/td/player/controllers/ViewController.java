@@ -50,7 +50,7 @@ public class ViewController {
     public void showMusic() {
         controller.musicListVBox.getChildren().clear();
         for (Music music : musicManager.getMusicArray()) {
-            controller.musicListVBox.getChildren().add(getMusicButton(music.getFileName()));
+            controller.musicListVBox.getChildren().add(getMusicButton(music));
         }
     }
 
@@ -81,35 +81,35 @@ public class ViewController {
         return button;
     }
 
-    private Button getMusicButton(String name) {
-        Button button = new Button(name);
-        button.setOnAction(actionEvent -> mediaController.playByName(name));
+    private Button getMusicButton(Music music) {
+        Button button = new Button(music.getTitle());
+        button.setOnAction(actionEvent -> mediaController.playMusicInPlaylist(music, playlistManager.getDefaultPlaylist()));
         button.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                contextMenuController.showMusicCM(button, mouseEvent);
+                contextMenuController.showMusicCM(button, mouseEvent, music);
             }
         });
         button.setOnDragDetected(mouseEvent -> Actions.onDragDetected(mouseEvent, button));
         return button;
     }
 
-    public Button getPlaylistMusicButton(String fileName, Playlist playlist, Button button) {
-        Button musicButton = new Button(fileName);
-        musicButton.setOnAction(actionEvent -> mediaController.playInPlaylist(musicButton.getText(), playlist.getName()));
+    public Button getPlaylistMusicButton(Music music, Playlist playlist, Button button) {
+        Button musicButton = new Button(music.getTitle());
+        musicButton.setOnAction(actionEvent -> mediaController.playMusicInPlaylist(music, playlist));
         musicButton.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                contextMenuController.showPlaylistMusicButtonCM(playlist, musicButton, button, mouseEvent, this);
+                contextMenuController.showPlaylistMusicButtonCM(playlist, musicButton, music, button, mouseEvent, this);
             }
         });
         return musicButton;
     }
 
-    public Button getPlaylistMusicArtistButton(Playlist playlist, Button button, Button musicButton) {
-        Button artistButton = new Button(musicManager.getByTitle(musicButton.getText()).getArtist());
-        artistButton.setOnAction(actionEvent -> mediaController.playInPlaylist(musicButton.getText(), playlist.getName()));
+    public Button getPlaylistMusicArtistButton(Playlist playlist, Button button, Music music) {
+        Button artistButton = new Button(music.getArtist());
+        artistButton.setOnAction(actionEvent -> mediaController.playMusicInPlaylist(music, playlist));
         artistButton.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                contextMenuController.showPlaylistMusicButtonCM(playlist, artistButton, button, mouseEvent, this);
+                contextMenuController.showPlaylistMusicButtonCM(playlist, artistButton, music, button, mouseEvent, this);
             }
         });
         return artistButton;
@@ -121,8 +121,8 @@ public class ViewController {
         playlistMusicVBox.getChildren().clear();
         for (Music music : playlist.getMusicArray()) {
             VBox vBox = new VBox();
-            Button titleButton = getPlaylistMusicButton(music.getTitle(), playlist, button);
-            Button artistButton = getPlaylistMusicArtistButton(playlist, button, titleButton);
+            Button titleButton = getPlaylistMusicButton(music, playlist, button);
+            Button artistButton = getPlaylistMusicArtistButton(playlist, button, music);
             vBox.getChildren().addAll(titleButton, artistButton);
             playlistMusicVBox.getChildren().add(vBox);
             titleButton.prefWidthProperty().bind(controller.playlistMusicScrollPane.widthProperty());
@@ -133,11 +133,11 @@ public class ViewController {
         }
     }
 
-    public void removeSongFromPlaylist(Button button) {
+    public void removeSongFromPlaylist(Music music) {
         for (int i = 0; i < playlistMusicVBox.getChildren().size() - 1; i++) {
             VBox vBox = (VBox) playlistMusicVBox.getChildren().get(i);
             Button musicLabel = (Button) vBox.getChildren().get(0);
-            if (musicLabel.getText().equals(button.getText())) {
+            if (musicLabel.getText().equals(music.getTitle())) {
                 playlistMusicVBox.getChildren().remove(vBox);
             }
         }

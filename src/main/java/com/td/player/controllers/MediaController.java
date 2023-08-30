@@ -4,51 +4,100 @@ import com.td.player.elements.Music;
 import com.td.player.elements.Playlist;
 import com.td.player.managers.MusicManager;
 import com.td.player.managers.PlaylistManager;
+import com.td.player.util.MusicTimer;
 import javafx.application.Platform;
-import javafx.scene.control.Button;
 import javafx.util.Duration;
 
 @SuppressWarnings("FieldMayBeFinal")
 public class MediaController {
+    private Controller controller;
     private MusicManager musicManager;
     private PlaylistManager playlistManager;
 
     private Music currentMusic;
     private Playlist currentPlayList;
-    private Button playButton;
 
-    private Controller controller;
     private Duration duration;
+    private boolean paused = false;
 
     public MediaController(Controller controller) {
         this.controller = controller;
         musicManager = controller.getMusicManager();
         playlistManager = controller.getPlaylistManager();
-        playButton = controller.playButton;
         addTimeSliderListener();
         addVolumeSliderListener();
+
+        currentPlayList = playlistManager.getDefaultPlaylist();
+        currentMusic = currentPlayList.getMusicArray().get(0);
     }
 
+    //
     public void play() {
-        if (currentMusic == null && currentPlayList == null) {
-            currentPlayList = playlistManager.getDefaultPlaylist();
-            if (currentPlayList.getMusicArray().size() > 0) {
-                currentMusic = currentPlayList.getMusicArray().get(0);
-                currentMusic.getMediaPlayer().play();
-                currentMusic.getMediaPlayer().setOnEndOfMedia(() -> switchMusic(true));
-                duration = currentMusic.getMediaPlayer().getMedia().getDuration();
-
-                controller.endTimeLabel.setText(getTotalTime(duration));
-                controller.titleLabel.setText(currentMusic.getTitle());
-                controller.artistLabel.setText(currentMusic.getArtist());
-
-                addMediaPlayerListener();
+        switch (controller.mode) {
+            case DEFAULT -> playInDefault();
+            case PREFERENCE -> playInPreference();
+            case RANDOM -> {
+                // TODO: 27.08.2023
             }
-        } else if (currentMusic != null) {
-            currentMusic.getMediaPlayer().play();
+            case REVERSE -> {
+                // TODO: 28.08.2023
+            }
         }
-        playButton.setText("Pause");
+    }
 
+    private void playInDefault() {
+        if (paused) {
+            commonPart(false, currentMusic);
+        } else {
+            playMusicInPlaylist(playlistManager.getDefaultPlaylist().getMusicArray().get(0), playlistManager.getDefaultPlaylist());
+        }
+        paused = false;
+    }
+
+    private void playInPreference() {
+        Playlist preferencePlaylist = playlistManager.createPreferencePlaylist(musicManager);
+        playMusicInPlaylist(preferencePlaylist.getMusicArray().get(0), preferencePlaylist);
+        paused = false;
+    }
+
+    public void playMusicInPlaylist(Music music, Playlist playlist) {
+        Music previousMusic = currentMusic;
+        currentMusic.getMediaPlayer().stop();
+        currentPlayList = playlist;
+        currentMusic = music;
+        commonPart(true, previousMusic);
+    }
+
+    public void pause() {
+        MusicTimer.setFlag(false, currentMusic);
+        currentMusic.getMediaPlayer().pause();
+        paused = true;
+        controller.playButton.setText("Play");
+    }
+
+    public void switchMusic(boolean next) {
+        Music previousMusic = currentMusic;
+        currentMusic.getMediaPlayer().stop();
+        if (next) {
+            currentMusic = currentPlayList.getNext(currentMusic);
+        } else {
+            currentMusic = currentPlayList.getPrevious(currentMusic);
+        }
+        commonPart(true, previousMusic);
+    }
+
+    private void commonPart(boolean turningNewMusic, Music previousMusic) {
+        MusicTimer.setFlag(turningNewMusic, previousMusic);
+        currentMusic.getMediaPlayer().play();
+        currentMusic.getMediaPlayer().setOnEndOfMedia(() -> switchMusic(true));
+
+        duration = currentMusic.getMediaPlayer().getMedia().getDuration();
+        controller.endTimeLabel.setText(getTotalTime(duration));
+        controller.playButton.setText("Pause");
+        controller.titleLabel.setText(currentMusic.getTitle());
+        controller.artistLabel.setText(currentMusic.getArtist());
+
+        addMediaPlayerListener();
     }
 
     private String getTotalTime(Duration duration) {
@@ -60,61 +109,6 @@ public class MediaController {
             time = String.format("%2d:%02d:%02d", seconds / 3600, (seconds % 3600) / 60, seconds % 60);
         }
         return time;
-    }
-
-    public void pause() {
-        currentMusic.getMediaPlayer().pause();
-        playButton.setText("Play");
-    }
-
-    public void playPlaylistByName(String name) {
-        if (currentMusic != null) {
-            currentMusic.getMediaPlayer().stop();
-        }
-        currentPlayList = playlistManager.getPlaylistByName(name);
-        currentMusic = currentPlayList.getMusicArray().get(0);
-        methodToPlay();
-    }
-
-    public void playInPlaylist(String musicName, String playlistName) {
-        if (currentMusic != null) {
-            currentMusic.getMediaPlayer().stop();
-        }
-        currentPlayList = playlistManager.getPlaylistByName(playlistName);
-        currentMusic = musicManager.getByTitle(musicName);
-        methodToPlay();
-    }
-
-    public void playByName(String name) {
-        if (currentMusic != null) {
-            currentMusic.getMediaPlayer().stop();
-        }
-        currentPlayList = playlistManager.getDefaultPlaylist();
-        currentMusic = musicManager.get(name);
-        methodToPlay();
-    }
-
-    public void switchMusic(boolean next) {
-        if (currentMusic != null) {
-            currentMusic.getMediaPlayer().stop();
-            if (next) {
-                currentMusic = currentPlayList.getNext(currentMusic);
-            } else {
-                currentMusic = currentPlayList.getPrevious(currentMusic);
-            }
-            methodToPlay();
-        }
-    }
-
-    private void methodToPlay() {
-        currentMusic.getMediaPlayer().play();
-        currentMusic.getMediaPlayer().setOnEndOfMedia(() -> switchMusic(true));
-        duration = currentMusic.getMediaPlayer().getMedia().getDuration();
-        controller.endTimeLabel.setText(getTotalTime(duration));
-        addMediaPlayerListener();
-        playButton.setText("Pause");
-        controller.titleLabel.setText(currentMusic.getTitle());
-        controller.artistLabel.setText(currentMusic.getArtist());
     }
 
     private void addMediaPlayerListener() {

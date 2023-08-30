@@ -91,7 +91,7 @@ public class Actions {
                 !playlist.getName().equals("All music")) {
             VBox labelsVBox = new VBox();
             labelsVBox.getChildren().addAll(
-                    viewController.getPlaylistMusicButton(musicManager.getTitleByFileName(dragboard.getString()), playlist, button),
+                    viewController.getPlaylistMusicButton(musicManager.getMusicByFileName(dragboard.getString()), playlist, button),
                     new Button(musicManager.get(dragboard.getString()).getArtist()));
             playlistMusicVBox.getChildren().add(playlistMusicVBox.getChildren().size(), labelsVBox);
             playlist.addByName(dragboard.getString(), musicManager);
