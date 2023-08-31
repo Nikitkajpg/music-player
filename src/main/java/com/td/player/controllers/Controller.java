@@ -39,7 +39,7 @@ public class Controller {
     public Label titleLabel, artistLabel, currentTimeLabel, endTimeLabel;
 
     @FXML
-    public ToggleButton preferenceToggleButton;
+    public ToggleButton preferenceToggleButton, randomToggleButton;
 
     private FileController fileController;
     private DirectoryManager directoryManager;
@@ -172,15 +172,25 @@ public class Controller {
     @FXML
     private void onPreferenceToggleButtonClick() {
         if (preferenceToggleButton.isSelected()) {
-            splitPane.setDisable(true);
-            mode = Mode.PREFERENCE;
-            mediaController.play();
+            enableMode(true, Mode.PREFERENCE);
         } else {
-            splitPane.setDisable(false);
-            mode = Mode.DEFAULT;
-            mediaController.play();
-
+            enableMode(false, Mode.DEFAULT);
         }
+    }
+
+    @FXML
+    private void onRandomToggleButtonClick() {
+        if (randomToggleButton.isSelected()) {
+            enableMode(true, Mode.RANDOM);
+        } else {
+            enableMode(false, Mode.DEFAULT);
+        }
+    }
+
+    private void enableMode(boolean disable, Mode newMode) {
+        splitPane.setDisable(disable);
+        mode = newMode;
+        mediaController.play();
     }
 
     public DirectoryManager getDirectoryManager() {

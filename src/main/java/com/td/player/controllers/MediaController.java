@@ -31,17 +31,11 @@ public class MediaController {
         currentMusic = currentPlayList.getMusicArray().get(0);
     }
 
-    //
     public void play() {
         switch (controller.mode) {
             case DEFAULT -> playInDefault();
             case PREFERENCE -> playInPreference();
-            case RANDOM -> {
-                // TODO: 27.08.2023
-            }
-            case REVERSE -> {
-                // TODO: 28.08.2023
-            }
+            case RANDOM -> playInRandom();
         }
     }
 
@@ -57,6 +51,13 @@ public class MediaController {
     private void playInPreference() {
         Playlist preferencePlaylist = playlistManager.createPreferencePlaylist(musicManager);
         playMusicInPlaylist(preferencePlaylist.getMusicArray().get(0), preferencePlaylist);
+        paused = false;
+    }
+
+    private void playInRandom() {
+        int x = (int) (Math.random() * (musicManager.getMusicArray().size() - 1));
+        Playlist playlist = playlistManager.getDefaultPlaylist();
+        playMusicInPlaylist(playlist.getMusicArray().get(x), playlist);
         paused = false;
     }
 

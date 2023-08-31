@@ -61,8 +61,7 @@
             <right>
                 <HBox>
                     <ToggleButton fx:id="preferenceToggleButton" text="Preference" onAction="#onPreferenceToggleButtonClick"/>
-                    <Button text="Random"/>
-                    <Button text="Reverse"/>
+                    <ToggleButton fx:id="randomToggleButton" text="Random" onAction="#onRandomToggleButtonClick"/>
                     <Button text="MODE"/>
                 </HBox>
             </right>
