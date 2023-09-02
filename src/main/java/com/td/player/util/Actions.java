@@ -1,6 +1,7 @@
 package com.td.player.util;
 
 import com.td.player.controllers.ViewController;
+import com.td.player.elements.Directory;
 import com.td.player.elements.Playlist;
 import com.td.player.managers.DirectoryManager;
 import com.td.player.managers.MusicManager;
@@ -13,7 +14,15 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Утилитарный класс, содержащий методы из лямбда-выражений
+ */
 public class Actions {
+    /**
+     * Метод открывает папку в проводнике
+     *
+     * @param button нажатая кнопка с путем к папке
+     */
     public static void openDirectory(Button button) {
         File directory = new File(button.getText());
         try {
@@ -23,6 +32,11 @@ public class Actions {
         }
     }
 
+    /**
+     * Метод открывает музыкальный файл в проводнике
+     *
+     * @param button нажатая кнопка с названием файла музыки
+     */
     public static void openFile(MusicManager musicManager, Button button) {
         File directory = new File(musicManager.get(button.getText()).getAbsolutePath());
         try {
@@ -34,8 +48,9 @@ public class Actions {
     }
 
     public static void deleteDirectory(DirectoryManager directoryManager, MusicManager musicManager,
-                                       ViewController viewController, Button button, PlaylistManager playlistManager) {
-        directoryManager.deleteByPath(button.getText());
+                                       ViewController viewController, Directory directory, Button button,
+                                       PlaylistManager playlistManager) {
+        directoryManager.delete(directory);
         musicManager.deleteByPath(button.getText());
         playlistManager.deleteByPath(button.getText());
         viewController.showLists();
@@ -82,7 +97,7 @@ public class Actions {
     }
 
     public static void onDragDropped(DragEvent dragEvent, PlaylistManager playlistManager, Playlist playlist,
-                                     MusicManager musicManager, VBox playlistMusicVBox, Button button, ViewController viewController) {
+                                     MusicManager musicManager, VBox playlistMusicVBox, ViewController viewController) {
         // data dropped
         // if there is a string data on dragBoard, read it and use it
         Dragboard dragboard = dragEvent.getDragboard();
@@ -91,10 +106,10 @@ public class Actions {
                 !playlist.getName().equals("All music")) {
             VBox labelsVBox = new VBox();
             labelsVBox.getChildren().addAll(
-                    viewController.getPlaylistMusicButton(musicManager.getMusicByFileName(dragboard.getString()), playlist, button),
+                    viewController.getPlaylistMusicTitleButton(musicManager.getMusicByFileName(dragboard.getString()), playlist),
                     new Button(musicManager.get(dragboard.getString()).getArtist()));
             playlistMusicVBox.getChildren().add(playlistMusicVBox.getChildren().size(), labelsVBox);
-            playlist.addByName(dragboard.getString(), musicManager);
+            playlist.add(dragboard.getString(), musicManager);
             success = true;
         }
         // let the source know whether the string was successfully transferred and used

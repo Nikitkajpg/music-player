@@ -5,19 +5,34 @@ import com.td.player.managers.MusicManager;
 import java.util.ArrayList;
 
 @SuppressWarnings("FieldMayBeFinal")
-public class Playlist extends Element {
+public class Playlist {
     private String name;
     private ArrayList<Music> musicArray = new ArrayList<>();
 
+    /**
+     * Конструктор для создания нового объекта.
+     *
+     * @param name название плейлиста
+     */
     public Playlist(String name) {
         this.name = name;
     }
 
+    /**
+     * Метод добавляет музыку в {@link #musicArray}
+     *
+     * @param music объект {@link Music}
+     */
     public void add(Music music) {
         musicArray.add(music);
     }
 
-    public void addByName(String name, MusicManager musicManager) {
+    /**
+     * Метод добавляет музыку в {@link #musicArray} по названию файла музыки.
+     *
+     * @param name название файла музыки
+     */
+    public void add(String name, MusicManager musicManager) {
         for (Music music : musicManager.getMusicArray()) {
             if (music.getFileName().equals(name)) {
                 musicArray.add(music);
@@ -26,8 +41,8 @@ public class Playlist extends Element {
         }
     }
 
-    public void deleteByName(String name) {
-        musicArray.removeIf(music -> music.getFileName().equals(name));
+    public void delete(Music music) {
+        musicArray.remove(music);
     }
 
     public String getName() {
@@ -42,6 +57,13 @@ public class Playlist extends Element {
         return musicArray;
     }
 
+    /**
+     * Метод для получения следующей песни в плейлисте.
+     * Если музыка последняя в списке, возвращается первая музыка
+     *
+     * @param currentMusic текущая музыка
+     * @return следующая музыка
+     */
     public Music getNext(Music currentMusic) {
         for (int i = 0; i < musicArray.size(); i++) {
             if (currentMusic.equals(musicArray.get(i))) {
@@ -53,6 +75,13 @@ public class Playlist extends Element {
         return musicArray.get(0);
     }
 
+    /**
+     * Метод для получения предыдущей песни в плейлисте.
+     * Если музыка первая в списке, возвращается последняя музыка
+     *
+     * @param currentMusic текущая музыка
+     * @return предыдущая музыка
+     */
     public Music getPrevious(Music currentMusic) {
         for (int i = 0; i < musicArray.size(); i++) {
             if (currentMusic.equals(musicArray.get(i))) {

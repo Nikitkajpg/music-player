@@ -18,7 +18,7 @@ public class Controller {
     public VBox musicListVBox, dirsListVBox, playlistVBox, playlistNamesVBox, playlistMusicVBox;
 
     @FXML
-    public BorderPane topMenuBorderPane;
+    public BorderPane topMenuBorderPane, borderPane;
 
     @FXML
     public Button playButton, addDirButton, addPlaylistButton, renamePlaylistButton;
@@ -68,20 +68,20 @@ public class Controller {
         addDirButton.prefWidthProperty().bind(dirScrollPane.widthProperty());
         widthPropertyForLists(dirsListVBox, dirScrollPane);
         widthPropertyForLists(musicListVBox, musicScrollPane);
-        widthPropertyForLists(playlistMusicVBox, playlistMusicScrollPane);
         widthPropertyForLists(playlistNamesVBox, playlistNamesScrollPane);
-//        musicListVBox.prefWidthProperty().bind(musicScrollPane.widthProperty().subtract(23));
-//        dirsListVBox.prefWidthProperty().bind(dirScrollPane.widthProperty().subtract(20));
         textField.prefWidthProperty().bind(playlistVBox.widthProperty());
     }
 
     private void widthPropertyForLists(VBox vBox, ScrollPane scrollPane) {
         for (int i = 0; i < vBox.getChildren().size(); i++) {
             Button button = (Button) vBox.getChildren().get(i);
-            button.prefWidthProperty().bind(scrollPane.widthProperty());
+            button.prefWidthProperty().bind(scrollPane.widthProperty().subtract(17));
         }
     }
 
+    /**
+     * Метод для перетаскивания окна
+     */
     public void dragStage(Stage stage) {
         topMenuBorderPane.setOnMousePressed(mouseEvent -> {
             xOffset = mouseEvent.getSceneX();

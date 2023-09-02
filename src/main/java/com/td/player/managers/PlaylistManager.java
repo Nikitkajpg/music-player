@@ -4,7 +4,11 @@ import com.td.player.elements.Music;
 import com.td.player.elements.Playlist;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
+/**
+ * Класс для управления списком плейлистов. Конструктор отсутствует
+ */
 @SuppressWarnings("FieldMayBeFinal")
 public class PlaylistManager {
     private ArrayList<Playlist> playlistArray = new ArrayList<>();
@@ -20,15 +24,11 @@ public class PlaylistManager {
         }
     }
 
-    public void deleteByName(String name) {
-        playlistArray.removeIf(playlist -> playlist.getName().equals(name));
-    }
-
     public ArrayList<Playlist> getPlaylistArray() {
         return playlistArray;
     }
 
-    public void addToPlaylist(String playlistName, Music music) {
+    public void addMusicToPlaylist(String playlistName, Music music) {
         for (Playlist playlist : playlistArray) {
             if (playlist.getName().equals(playlistName)) {
                 playlist.add(music);
@@ -37,6 +37,10 @@ public class PlaylistManager {
         }
     }
 
+    /**
+     * Метод создает плейлист для "системы предпочтений".
+     * <p>В начале плейлиста находится музыка с самым высоким уровнем (приоритетом), далее по убыванию
+     */
     public Playlist createPreferencePlaylist(MusicManager musicManager) {
         Playlist preferencePlaylist = new Playlist("Preference");
         for (int i = 10; i >= 0; i--) {
@@ -109,5 +113,15 @@ public class PlaylistManager {
             }
         }
         return getDefaultPlaylist();
+    }
+
+    public Playlist getRandomPlaylist() {
+        Playlist randomPlaylist = getDefaultPlaylist();
+        Collections.shuffle(randomPlaylist.getMusicArray());
+        return randomPlaylist;
+    }
+
+    public void delete(Playlist playlist) {
+        playlistArray.remove(playlist);
     }
 }

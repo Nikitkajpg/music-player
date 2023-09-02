@@ -5,6 +5,9 @@ import com.td.player.elements.Music;
 import java.io.File;
 import java.util.ArrayList;
 
+/**
+ * Класс для управления списком музыки. Конструктор отсутствует
+ */
 @SuppressWarnings("FieldMayBeFinal")
 public class MusicManager {
     private ArrayList<Music> musicArray = new ArrayList<>();

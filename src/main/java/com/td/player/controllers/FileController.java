@@ -12,6 +12,9 @@ import javafx.stage.DirectoryChooser;
 import java.io.*;
 import java.util.Objects;
 
+/**
+ * Класс для управления файлами: создание, чтение и запись
+ */
 @SuppressWarnings("FieldMayBeFinal")
 public class FileController {
     private DirectoryManager directoryManager;
@@ -22,6 +25,10 @@ public class FileController {
     private File playlistFile;
     private File levelsFile;
 
+    /**
+     * Конструктор создает файлы и заполняет все необходимые массивы
+     * <p>Создается плейлист по умолчанию, содержащий все песни
+     */
     public FileController(Controller controller) {
         directoryManager = controller.getDirectoryManager();
         musicManager = controller.getMusicManager();
@@ -64,25 +71,39 @@ public class FileController {
         }
     }
 
-    private void fillMusicArray() { // выполняется при запуске программы
+    /**
+     * Метод выполняется при запуске программы
+     */
+    private void fillMusicArray() {
         for (Directory directory : directoryManager.getDirectoryArray()) {
             fill(directory.getPath());
         }
     }
 
-    private void fillMusicArray(String path) { // выполняется при выборе папки с музыкой
+    /**
+     * Метод выполняется при выборе папки с музыкой
+     *
+     * @param path путь к папке с музыкой
+     */
+    private void fillMusicArray(String path) {
         fill(path);
     }
 
+    /**
+     * Метод заполняет массив песен.
+     * <p>Поле fileList получает список музыкальных файлов в папке.
+     * Пробел в пути заменяется "%20" для корректной передачи в {@link javafx.scene.media.Media}
+     *
+     * @param path путь к папке с музыкой
+     */
     private void fill(String path) {
-        File[] fileList = new File(path).listFiles(file -> file.getName().endsWith("mp3")); // получаем список муз. файлов в папке
+        File[] fileList = new File(path).listFiles(file -> file.getName().endsWith("mp3"));
 
         for (File musicFile : Objects.requireNonNull(fileList)) {
             String mediaPath = "file:///" + musicFile.getAbsolutePath().
                     replace("\\", "/").
-                    replace(" ", "%20"); // путь к файлу для медиа
-//                musicManager.add("", "", 5, musicFile, mediaPath);
-                musicManager.add("", "", musicFile, mediaPath);
+                    replace(" ", "%20");
+            musicManager.add("", "", musicFile, mediaPath);
         }
     }
 
@@ -115,7 +136,7 @@ public class FileController {
                 } else {
                     for (Music music : musicManager.getMusicArray()) {
                         if (music.getFileName().equals(line)) {
-                            playlistManager.addToPlaylist(name, music);
+                            playlistManager.addMusicToPlaylist(name, music);
                             break;
                         }
                     }
@@ -126,6 +147,9 @@ public class FileController {
         }
     }
 
+    /**
+     * Метод добавляет выбранную папку в массив папок {@link DirectoryManager#add(String)}
+     */
     public void selectDirectory() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Directory selection");
@@ -137,6 +161,9 @@ public class FileController {
         fillMusicArray(path);
     }
 
+    /**
+     * Метод записывает все данные в {@link #directoriesFile}, {@link #playlistFile}, {@link #levelsFile}
+     */
     public void writeAllInf() {
         writeDir();
         writePlaylist();

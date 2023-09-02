@@ -50,7 +50,7 @@
     <VBox alignment="CENTER">
         <Label fx:id="titleLabel" text="No data"/>
         <Label fx:id="artistLabel" text="No data"/>
-        <BorderPane>
+        <BorderPane fx:id="borderPane">
             <top>
                 <HBox alignment="CENTER" BorderPane.alignment="CENTER">
                     <Button fx:id="previousButton" onMouseClicked="#onPreviousButtonClick"/>
@@ -68,7 +68,7 @@
             <bottom>
                 <HBox>
                     <Label fx:id="currentTimeLabel" text="00.00"/>
-                    <Slider fx:id="timeSlider"/>
+                    <Slider fx:id="timeSlider" HBox.hgrow="ALWAYS"/>
                     <Label fx:id="endTimeLabel" text="00.00"/>
                 </HBox>
             </bottom>
@@ -122,11 +122,11 @@
                 </right>
             </BorderPane>
             <SplitPane VBox.vgrow="ALWAYS">
-                <ScrollPane fx:id="playlistNamesScrollPane">
+                <ScrollPane fx:id="playlistNamesScrollPane" vbarPolicy="ALWAYS">
                     <VBox fx:id="playlistNamesVBox"/>
                 </ScrollPane>
-                <ScrollPane fx:id="playlistMusicScrollPane">
-                    <VBox fx:id="playlistMusicVBox"/>
+                <ScrollPane fx:id="playlistMusicScrollPane" vbarPolicy="ALWAYS">
+                    <VBox fx:id="playlistMusicVBox" spacing="4"/>
                 </ScrollPane>
             </SplitPane>
         </VBox>

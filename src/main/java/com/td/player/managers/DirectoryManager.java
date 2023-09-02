@@ -4,6 +4,9 @@ import com.td.player.elements.Directory;
 
 import java.util.ArrayList;
 
+/**
+ * Класс для управления списком папок. Конструктор отсутствует
+ */
 @SuppressWarnings("FieldMayBeFinal")
 public class DirectoryManager {
     private ArrayList<Directory> directoryArray = new ArrayList<>();
@@ -13,8 +16,8 @@ public class DirectoryManager {
         directoryArray.add(directory);
     }
 
-    public void deleteByPath(String path) {
-        directoryArray.removeIf(directory -> directory.getPath().equals(path));
+    public void delete(Directory directory) {
+        directoryArray.remove(directory);
     }
 
     public ArrayList<Directory> getDirectoryArray() {

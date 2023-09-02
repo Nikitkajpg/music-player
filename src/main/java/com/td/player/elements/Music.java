@@ -6,7 +6,7 @@ import javafx.scene.media.MediaPlayer;
 import java.io.File;
 
 @SuppressWarnings("FieldMayBeFinal")
-public class Music extends Element {
+public class Music {
     private String title;
     private String artist;
     private int level;
@@ -16,6 +16,16 @@ public class Music extends Element {
 //    AudioEqualizer
 //    AudioSpectrumListener
 
+    /**
+     * Конструктор для создания нового объекта.
+     * <p>Создает {@link MediaPlayer}. Заполняет поля {@link #title} и {@link #artist} метаданными.
+     *
+     * @param title     название
+     * @param artist    исполнитель
+     * @param level     уровень (приоритет)
+     * @param file      сам музыкальный файл
+     * @param mediaPath путь к файлу, преобразованный для {@link Media}
+     */
     public Music(String title, String artist, int level, File file, String mediaPath) {
         this.title = title;
         this.artist = artist;
@@ -26,6 +36,10 @@ public class Music extends Element {
         setData();
     }
 
+    /**
+     * Метод заполняет поля {@link #title} и {@link #artist} метаданными.
+     * <p>Выполняется в самом конце инициализации, по сути костыль
+     */
     private void setData() {
         mediaPlayer.setOnReady(() -> {
             setTitle((String) mediaPlayer.getMedia().getMetadata().get("title"));
