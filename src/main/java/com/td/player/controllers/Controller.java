@@ -125,7 +125,7 @@ public class Controller {
     private void onPlayButtonClick() {
         if (mediaController.isPaused()) {
             mediaController.play();
-            playButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(Player.class.getResource("img/exit.png")).toExternalForm())));
+            playButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(Player.class.getResource("img/pause.png")).toExternalForm())));
         } else {
             mediaController.pause();
             playButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(Player.class.getResource("img/play.png")).toExternalForm())));
