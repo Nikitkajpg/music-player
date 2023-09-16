@@ -157,8 +157,8 @@ public class FileController {
         String path = directory.getAbsolutePath();
         if (directoryManager.pathIsUnique(path)) {
             directoryManager.add(path);
+            fillMusicArray(path);
         }
-        fillMusicArray(path);
     }
 
     /**

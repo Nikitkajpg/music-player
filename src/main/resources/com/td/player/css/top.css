@@ -1,0 +1,28 @@
+BorderPane {
+    -fx-background-color: #222222;
+}
+
+.button {
+    -fx-background-color: #222222;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+    -fx-cursor: hand;
+    -fx-pref-width: 32;
+    -fx-pref-height: 32;
+
+    -fx-border-insets: 0;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.button:hover {
+    -fx-background-color: #333333;
+}
+
+.button:pressed {
+    -fx-background-color: #444444;
+}
+
+HBox {
+    -fx-pref-height: 32;
+}

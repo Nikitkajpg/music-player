@@ -6,11 +6,11 @@
 <?import javafx.scene.layout.*?>
 <VBox xmlns:fx="http://javafx.com/fxml" fx:controller="com.td.player.controllers.Controller"
       stylesheets="@../css/main.css">
-    <BorderPane fx:id="topMenuBorderPane">
+    <BorderPane fx:id="topMenuBorderPane" stylesheets="@../css/top.css">
         <left>
             <HBox>
                 <ImageView fitWidth="30" preserveRatio="true">
-                    <Image url="@../img/EMP4.png"/>
+                    <Image url="@../img/EMP6.png"/>
                 </ImageView>
                 <HBox>
                     <Button fx:id="settingsButton">
@@ -47,22 +47,41 @@
         </right>
     </BorderPane>
 
-    <VBox alignment="CENTER">
+    <VBox alignment="CENTER" stylesheets="@../css/middle.css">
         <Label fx:id="titleLabel" text="No data"/>
-        <Label fx:id="artistLabel" text="No data"/>
         <BorderPane fx:id="borderPane">
             <top>
                 <HBox alignment="CENTER" BorderPane.alignment="CENTER">
-                    <Button fx:id="previousButton" onMouseClicked="#onPreviousButtonClick"/>
-                    <Button fx:id="playButton" onMouseClicked="#onPlayButtonClick"/>
-                    <Button fx:id="nextButton" onMouseClicked="#onNextButtonClick"/>
+                    <Button fx:id="previousButton" onMouseClicked="#onPreviousButtonClick">
+                        <tooltip>
+                            <Tooltip text="Previous song"/>
+                        </tooltip>
+                    </Button>
+                    <Button fx:id="playButton" onMouseClicked="#onPlayButtonClick">
+                        <tooltip>
+                            <Tooltip text="Play song"/>
+                        </tooltip>
+                    </Button>
+                    <Button fx:id="nextButton" onMouseClicked="#onNextButtonClick">
+                        <tooltip>
+                            <Tooltip text="Next song"/>
+                        </tooltip>
+                    </Button>
                 </HBox>
             </top>
             <right>
                 <HBox>
-                    <ToggleButton fx:id="preferenceToggleButton" text="Preference" onAction="#onPreferenceToggleButtonClick"/>
-                    <ToggleButton fx:id="randomToggleButton" text="Random" onAction="#onRandomToggleButtonClick"/>
-                    <Button text="MODE"/>
+                    <ToggleButton fx:id="preferenceToggleButton" text="Preference"
+                                  onAction="#onPreferenceToggleButtonClick">
+                        <tooltip>
+                            <Tooltip text="Play songs in preference mode"/>
+                        </tooltip>
+                    </ToggleButton>
+                    <ToggleButton fx:id="randomToggleButton" text="Random" onAction="#onRandomToggleButtonClick">
+                        <tooltip>
+                            <Tooltip text="Play song in random mode"/>
+                        </tooltip>
+                    </ToggleButton>
                 </HBox>
             </right>
             <bottom>
@@ -74,21 +93,27 @@
             </bottom>
             <left>
                 <HBox BorderPane.alignment="CENTER">
-                    <Button fx:id="muteButton"/>
+                    <Button fx:id="muteButton">
+                        <tooltip>
+                            <Tooltip text="Turn on/off sound"/>
+                        </tooltip>
+                    </Button>
                     <Slider fx:id="volumeSlider"/>
                 </HBox>
             </left>
         </BorderPane>
     </VBox>
 
-    <SplitPane fx:id="splitPane" VBox.vgrow="ALWAYS">
+    <SplitPane fx:id="splitPane" VBox.vgrow="ALWAYS" stylesheets="@../css/bottom.css" dividerPositions="0.1">
         <VBox>
-            <Button fx:id="addDirButton" onAction="#onAddDirButtonClick">
-                <tooltip>
-                    <Tooltip text="Add directory"/>
-                </tooltip>
-            </Button>
-            <Label text="Dirs"/>
+            <HBox>
+                <Button fx:id="addDirButton" onAction="#onAddDirButtonClick">
+                    <tooltip>
+                        <Tooltip text="Add directory"/>
+                    </tooltip>
+                </Button>
+                <Label text="Directories"/>
+            </HBox>
             <ScrollPane fx:id="dirScrollPane" minWidth="50" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
                 <VBox fx:id="dirsListVBox" VBox.vgrow="ALWAYS"/>
             </ScrollPane>
@@ -99,36 +124,26 @@
                 <VBox fx:id="musicListVBox"/>
             </ScrollPane>
         </VBox>
-        <VBox fx:id="playlistVBox">
-            <HBox>
-                <Button fx:id="addPlaylistButton" onMouseClicked="#onAddPlaylistButtonClick">
-                    <tooltip>
-                        <Tooltip text="Add new playlist"/>
-                    </tooltip>
-                </Button>
-                <TextField fx:id="textField" promptText="Name..." onKeyPressed="#onTextFieldKeyPressed"/>
-                <Button fx:id="renamePlaylistButton" onMouseClicked="#onRenamePlaylistButtonClick" disable="true">
-                    <tooltip>
-                        <Tooltip text="Rename playlist"/>
-                    </tooltip>
-                </Button>
-            </HBox>
-            <BorderPane>
-                <left>
-                    <Label text="Playlists" BorderPane.alignment="CENTER"/>
-                </left>
-                <right>
-                    <Label text="Music" BorderPane.alignment="CENTER"/>
-                </right>
-            </BorderPane>
-            <SplitPane VBox.vgrow="ALWAYS">
-                <ScrollPane fx:id="playlistNamesScrollPane" vbarPolicy="ALWAYS">
+        <SplitPane VBox.vgrow="ALWAYS">
+            <VBox>
+                <HBox fx:id="hBox">
+                    <Button fx:id="addPlaylistButton" onMouseClicked="#onAddPlaylistButtonClick">
+                        <tooltip>
+                            <Tooltip text="Add new playlist"/>
+                        </tooltip>
+                    </Button>
+                    <Label fx:id="playlistsLabel" text="Playlists"/>
+                </HBox>
+                <ScrollPane fx:id="playlistNamesScrollPane" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
                     <VBox fx:id="playlistNamesVBox"/>
                 </ScrollPane>
-                <ScrollPane fx:id="playlistMusicScrollPane" vbarPolicy="ALWAYS">
-                    <VBox fx:id="playlistMusicVBox" spacing="4"/>
+            </VBox>
+            <VBox>
+                <Label text="Music"/>
+                <ScrollPane fx:id="playlistMusicScrollPane" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
+                    <VBox fx:id="playlistMusicVBox"/>
                 </ScrollPane>
-            </SplitPane>
-        </VBox>
+            </VBox>
+        </SplitPane>
     </SplitPane>
 </VBox>

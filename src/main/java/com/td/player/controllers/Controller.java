@@ -7,24 +7,29 @@ import com.td.player.managers.PlaylistManager;
 import com.td.player.util.Mode;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.util.Objects;
+
 public class Controller {
     @FXML
-    public VBox musicListVBox, dirsListVBox, playlistVBox, playlistNamesVBox, playlistMusicVBox;
+    public VBox musicListVBox, dirsListVBox, playlistNamesVBox, playlistMusicVBox;
+
+    @FXML
+    public HBox hBox;
 
     @FXML
     public BorderPane topMenuBorderPane, borderPane;
 
     @FXML
-    public Button playButton, addDirButton, addPlaylistButton, renamePlaylistButton;
-
-    @FXML
-    public TextField textField;
+    public Button playButton, addDirButton, addPlaylistButton;
 
     @FXML
     public ScrollPane dirScrollPane, musicScrollPane, playlistNamesScrollPane, playlistMusicScrollPane;
@@ -36,7 +41,7 @@ public class Controller {
     public Slider timeSlider, volumeSlider;
 
     @FXML
-    public Label titleLabel, artistLabel, currentTimeLabel, endTimeLabel;
+    public Label titleLabel, currentTimeLabel, endTimeLabel, playlistsLabel;
 
     @FXML
     public ToggleButton preferenceToggleButton, randomToggleButton;
@@ -65,11 +70,9 @@ public class Controller {
     }
 
     private void widthProperties() {
-        addDirButton.prefWidthProperty().bind(dirScrollPane.widthProperty());
         widthPropertyForLists(dirsListVBox, dirScrollPane);
         widthPropertyForLists(musicListVBox, musicScrollPane);
         widthPropertyForLists(playlistNamesVBox, playlistNamesScrollPane);
-        textField.prefWidthProperty().bind(playlistVBox.widthProperty());
     }
 
     private void widthPropertyForLists(VBox vBox, ScrollPane scrollPane) {
@@ -102,44 +105,30 @@ public class Controller {
 
     @FXML
     private void onAddPlaylistButtonClick() {
-        String playlistName = textField.getText();
-        if (playlistName != null && !playlistName.equals("") && playlistManager.isUnique(playlistName)) {
-            viewController.createPlaylistNameButton(playlistName);
-            textField.clear();
-        }
-    }
-
-    @FXML
-    private void onTextFieldKeyPressed(KeyEvent keyEvent) {
-        if (keyEvent.getCode().equals(KeyCode.ENTER)) {
-            if (!addPlaylistButton.isDisable()) {
-                onAddPlaylistButtonClick();
-            } else {
-                onRenamePlaylistButtonClick();
+        hBox.getChildren().remove(hBox.getChildren().size() - 1);
+        TextField textField = new TextField();
+        textField.setPromptText("Playlist name...");
+        textField.setOnKeyPressed(keyEvent -> {
+            if (keyEvent.getCode().equals(KeyCode.ENTER)) {
+                String playlistName = textField.getText();
+                if (playlistName != null && !playlistName.equals("") && playlistManager.isUnique(playlistName)) {
+                    viewController.createPlaylistNameButton(playlistName);
+                    hBox.getChildren().remove(textField);
+                    hBox.getChildren().add(playlistsLabel);
+                }
             }
-        }
-    }
-
-    @FXML
-    private void onRenamePlaylistButtonClick() {
-        String newPlaylistName = textField.getText();
-        if (playlistManager.isUnique(newPlaylistName)) {
-            if (newPlaylistName != null && !newPlaylistName.equals("")) {
-                viewController.renamePlaylist(newPlaylistName);
-                textField.clear();
-            } else {
-                addPlaylistButton.setDisable(false);
-                renamePlaylistButton.setDisable(true);
-            }
-        }
+        });
+        hBox.getChildren().add(textField);
     }
 
     @FXML
     private void onPlayButtonClick() {
-        if (playButton.getText().equals("Pause")) {
-            mediaController.pause();
-        } else {
+        if (mediaController.isPaused()) {
             mediaController.play();
+            playButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(Player.class.getResource("img/exit.png")).toExternalForm())));
+        } else {
+            mediaController.pause();
+            playButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(Player.class.getResource("img/play.png")).toExternalForm())));
         }
     }
 

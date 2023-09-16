@@ -21,7 +21,7 @@ public class MediaController {
     private Playlist currentPlayList;
 
     private Duration duration;
-    private boolean paused = false;
+    private boolean paused = true;
 
     /**
      * Конструктор создает текущий плейлист {@link Playlist} и текущую песню {@link Music}
@@ -34,7 +34,9 @@ public class MediaController {
         addVolumeSliderListener();
 
         currentPlayList = playlistManager.getDefaultPlaylist();
-        currentMusic = currentPlayList.getMusicArray().get(0);
+        if (currentPlayList.getMusicArray().size() > 0) {
+            currentMusic = currentPlayList.getMusicArray().get(0);
+        }
     }
 
     /**
@@ -102,7 +104,6 @@ public class MediaController {
         MusicTimer.setFlag(false, currentMusic);
         currentMusic.getMediaPlayer().pause();
         paused = true;
-        controller.playButton.setText("Play");
     }
 
     /**
@@ -135,9 +136,7 @@ public class MediaController {
 
         duration = currentMusic.getMediaPlayer().getMedia().getDuration();
         controller.endTimeLabel.setText(getTotalTime(duration));
-        controller.playButton.setText("Pause");
-        controller.titleLabel.setText(currentMusic.getTitle());
-        controller.artistLabel.setText(currentMusic.getArtist());
+        controller.titleLabel.setText(currentMusic.getTitle() + " - " + currentMusic.getArtist());
 
         addMediaPlayerListener();
     }
@@ -186,7 +185,7 @@ public class MediaController {
      */
     private void addTimeSliderListener() {
         controller.timeSlider.valueProperty().addListener(observable -> {
-            if (controller.timeSlider.isValueChanging()) {
+            if (controller.timeSlider.isValueChanging() && duration != null) {
                 controller.timeSlider.setOnMouseReleased(mouseEvent ->
                         currentMusic.getMediaPlayer().seek(duration.multiply(controller.timeSlider.getValue() / 100)));
             }
@@ -202,5 +201,9 @@ public class MediaController {
                 currentMusic.getMediaPlayer().setVolume(controller.volumeSlider.getValue() / 100);
             }
         });
+    }
+
+    public boolean isPaused() {
+        return paused;
     }
 }

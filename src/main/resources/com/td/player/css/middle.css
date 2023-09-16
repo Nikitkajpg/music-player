@@ -1,0 +1,76 @@
+VBox {
+    -fx-background-color: #222222;
+}
+
+.slider .track {
+    -fx-background-color: #B89000;
+    -fx-pref-height: 4;
+    -fx-border-width: 0;
+}
+
+.slider .thumb {
+    -fx-background-color: #333333;
+    -fx-border-color: #B89000;
+    -fx-border-width: 4;
+    -fx-border-radius: 8;
+    -fx-pref-width: 16;
+    -fx-pref-height: 16;
+    -fx-cursor: hand;
+}
+
+.label {
+    -fx-font-family: Verdana;
+    -fx-font-size: 16;
+    -fx-text-fill: #cccccc;
+    -fx-font-weight: 200;
+}
+
+#currentTimeLabel, #endTimeLabel {
+    -fx-font-size: 12;
+}
+
+.button {
+    -fx-background-color: #222222;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+    -fx-cursor: hand;
+    -fx-pref-width: 32;
+    -fx-pref-height: 32;
+
+    -fx-border-insets: 0;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.button:hover {
+    -fx-background-color: #333333;
+}
+
+.button:pressed {
+    -fx-background-color: #444444;
+}
+
+.toggle-button {
+    -fx-background-color: #222222;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+    -fx-cursor: hand;
+    -fx-pref-width: 32;
+    -fx-pref-height: 32;
+
+    -fx-border-insets: 0;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.toggle-button:selected {
+    -fx-background-color: #ffc600;
+}
+
+.toggle-button:hover {
+    -fx-background-color: #333333;
+}
+
+.toggle-button:selected:hover {
+    -fx-background-color: #cca000;
+}

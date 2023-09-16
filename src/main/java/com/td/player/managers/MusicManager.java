@@ -53,6 +53,6 @@ public class MusicManager {
     }
 
     private int setLevel() {
-        return 50;
+        return 5;
     }
 }

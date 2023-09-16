@@ -7,6 +7,7 @@ import com.td.player.managers.DirectoryManager;
 import com.td.player.managers.MusicManager;
 import com.td.player.managers.PlaylistManager;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.*;
 import javafx.scene.layout.VBox;
 
@@ -83,7 +84,7 @@ public class Actions {
         // show to the user that it is an actual gesture target
         if (dragEvent.getGestureSource() != playlistMusicVBox && dragEvent.getDragboard().hasString() &&
                 !playlist.getName().equals("All music")) {
-            playlistMusicVBox.setStyle("-fx-background-color: green");
+            playlistMusicVBox.setStyle("-fx-background-color: #ffc600");
         }
         dragEvent.consume();
     }
@@ -91,24 +92,23 @@ public class Actions {
     public static void onDragExited(DragEvent dragEvent, VBox vBox, Playlist playlist) {
         // mouse moved away, remove the graphical cues
         if (!playlist.getName().equals("All music")) {
-            vBox.setStyle("-fx-background-color: #333333");
+            vBox.setStyle("-fx-background-color: #222222");
         }
         dragEvent.consume();
     }
 
     public static void onDragDropped(DragEvent dragEvent, PlaylistManager playlistManager, Playlist playlist,
-                                     MusicManager musicManager, VBox playlistMusicVBox, ViewController viewController) {
+                                     MusicManager musicManager, VBox playlistMusicVBox, ViewController viewController,
+                                     ScrollPane scrollPane) {
         // data dropped
         // if there is a string data on dragBoard, read it and use it
         Dragboard dragboard = dragEvent.getDragboard();
         boolean success = false;
         if (dragboard.hasString() && playlistManager.isUniqueInPlaylist(playlist, musicManager.getTitleByFileName(dragboard.getString())) &&
                 !playlist.getName().equals("All music")) {
-            VBox labelsVBox = new VBox();
-            labelsVBox.getChildren().addAll(
-                    viewController.getPlaylistMusicTitleButton(musicManager.getMusicByFileName(dragboard.getString()), playlist),
-                    new Button(musicManager.get(dragboard.getString()).getArtist()));
-            playlistMusicVBox.getChildren().add(playlistMusicVBox.getChildren().size(), labelsVBox);
+            Button button = viewController.getNameButton(musicManager.getMusicByFileName(dragboard.getString()), playlist);
+            button.prefWidthProperty().bind(scrollPane.widthProperty().subtract(17));
+            playlistMusicVBox.getChildren().add(playlistMusicVBox.getChildren().size() - 1, button);
             playlist.add(dragboard.getString(), musicManager);
             success = true;
         }

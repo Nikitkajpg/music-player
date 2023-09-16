@@ -23,7 +23,7 @@ public class Music {
      * @param title     название
      * @param artist    исполнитель
      * @param level     уровень (приоритет)
-     * @param file      сам музыкальный файл
+     * @param file      сам музыкальный файл {@link File}
      * @param mediaPath путь к файлу, преобразованный для {@link Media}
      */
     public Music(String title, String artist, int level, File file, String mediaPath) {

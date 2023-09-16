@@ -170,7 +170,7 @@ public class ContextMenuController {
      */
     private MenuItem getRenameMenuItem(Button button, ViewController viewController) {
         MenuItem renamePlaylistMenuItem = new MenuItem("Rename playlist");
-        renamePlaylistMenuItem.setOnAction(actionEvent -> viewController.startRename(false, true, button));
+        renamePlaylistMenuItem.setOnAction(actionEvent -> viewController.renamePlaylistButton(button));
         return renamePlaylistMenuItem;
     }
 }

@@ -8,7 +8,10 @@ import com.td.player.managers.PlaylistManager;
 import com.td.player.util.Actions;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.DragEvent;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
 
@@ -112,7 +115,7 @@ public class ViewController {
      * @return {@link Button}
      */
     private Button getMusicButton(Music music) {
-        Button button = new Button(music.getTitle());
+        Button button = new Button(music.getFileName());
         button.setOnAction(actionEvent -> mediaController.playMusicInPlaylist(music, playlistManager.getDefaultPlaylist()));
         button.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
@@ -171,17 +174,31 @@ public class ViewController {
         dragAndDrop(playlist);
         playlistMusicVBox.getChildren().clear();
         for (Music music : playlist.getMusicArray()) {
-            VBox vBox = new VBox();
-            Button titleButton = getPlaylistMusicTitleButton(music, playlist);
-            Button artistButton = getPlaylistMusicArtistButton(playlist, music);
-            vBox.getChildren().addAll(titleButton, artistButton);
-            playlistMusicVBox.getChildren().add(vBox);
-            titleButton.prefWidthProperty().bind(controller.playlistMusicScrollPane.widthProperty().subtract(17));
-            artistButton.prefWidthProperty().bind(controller.playlistMusicScrollPane.widthProperty().subtract(22));
+            Button nameButton = getNameButton(music, playlist);
+            playlistMusicVBox.getChildren().add(nameButton);
+            nameButton.prefWidthProperty().bind(controller.playlistMusicScrollPane.widthProperty().subtract(17));
         }
         if (!playlist.getName().equals("All music")) {
             playlistMusicVBox.getChildren().add(new Label("Put song here..."));
         }
+    }
+
+    /**
+     * Метод создает кнопку для отображения названия и исполнителя песни {@link Music}
+     *
+     * @param music    объект Music
+     * @param playlist объект Playlist
+     * @return {@link Button}
+     */
+    public Button getNameButton(Music music, Playlist playlist) {
+        Button button = new Button(music.getTitle() + "\n" + music.getArtist());
+        button.setOnAction(actionEvent -> mediaController.playMusicInPlaylist(music, playlist));
+        button.setOnMouseClicked(mouseEvent -> {
+            if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+                contextMenuController.showPlaylistMusicButtonCM(playlist, button, music, mouseEvent, this);
+            }
+        });
+        return button;
     }
 
     public void removeSongFromPlaylist(Music music) {
@@ -226,19 +243,18 @@ public class ViewController {
             }
         });
         actionForShowingPlaylist(button, playlist);
+        button.prefWidthProperty().bind(controller.playlistNamesScrollPane.widthProperty().subtract(17));
         playlistNamesVBox.getChildren().add(button);
     }
 
     /**
      * Метод для присвоения нового названия плейлиста при переименовании
-     * (начало переименовывания - {@link #startRename(boolean, boolean, Button)})
      *
      * @param playlistName название плейлиста
      */
     public void renamePlaylist(String playlistName) {
         playlistManager.renamePlaylist(currentPlaylistButton.getText(), playlistName);
         currentPlaylistButton.setText(playlistName);
-        controller.renamePlaylistButton.setDisable(true);
         controller.addPlaylistButton.setDisable(false);
     }
 
@@ -246,20 +262,33 @@ public class ViewController {
         playlistMusicVBox.setOnDragOver(dragEvent -> Actions.onDragOver(dragEvent, playlistMusicVBox, playlist));
         playlistMusicVBox.setOnDragEntered(dragEvent -> Actions.onDragEntered(dragEvent, playlistMusicVBox, playlist));
         playlistMusicVBox.setOnDragExited(dragEvent -> Actions.onDragExited(dragEvent, playlistMusicVBox, playlist));
-        playlistMusicVBox.setOnDragDropped(dragEvent -> Actions.onDragDropped(dragEvent, playlistManager, playlist, musicManager, playlistMusicVBox, this));
+        playlistMusicVBox.setOnDragDropped(dragEvent -> Actions.onDragDropped(dragEvent, playlistManager, playlist, musicManager, playlistMusicVBox, this, controller.playlistMusicScrollPane));
     }
 
     /**
      * Метод для начала переименования плейлиста
+     * <p> Кнопка меняется на текстовое поле.
+     * После нажатия "Enter" текстовое поле меняется на кнопку в прежнее состояние.
      *
-     * @param renameDisable флаг для кнопки {@link Controller#renamePlaylistButton}
-     * @param addDisable    флаг для кнопки {@link Controller#addPlaylistButton}
-     * @param button        кнопка для переименования
+     * @param button кнопка для переименования
      */
-    public void startRename(boolean renameDisable, boolean addDisable, Button button) {
-        controller.renamePlaylistButton.setDisable(renameDisable);
-        controller.addPlaylistButton.setDisable(addDisable);
-        controller.textField.requestFocus();
-        currentPlaylistButton = button;
+    public void renamePlaylistButton(Button button) {
+        TextField textField = new TextField();
+        textField.setTooltip(new Tooltip("Press \"Enter\" to rename"));
+        textField.setText(button.getText());
+        int index = playlistNamesVBox.getChildren().indexOf(button);
+        playlistNamesVBox.getChildren().remove(button);
+        playlistNamesVBox.getChildren().add(index, textField);
+        textField.setOnKeyPressed(keyEvent -> {
+            if (keyEvent.getCode() == KeyCode.ENTER) {
+                String newPlaylistName = textField.getText();
+                if (newPlaylistName != null && !newPlaylistName.equals("") && playlistManager.isUnique(newPlaylistName)) {
+                    renamePlaylist(newPlaylistName);
+                    button.setText(newPlaylistName);
+                    playlistNamesVBox.getChildren().remove(textField);
+                    playlistNamesVBox.getChildren().add(index, button);
+                }
+            }
+        });
     }
 }
