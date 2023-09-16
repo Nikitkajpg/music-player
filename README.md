@@ -9,4 +9,4 @@ Features:
 - playing music in the "preferences" mode: the longer you listen to music, the higher its priority, the more often it will turn on.
 
 Screenshot:
-![image](https://github.com/Nikitkajpg/music-player/assets/71207525/93e8f2c3-df35-4141-9b62-c6a9c866d5e1)
+![Снимок экрана 2023-09-16 144556](https://github.com/Nikitkajpg/music-player/assets/71207525/2d227518-4598-4d95-8470-6a55f54c25d6)
