@@ -1,10 +1,8 @@
 package com.td.player.controllers;
 
 import com.td.player.elements.Directory;
-import com.td.player.elements.Music;
 import com.td.player.elements.Playlist;
-import com.td.player.managers.MusicManager;
-import com.td.player.managers.PlaylistManager;
+import com.td.player.elements.Track;
 import com.td.player.util.Actions;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -21,105 +19,80 @@ import javafx.scene.layout.VBox;
 @SuppressWarnings("FieldMayBeFinal")
 public class ViewController {
     private Button currentPlaylistButton = new Button();
-    private VBox playlistNamesVBox, playlistMusicVBox;
 
     private Controller controller;
     private ContextMenuController contextMenuController;
-    private MediaController mediaController;
-
-    private MusicManager musicManager;
-    private PlaylistManager playlistManager;
 
     /**
-     * Конструктор отображает все списки {@link Directory}, {@link Music} и {@link Playlist}.
+     * Конструктор отображает все списки {@link Directory}, {@link Track} и {@link Playlist}.
      */
     public ViewController(Controller controller) {
         this.controller = controller;
-        musicManager = controller.getMusicManager();
-        playlistManager = controller.getPlaylistManager();
-        mediaController = controller.getMediaController();
-        playlistNamesVBox = controller.playlistNamesVBox;
-        playlistMusicVBox = controller.playlistMusicVBox;
         contextMenuController = new ContextMenuController(controller);
         showLists();
     }
 
     public void showLists() {
         showDirectories();
-        showMusic();
+        showTrack();
         showPlaylists();
     }
 
-    /**
-     * Метод отображает пути к папкам в виде {@link Button}
-     */
     public void showDirectories() {
-        controller.dirsListVBox.getChildren().clear();
+        controller.directoriesListVBox.getChildren().clear();
         for (Directory directory : controller.getDirectoryManager().getDirectoryArray()) {
-            controller.dirsListVBox.getChildren().add(getDirButton(directory));
+            controller.directoriesListVBox.getChildren().add(getDirButton(directory));
         }
     }
 
-    /**
-     * Метод отображает названия файлов музыки в виде {@link Button}
-     */
-    public void showMusic() {
-        controller.musicListVBox.getChildren().clear();
-        for (Music music : musicManager.getMusicArray()) {
-            controller.musicListVBox.getChildren().add(getMusicButton(music));
+    public void showTrack() {
+        controller.trackListVBox.getChildren().clear();
+        for (Track track : controller.getTrackManager().getTrackArray()) {
+            controller.trackListVBox.getChildren().add(getTrackButton(track));
         }
     }
 
-    /**
-     * Метод отображает плейлисты и их содержимое в виде {@link Button}.
-     * <p>Перед отображением очищает {@link #playlistMusicVBox} и {@link #playlistNamesVBox}.
-     */
     public void showPlaylists() {
-        playlistNamesVBox.getChildren().clear();
-        playlistMusicVBox.getChildren().clear();
+        controller.playlistNamesVBox.getChildren().clear();
+        controller.playlistTrackVBox.getChildren().clear();
 
-        for (Playlist playlist : playlistManager.getPlaylistArray()) {
+        for (Playlist playlist : controller.getPlaylistManager().getPlaylistArray()) {
             Button button = new Button(playlist.getName());
             button.setOnMouseClicked(mouseEvent -> {
                 if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                    contextMenuController.showPlaylistButtonCM(playlist, button, mouseEvent, this);
+                    contextMenuController.showPlaylistButtonCM(playlist, button, mouseEvent);
                 }
             });
             button.setOnAction(actionEvent -> actionForShowingPlaylist(button, playlist));
-            playlistNamesVBox.getChildren().add(button);
+            controller.playlistNamesVBox.getChildren().add(button);
         }
     }
 
     /**
      * Метод создает кнопку для отображения {@link Directory}.
-     *
-     * @param directory текущая папка
-     * @return {@link Button}
      */
-    private Button getDirButton(Directory directory) {
-        Button button = new Button(directory.getPath());
+    private Button getDirButton(Directory currentDirectory) {
+        Button button = new Button(currentDirectory.getPath());
         button.setOnAction(actionEvent -> Actions.openDirectory(button));
         button.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                contextMenuController.showDirCM(directory, button, mouseEvent, this);
+                contextMenuController.showDirCM(currentDirectory, button, mouseEvent);
             }
         });
         return button;
     }
 
     /**
-     * Метод создает кнопку для отображения {@link Music}.
+     * Метод создает кнопку для отображения {@link Track}.
      * <p>Содержит метод, обнаруживающий {@link DragEvent}
-     *
-     * @param music объект {@link Music}
-     * @return {@link Button}
      */
-    private Button getMusicButton(Music music) {
-        Button button = new Button(music.getFileName());
-        button.setOnAction(actionEvent -> mediaController.playMusicInPlaylist(music, playlistManager.getDefaultPlaylist()));
+    private Button getTrackButton(Track track) {
+        Button button = new Button(track.getFileName());
+        button.setOnAction(actionEvent ->
+                controller.getMediaController().playTrackInPlaylist(track, controller.getPlaylistManager().getDefaultPlaylist()));
         button.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                contextMenuController.showMusicCM(button, mouseEvent, music);
+                contextMenuController.showTrackCM(button, mouseEvent, track);
             }
         });
         button.setOnDragDetected(mouseEvent -> Actions.onDragDetected(mouseEvent, button));
@@ -127,36 +100,28 @@ public class ViewController {
     }
 
     /**
-     * Метод создает кнопку для отображения названия {@link Music}.
-     *
-     * @param music    объект {@link Music}
-     * @param playlist объект {@link Playlist}
-     * @return {@link Button}
+     * Метод создает кнопку для отображения названия {@link Track}.
      */
-    public Button getPlaylistMusicTitleButton(Music music, Playlist playlist) {
-        Button titleButton = new Button(music.getTitle());
-        titleButton.setOnAction(actionEvent -> mediaController.playMusicInPlaylist(music, playlist));
+    public Button getCurrentPlaylistButtonTrackTitleButton(Track track, Playlist playlist) {
+        Button titleButton = new Button(track.getTitle());
+        titleButton.setOnAction(actionEvent -> controller.getMediaController().playTrackInPlaylist(track, playlist));
         titleButton.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                contextMenuController.showPlaylistMusicButtonCM(playlist, titleButton, music, mouseEvent, this);
+                contextMenuController.showPlaylistTrackButtonCM(playlist, titleButton, track, mouseEvent);
             }
         });
         return titleButton;
     }
 
     /**
-     * Метод создает кнопку для отображения исполнителя {@link Music}.
-     *
-     * @param playlist объект {@link Playlist}
-     * @param music    объект {@link Music}
-     * @return {@link Button}
+     * Метод создает кнопку для отображения исполнителя {@link Track}.
      */
-    public Button getPlaylistMusicArtistButton(Playlist playlist, Music music) {
-        Button artistButton = new Button(music.getArtist());
-        artistButton.setOnAction(actionEvent -> mediaController.playMusicInPlaylist(music, playlist));
+    public Button getPlaylistTrackArtistButton(Playlist playlist, Track track) {
+        Button artistButton = new Button(track.getArtist());
+        artistButton.setOnAction(actionEvent -> controller.getMediaController().playTrackInPlaylist(track, playlist));
         artistButton.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                contextMenuController.showPlaylistMusicButtonCM(playlist, artistButton, music, mouseEvent, this);
+                contextMenuController.showPlaylistTrackButtonCM(playlist, artistButton, track, mouseEvent);
             }
         });
         return artistButton;
@@ -165,65 +130,55 @@ public class ViewController {
     /**
      * Метод при нажатии на плейлист отображает его список музыки.
      * <p> Содержит метод для {@link DragEvent}. Список музыки {@link VBox} очищается при каждом вызове.
-     *
-     * @param button   нажатая кнопка плейлиста
-     * @param playlist текущий плейлист
      */
-    private void actionForShowingPlaylist(Button button, Playlist playlist) {
-        currentPlaylistButton = button;
-        dragAndDrop(playlist);
-        playlistMusicVBox.getChildren().clear();
-        for (Music music : playlist.getMusicArray()) {
-            Button nameButton = getNameButton(music, playlist);
-            playlistMusicVBox.getChildren().add(nameButton);
-            nameButton.prefWidthProperty().bind(controller.playlistMusicScrollPane.widthProperty().subtract(17));
+    private void actionForShowingPlaylist(Button pressedPlaylistButton, Playlist currentPlaylist) {
+        currentPlaylistButton = pressedPlaylistButton;
+        dragAndDrop(currentPlaylist);
+        controller.playlistTrackVBox.getChildren().clear();
+        for (Track track : currentPlaylist.getTrackArray()) {
+            Button nameButton = getNameButton(track, currentPlaylist);
+            controller.playlistTrackVBox.getChildren().add(nameButton);
+            nameButton.prefWidthProperty().bind(controller.playlistTrackScrollPane.widthProperty().subtract(17));
         }
-        if (!playlist.getName().equals("All music")) {
-            playlistMusicVBox.getChildren().add(new Label("Put song here..."));
+        if (!currentPlaylist.getName().equals("All tracks")) {
+            controller.playlistTrackVBox.getChildren().add(new Label("Put song here..."));
         }
     }
 
     /**
-     * Метод создает кнопку для отображения названия и исполнителя песни {@link Music}
-     *
-     * @param music    объект Music
-     * @param playlist объект Playlist
-     * @return {@link Button}
+     * Метод создает кнопку для отображения названия и исполнителя песни {@link Track}
      */
-    public Button getNameButton(Music music, Playlist playlist) {
-        Button button = new Button(music.getTitle() + "\n" + music.getArtist());
-        button.setOnAction(actionEvent -> mediaController.playMusicInPlaylist(music, playlist));
+    public Button getNameButton(Track track, Playlist playlist) {
+        Button button = new Button(track.getTitle() + "\n" + track.getArtist());
+        button.setOnAction(actionEvent -> controller.getMediaController().playTrackInPlaylist(track, playlist));
         button.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                contextMenuController.showPlaylistMusicButtonCM(playlist, button, music, mouseEvent, this);
+                contextMenuController.showPlaylistTrackButtonCM(playlist, button, track, mouseEvent);
             }
         });
         return button;
     }
 
-    public void removeSongFromPlaylist(Music music) {
-        for (int i = 0; i < playlistMusicVBox.getChildren().size() - 1; i++) {
-            VBox vBox = (VBox) playlistMusicVBox.getChildren().get(i);
-            Button musicLabel = (Button) vBox.getChildren().get(0);
-            if (musicLabel.getText().equals(music.getTitle())) {
-                playlistMusicVBox.getChildren().remove(vBox);
+    public void removeTrackFromPlaylist(Track track) {
+        for (int i = 0; i < controller.playlistTrackVBox.getChildren().size() - 1; i++) {
+            VBox vBox = (VBox) controller.playlistTrackVBox.getChildren().get(i);
+            Button trackLabel = (Button) vBox.getChildren().get(0);
+            if (trackLabel.getText().equals(track.getTitle())) {
+                controller.playlistTrackVBox.getChildren().remove(vBox);
             }
         }
     }
 
     /**
      * Метод для удаления плейлиста. Если отображаются песни этого плейлиста, они будут очищены.
-     *
-     * @param playlist плейлист для удаления
-     * @param button   нажатая кнопка плейлиста
      */
-    public void removePlaylist(Playlist playlist, Button button) {
-        for (int i = 0; i < playlistNamesVBox.getChildren().size(); i++) {
-            Button buttonToRemove = (Button) playlistNamesVBox.getChildren().get(i);
-            if (buttonToRemove.getText().equals(playlist.getName())) {
-                playlistNamesVBox.getChildren().remove(buttonToRemove);
-                if (button == currentPlaylistButton) {
-                    playlistMusicVBox.getChildren().clear();
+    public void removePlaylist(Playlist playlistToDelete, Button pressedPlaylistButton) {
+        for (int i = 0; i < controller.playlistNamesVBox.getChildren().size(); i++) {
+            Button buttonToRemove = (Button) controller.playlistNamesVBox.getChildren().get(i);
+            if (buttonToRemove.getText().equals(playlistToDelete.getName())) {
+                controller.playlistNamesVBox.getChildren().remove(buttonToRemove);
+                if (pressedPlaylistButton == currentPlaylistButton) {
+                    controller.playlistTrackVBox.getChildren().clear();
                 }
             }
         }
@@ -231,62 +186,60 @@ public class ViewController {
 
     /**
      * Метод для создания кнопки плейлиста.
-     *
-     * @param playlistName название плейлиста
      */
     public void createPlaylistNameButton(String playlistName) {
         Button button = new Button(playlistName);
-        Playlist playlist = playlistManager.createAndGetPlaylist(playlistName);
+        Playlist playlist = controller.getPlaylistManager().createAndGetPlaylist(playlistName);
         button.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                contextMenuController.showPlaylistButtonCM(playlist, button, mouseEvent, this);
+                contextMenuController.showPlaylistButtonCM(playlist, button, mouseEvent);
             }
         });
         actionForShowingPlaylist(button, playlist);
         button.prefWidthProperty().bind(controller.playlistNamesScrollPane.widthProperty().subtract(17));
-        playlistNamesVBox.getChildren().add(button);
+        controller.playlistNamesVBox.getChildren().add(button);
     }
 
     /**
      * Метод для присвоения нового названия плейлиста при переименовании
-     *
-     * @param playlistName название плейлиста
      */
     public void renamePlaylist(String playlistName) {
-        playlistManager.renamePlaylist(currentPlaylistButton.getText(), playlistName);
+        controller.getPlaylistManager().renamePlaylist(currentPlaylistButton.getText(), playlistName);
         currentPlaylistButton.setText(playlistName);
         controller.addPlaylistButton.setDisable(false);
     }
 
     private void dragAndDrop(Playlist playlist) {
-        playlistMusicVBox.setOnDragOver(dragEvent -> Actions.onDragOver(dragEvent, playlistMusicVBox, playlist));
-        playlistMusicVBox.setOnDragEntered(dragEvent -> Actions.onDragEntered(dragEvent, playlistMusicVBox, playlist));
-        playlistMusicVBox.setOnDragExited(dragEvent -> Actions.onDragExited(dragEvent, playlistMusicVBox, playlist));
-        playlistMusicVBox.setOnDragDropped(dragEvent -> Actions.onDragDropped(dragEvent, playlistManager, playlist, musicManager, playlistMusicVBox, this, controller.playlistMusicScrollPane));
+        controller.playlistTrackVBox.setOnDragOver(dragEvent ->
+                Actions.onDragOver(dragEvent, controller.playlistTrackVBox, playlist));
+        controller.playlistTrackVBox.setOnDragEntered(dragEvent ->
+                Actions.onDragEntered(dragEvent, controller.playlistTrackVBox, playlist));
+        controller.playlistTrackVBox.setOnDragExited(dragEvent ->
+                Actions.onDragExited(dragEvent, controller.playlistTrackVBox, playlist));
+        controller.playlistTrackVBox.setOnDragDropped(dragEvent ->
+                Actions.onDragDropped(controller, dragEvent, playlist, controller.playlistTrackVBox, controller.playlistTrackScrollPane));
     }
 
     /**
      * Метод для начала переименования плейлиста
      * <p> Кнопка меняется на текстовое поле.
      * После нажатия "Enter" текстовое поле меняется на кнопку в прежнее состояние.
-     *
-     * @param button кнопка для переименования
      */
-    public void renamePlaylistButton(Button button) {
+    public void renamePlaylistButton(Button buttonToRename) {
         TextField textField = new TextField();
         textField.setTooltip(new Tooltip("Press \"Enter\" to rename"));
-        textField.setText(button.getText());
-        int index = playlistNamesVBox.getChildren().indexOf(button);
-        playlistNamesVBox.getChildren().remove(button);
-        playlistNamesVBox.getChildren().add(index, textField);
+        textField.setText(buttonToRename.getText());
+        int index = controller.playlistNamesVBox.getChildren().indexOf(buttonToRename);
+        controller.playlistNamesVBox.getChildren().remove(buttonToRename);
+        controller.playlistNamesVBox.getChildren().add(index, textField);
         textField.setOnKeyPressed(keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ENTER) {
                 String newPlaylistName = textField.getText();
-                if (newPlaylistName != null && !newPlaylistName.equals("") && playlistManager.isUnique(newPlaylistName)) {
+                if (newPlaylistName != null && !newPlaylistName.equals("") && controller.getPlaylistManager().isUnique(newPlaylistName)) {
                     renamePlaylist(newPlaylistName);
-                    button.setText(newPlaylistName);
-                    playlistNamesVBox.getChildren().remove(textField);
-                    playlistNamesVBox.getChildren().add(index, button);
+                    buttonToRename.setText(newPlaylistName);
+                    controller.playlistNamesVBox.getChildren().remove(textField);
+                    controller.playlistNamesVBox.getChildren().add(index, buttonToRename);
                 }
             }
         });

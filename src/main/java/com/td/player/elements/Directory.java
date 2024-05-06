@@ -4,13 +4,8 @@ package com.td.player.elements;
 public class Directory {
     private String path;
 
-    /**
-     * Конструктор для создания объекта
-     *
-     * @param path путь к папке
-     */
-    public Directory(String path) {
-        this.path = path;
+    public Directory(String pathToDirectory) {
+        this.path = pathToDirectory;
     }
 
     public String getPath() {

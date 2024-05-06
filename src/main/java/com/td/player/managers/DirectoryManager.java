@@ -5,7 +5,7 @@ import com.td.player.elements.Directory;
 import java.util.ArrayList;
 
 /**
- * Класс для управления списком папок. Конструктор отсутствует
+ * Класс для управления списком папок
  */
 @SuppressWarnings("FieldMayBeFinal")
 public class DirectoryManager {

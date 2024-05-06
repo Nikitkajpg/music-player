@@ -49,7 +49,7 @@
 
     <VBox alignment="CENTER" stylesheets="@../css/middle.css">
         <Label fx:id="titleLabel" text="No data"/>
-        <BorderPane fx:id="borderPane">
+        <BorderPane fx:id="controlsBorderPane">
             <top>
                 <HBox alignment="CENTER" BorderPane.alignment="CENTER">
                     <Button fx:id="previousButton" onMouseClicked="#onPreviousButtonClick">
@@ -107,26 +107,26 @@
     <SplitPane fx:id="splitPane" VBox.vgrow="ALWAYS" stylesheets="@../css/bottom.css" dividerPositions="0.1">
         <VBox>
             <HBox>
-                <Button fx:id="addDirButton" onAction="#onAddDirButtonClick">
+                <Button fx:id="addDirectoryButton" onAction="#onAddDirectoryButtonClick">
                     <tooltip>
                         <Tooltip text="Add directory"/>
                     </tooltip>
                 </Button>
                 <Label text="Directories"/>
             </HBox>
-            <ScrollPane fx:id="dirScrollPane" minWidth="50" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
-                <VBox fx:id="dirsListVBox" VBox.vgrow="ALWAYS"/>
+            <ScrollPane fx:id="directoryScrollPane" minWidth="50" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
+                <VBox fx:id="directoriesListVBox" VBox.vgrow="ALWAYS"/>
             </ScrollPane>
         </VBox>
         <VBox>
-            <Label text="Music files"/>
-            <ScrollPane fx:id="musicScrollPane" minWidth="50" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
-                <VBox fx:id="musicListVBox"/>
+            <Label text="Track files"/>
+            <ScrollPane fx:id="trackScrollPane" minWidth="50" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
+                <VBox fx:id="trackListVBox"/>
             </ScrollPane>
         </VBox>
         <SplitPane VBox.vgrow="ALWAYS">
             <VBox>
-                <HBox fx:id="hBox">
+                <HBox fx:id="addPlaylistHBox">
                     <Button fx:id="addPlaylistButton" onMouseClicked="#onAddPlaylistButtonClick">
                         <tooltip>
                             <Tooltip text="Add new playlist"/>
@@ -139,9 +139,9 @@
                 </ScrollPane>
             </VBox>
             <VBox>
-                <Label text="Music"/>
-                <ScrollPane fx:id="playlistMusicScrollPane" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
-                    <VBox fx:id="playlistMusicVBox"/>
+                <Label text="Track"/>
+                <ScrollPane fx:id="playlistTrackScrollPane" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
+                    <VBox fx:id="playlistTrackVBox"/>
                 </ScrollPane>
             </VBox>
         </SplitPane>

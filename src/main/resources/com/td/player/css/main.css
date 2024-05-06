@@ -14,7 +14,7 @@
     -fx-graphic: url("../img/volume.png");
 }
 
-#addDirButton, #addPlaylistButton {
+#addDirectoryButton, #addPlaylistButton {
     -fx-graphic: url("../img/add.png");
 }
 

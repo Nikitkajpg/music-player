@@ -1,6 +1,6 @@
 package com.td.player.util;
 
-import com.td.player.elements.Music;
+import com.td.player.elements.Track;
 
 import java.util.ArrayList;
 
@@ -10,7 +10,7 @@ import java.util.ArrayList;
  * <p>{@link #n} - подсчет количества временных отметок
  */
 @SuppressWarnings("FieldMayBeFinal")
-public class MusicTimer {
+public class TrackTimer {
     private static long totalTime;
     private static ArrayList<Long> flags = new ArrayList<>();
     private static int n = 0;
@@ -20,14 +20,13 @@ public class MusicTimer {
      * <p>Если включена новая песня, рассчитывается время слушания предыдущей песни и установка приоритета
      *
      * @param turningNewSong флаг включения новой песни
-     * @param previousMusic  предыдущия песня
      */
-    public static void setFlag(boolean turningNewSong, Music previousMusic) {
+    public static void setFlag(boolean turningNewSong, Track previousTrack) {
         if (turningNewSong) {
-            long musicTime = (long) previousMusic.getMediaPlayer().getMedia().getDuration().toMillis();
+            long trackTime = (long) previousTrack.getMediaPlayer().getMedia().getDuration().toMillis();
             calculateTotalTime();
             if (totalTime > 0) {
-                setLevel(musicTime, previousMusic);
+                setLevel(trackTime, previousTrack);
             }
             resetFlags();
         }
@@ -67,16 +66,13 @@ public class MusicTimer {
      * <p>Если песня была прослушана меньше 20%, уровень уменьшается.
      * <p>Если песня была прослушана больше 80%, уровень увеличивается.
      * <p>В других случаях уровень песни не изменяется.
-     *
-     * @param musicTime общая продолжительность музыки
-     * @param music     предыдущая музыка
      */
-    private static void setLevel(long musicTime, Music music) {
-        int percent = (int) ((int) (totalTime * 100) / musicTime);
+    private static void setLevel(long totalTrackTime, Track previousTrack) {
+        int percent = (int) ((int) (totalTime * 100) / totalTrackTime);
         if (percent < 21) {
-            music.downgradeLevel();
+            previousTrack.downgradeLevel();
         } else if (percent > 79) {
-            music.upgradeLevel();
+            previousTrack.upgradeLevel();
         }
     }
 

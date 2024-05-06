@@ -1,10 +1,8 @@
 package com.td.player.controllers;
 
-import com.td.player.elements.Music;
 import com.td.player.elements.Playlist;
-import com.td.player.managers.MusicManager;
-import com.td.player.managers.PlaylistManager;
-import com.td.player.util.MusicTimer;
+import com.td.player.elements.Track;
+import com.td.player.util.TrackTimer;
 import javafx.application.Platform;
 import javafx.util.Duration;
 
@@ -14,36 +12,28 @@ import javafx.util.Duration;
 @SuppressWarnings("FieldMayBeFinal")
 public class MediaController {
     private Controller controller;
-    private MusicManager musicManager;
-    private PlaylistManager playlistManager;
 
-    private Music currentMusic;
+    private Track currentTrack;
     private Playlist currentPlayList;
 
     private Duration duration;
     private boolean paused = true;
 
     /**
-     * Конструктор создает текущий плейлист {@link Playlist} и текущую песню {@link Music}
+     * Конструктор создает текущий плейлист {@link Playlist} и текущую песню {@link Track}
      */
     public MediaController(Controller controller) {
         this.controller = controller;
-        musicManager = controller.getMusicManager();
-        playlistManager = controller.getPlaylistManager();
         addTimeSliderListener();
         addVolumeSliderListener();
 
-        currentPlayList = playlistManager.getDefaultPlaylist();
-        if (currentPlayList.getMusicArray().size() > 0) {
-            currentMusic = currentPlayList.getMusicArray().get(0);
+        currentPlayList = controller.getPlaylistManager().getDefaultPlaylist();
+        if (currentPlayList.getTrackArray().size() > 0) {
+            currentTrack = currentPlayList.getTrackArray().get(0);
         }
     }
 
-    /**
-     * При нажатии на кнопку {@link Controller#playButton} воспроизводится
-     * песня в соответсявии с выбранным режимом {@link com.td.player.util.Mode}
-     */
-    public void play() {
+    public void playInMode() {
         switch (controller.mode) {
             case DEFAULT -> playInDefault();
             case PREFERENCE -> playInPreference();
@@ -59,95 +49,70 @@ public class MediaController {
      */
     private void playInDefault() {
         if (paused) {
-            commonPart(false, currentMusic);
+            playTrack(false, currentTrack);
         } else {
-            playMusicInPlaylist(playlistManager.getDefaultPlaylist().getMusicArray().get(0), playlistManager.getDefaultPlaylist());
+            Playlist defaultPlaylist = controller.getPlaylistManager().getDefaultPlaylist();
+            playTrackInPlaylist(defaultPlaylist.getTrackArray().get(0), defaultPlaylist);
         }
         paused = false;
     }
 
-    /**
-     * Метод воспроизводит музыку в "режиме предпочтений"
-     * <p>Создается новый плейлист, а затем проигрывается.
-     */
     private void playInPreference() {
-        Playlist preferencePlaylist = playlistManager.createPreferencePlaylist(musicManager);
-        playMusicInPlaylist(preferencePlaylist.getMusicArray().get(0), preferencePlaylist);
+        Playlist preferencePlaylist = controller.getPlaylistManager().createPreferencePlaylist();
+        playTrackInPlaylist(preferencePlaylist.getTrackArray().get(0), preferencePlaylist);
         paused = false;
     }
 
-    /**
-     * Метод воспроизводит музыку в случайном режиме.
-     * <p>Создается новый плейлист, а затем проигрывается
-     */
     private void playInRandom() {
-        Playlist playlist = playlistManager.getRandomPlaylist();
-        playMusicInPlaylist(playlist.getMusicArray().get(0), playlist);
+        Playlist randomPlaylist = controller.getPlaylistManager().getRandomPlaylist();
+        playTrackInPlaylist(randomPlaylist.getTrackArray().get(0), randomPlaylist);
         paused = false;
     }
 
-    /**
-     * Метод для проигрывания музыки в плейлисте
-     *
-     * @param music    текущая песня
-     * @param playlist текущий плейлист
-     */
-    public void playMusicInPlaylist(Music music, Playlist playlist) {
-        Music previousMusic = currentMusic;
-        currentMusic.getMediaPlayer().stop();
-        currentPlayList = playlist;
-        currentMusic = music;
-        commonPart(true, previousMusic);
+    public void playTrackInPlaylist(Track currentTrack, Playlist currentPlaylist) {
+        Track previousTrack = this.currentTrack;
+        this.currentTrack.getMediaPlayer().stop();
+        this.currentPlayList = currentPlaylist;
+        this.currentTrack = currentTrack;
+        playTrack(true, previousTrack);
     }
 
     public void pause() {
-        MusicTimer.setFlag(false, currentMusic);
-        currentMusic.getMediaPlayer().pause();
+        TrackTimer.setFlag(false, currentTrack);
+        currentTrack.getMediaPlayer().pause();
         paused = true;
     }
 
-    /**
-     * Метод для переключения следующей или предыдущей музыки в текущем плейлисте
-     *
-     * @param next флаг, true - если включается следующая песня, false - если предыдущая
-     */
-    public void switchMusic(boolean next) {
-        Music previousMusic = currentMusic;
-        currentMusic.getMediaPlayer().stop();
-        if (next) {
-            currentMusic = currentPlayList.getNext(currentMusic);
+    public void switchTrack(boolean nextTrack) {
+        Track previousTrack = currentTrack;
+        currentTrack.getMediaPlayer().stop();
+        if (nextTrack) {
+            currentTrack = currentPlayList.getNext(currentTrack);
         } else {
-            currentMusic = currentPlayList.getPrevious(currentMusic);
+            currentTrack = currentPlayList.getPrevious(currentTrack);
         }
-        commonPart(true, previousMusic);
+        playTrack(true, previousTrack);
     }
 
     /**
      * Метод, содержащий общие действия для запуска музыки.
      * <p>Проигрывание музыки, обновление текста для {@link javafx.scene.control.Label}
      *
-     * @param turningNewMusic флаг, true - была включена новая песня, false - снята с паузы текущая песня
-     * @param previousMusic   предыдущая песня
+     * @param turningNewTrack флаг, true - была включена новая песня, false - снята с паузы текущая песня
      */
-    private void commonPart(boolean turningNewMusic, Music previousMusic) {
-        MusicTimer.setFlag(turningNewMusic, previousMusic);
-        currentMusic.getMediaPlayer().play();
-        currentMusic.getMediaPlayer().setOnEndOfMedia(() -> switchMusic(true));
+    private void playTrack(boolean turningNewTrack, Track previousTrack) {
+        TrackTimer.setFlag(turningNewTrack, previousTrack);
+        currentTrack.getMediaPlayer().play();
+        currentTrack.getMediaPlayer().setOnEndOfMedia(() -> switchTrack(true));
 
-        duration = currentMusic.getMediaPlayer().getMedia().getDuration();
-        controller.endTimeLabel.setText(getTotalTime(duration));
-        controller.titleLabel.setText(currentMusic.getTitle() + " - " + currentMusic.getArtist());
+        duration = currentTrack.getMediaPlayer().getMedia().getDuration();
+        controller.endTimeLabel.setText(getTotalTrackTime(duration));
+        controller.titleLabel.setText(currentTrack.getTitle() + " - " + currentTrack.getArtist());
 
         addMediaPlayerListener();
     }
 
-    /**
-     * Метод для подсчета общего времени песни
-     *
-     * @param duration продолжительность
-     * @return время в формате MM:SS или HH:MM:SS
-     */
-    private String getTotalTime(Duration duration) {
+    private String getTotalTrackTime(Duration duration) {
         int seconds = (int) duration.toSeconds();
         String time;
         if (seconds / 3600 < 1) {
@@ -161,21 +126,24 @@ public class MediaController {
     /**
      * Метод для управления дорожкой музыки {@link Controller#timeSlider} и
      * дорожкой громкости {@link Controller#volumeSlider}.
-     * <p>1. При нажатии на {@link Controller#timeSlider} музыка воспроизводится с точки нажатия.
+     * <p>1. При нажатии на {@link Controller#timeSlider} музыка воспроизводится с точки нажатия,
+     * при нажатии на {@link Controller#volumeSlider} громкость устанавливается согласно ползунку.
      * <p>2. Создается отдельный поток для положения ползунка на музыкальной дорожке и дорожке громкости,
      * ведется подсчет текущего времени.
      */
     private void addMediaPlayerListener() {
         controller.timeSlider.setOnMousePressed(mouseEvent ->
-                currentMusic.getMediaPlayer().seek(duration.multiply(controller.timeSlider.getValue() / 100)));
-        currentMusic.getMediaPlayer().currentTimeProperty().addListener(observable -> Platform.runLater(() -> {
-            Duration currentTime = currentMusic.getMediaPlayer().getCurrentTime();
+                currentTrack.getMediaPlayer().seek(duration.multiply(controller.timeSlider.getValue() / 100)));
+        controller.volumeSlider.setOnMousePressed(mouseEvent ->
+                currentTrack.getMediaPlayer().setVolume(controller.volumeSlider.getValue() / 100));
+        currentTrack.getMediaPlayer().currentTimeProperty().addListener(observable -> Platform.runLater(() -> {
+            Duration currentTime = currentTrack.getMediaPlayer().getCurrentTime();
             if (!controller.timeSlider.isValueChanging()) {
                 controller.timeSlider.setValue(currentTime.divide(duration.toMillis()).toMillis() * 100.0);
-                controller.currentTimeLabel.setText(getTotalTime(currentTime));
+                controller.currentTimeLabel.setText(getTotalTrackTime(currentTime));
             }
             if (!controller.volumeSlider.isValueChanging()) {
-                controller.volumeSlider.setValue((int) Math.round(currentMusic.getMediaPlayer().getVolume() * 100));
+                controller.volumeSlider.setValue((int) Math.round(currentTrack.getMediaPlayer().getVolume() * 100));
             }
         }));
     }
@@ -187,7 +155,7 @@ public class MediaController {
         controller.timeSlider.valueProperty().addListener(observable -> {
             if (controller.timeSlider.isValueChanging() && duration != null) {
                 controller.timeSlider.setOnMouseReleased(mouseEvent ->
-                        currentMusic.getMediaPlayer().seek(duration.multiply(controller.timeSlider.getValue() / 100)));
+                        currentTrack.getMediaPlayer().seek(duration.multiply(controller.timeSlider.getValue() / 100)));
             }
         });
     }
@@ -196,9 +164,10 @@ public class MediaController {
      * Метод для установки громкости музыки через перемещение ползунка
      */
     private void addVolumeSliderListener() {
+        controller.volumeSlider.setValue(controller.volumeSlider.getMax());
         controller.volumeSlider.valueProperty().addListener(observable -> {
             if (controller.volumeSlider.isValueChanging()) {
-                currentMusic.getMediaPlayer().setVolume(controller.volumeSlider.getValue() / 100);
+                currentTrack.getMediaPlayer().setVolume(controller.volumeSlider.getValue() / 100);
             }
         });
     }

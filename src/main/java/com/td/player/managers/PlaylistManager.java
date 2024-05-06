@@ -1,17 +1,23 @@
 package com.td.player.managers;
 
-import com.td.player.elements.Music;
+import com.td.player.controllers.Controller;
+import com.td.player.elements.Track;
 import com.td.player.elements.Playlist;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * Класс для управления списком плейлистов. Конструктор отсутствует
+ * Класс для управления списком плейлистов
  */
 @SuppressWarnings("FieldMayBeFinal")
 public class PlaylistManager {
+    private Controller controller;
     private ArrayList<Playlist> playlistArray = new ArrayList<>();
+
+    public PlaylistManager(Controller controller) {
+        this.controller = controller;
+    }
 
     public void add(String name) {
         playlistArray.add(new Playlist(name));
@@ -19,8 +25,8 @@ public class PlaylistManager {
 
     public void deleteByPath(String path) {
         for (Playlist playlist : playlistArray) {
-            ArrayList<Music> musicArray = playlist.getMusicArray();
-            musicArray.removeIf(music -> (path + "\\" + music.getFileName()).equals(music.getAbsolutePath()));
+            ArrayList<Track> trackArray = playlist.getTrackArray();
+            trackArray.removeIf(track -> (path + "\\" + track.getFileName()).equals(track.getAbsolutePath()));
         }
     }
 
@@ -28,10 +34,10 @@ public class PlaylistManager {
         return playlistArray;
     }
 
-    public void addMusicToPlaylist(String playlistName, Music music) {
+    public void addTrackToPlaylist(String playlistName, Track track) {
         for (Playlist playlist : playlistArray) {
             if (playlist.getName().equals(playlistName)) {
-                playlist.add(music);
+                playlist.addTrack(track);
                 break;
             }
         }
@@ -41,31 +47,31 @@ public class PlaylistManager {
      * Метод создает плейлист для "системы предпочтений".
      * <p>В начале плейлиста находится музыка с самым высоким уровнем (приоритетом), далее по убыванию
      */
-    public Playlist createPreferencePlaylist(MusicManager musicManager) {
+    public Playlist createPreferencePlaylist() {
         Playlist preferencePlaylist = new Playlist("Preference");
         for (int i = 10; i >= 0; i--) {
-            for (Music music : musicManager.getMusicArray()) {
-                if (music.getLevel() == i) {
-                    preferencePlaylist.add(music);
+            for (Track track : controller.getTrackManager().getTrackArray()) {
+                if (track.getLevel() == i) {
+                    preferencePlaylist.addTrack(track);
                 }
             }
         }
         return preferencePlaylist;
     }
 
-    public void createDefaultPlaylist(MusicManager musicManager) {
-        Playlist playlist = new Playlist("All music");
-        for (Music music : musicManager.getMusicArray()) {
-            playlist.add(music);
+    public void createDefaultPlaylist() {
+        Playlist playlist = new Playlist("All tracks");
+        for (Track track : controller.getTrackManager().getTrackArray()) {
+            playlist.addTrack(track);
         }
         playlistArray.add(playlist);
     }
 
-    public void updateDefaultPlaylist(MusicManager musicManager) {
+    public void updateDefaultPlaylist() {
         Playlist defaultPlaylist = playlistArray.get(0);
-        defaultPlaylist.getMusicArray().clear();
-        for (Music music : musicManager.getMusicArray()) {
-            defaultPlaylist.add(music);
+        defaultPlaylist.getTrackArray().clear();
+        for (Track track : controller.getTrackManager().getTrackArray()) {
+            defaultPlaylist.addTrack(track);
         }
     }
 
@@ -94,8 +100,8 @@ public class PlaylistManager {
     }
 
     public boolean isUniqueInPlaylist(Playlist playlist, String name) {
-        for (Music music : playlist.getMusicArray()) {
-            if (music.getTitle().equals(name)) {
+        for (Track track : playlist.getTrackArray()) {
+            if (track.getTitle().equals(name)) {
                 return false;
             }
         }
@@ -117,7 +123,7 @@ public class PlaylistManager {
 
     public Playlist getRandomPlaylist() {
         Playlist randomPlaylist = getDefaultPlaylist();
-        Collections.shuffle(randomPlaylist.getMusicArray());
+        Collections.shuffle(randomPlaylist.getTrackArray());
         return randomPlaylist;
     }
 

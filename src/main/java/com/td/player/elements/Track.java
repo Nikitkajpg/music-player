@@ -6,7 +6,7 @@ import javafx.scene.media.MediaPlayer;
 import java.io.File;
 
 @SuppressWarnings("FieldMayBeFinal")
-public class Music {
+public class Track {
     private String title;
     private String artist;
     private int level;
@@ -19,17 +19,11 @@ public class Music {
     /**
      * Конструктор для создания нового объекта.
      * <p>Создает {@link MediaPlayer}. Заполняет поля {@link #title} и {@link #artist} метаданными.
-     *
-     * @param title     название
-     * @param artist    исполнитель
-     * @param level     уровень (приоритет)
-     * @param file      сам музыкальный файл {@link File}
-     * @param mediaPath путь к файлу, преобразованный для {@link Media}
      */
-    public Music(String title, String artist, int level, File file, String mediaPath) {
+    public Track(String title, String artist, File file, String mediaPath) {
         this.title = title;
         this.artist = artist;
-        this.level = level;
+        this.level = 5;
         this.absolutePath = file.getAbsolutePath();
         this.fileName = file.getName();
         mediaPlayer = new MediaPlayer(new Media(mediaPath));
