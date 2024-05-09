@@ -154,6 +154,8 @@ public class FileController {
             controller.getDirectoryManager().add(path);
             fillTrackArray(path);
         }
+        controller.getPlaylistManager().updateDefaultPlaylist();
+        controller.getViewController().showLists();
     }
 
     /**

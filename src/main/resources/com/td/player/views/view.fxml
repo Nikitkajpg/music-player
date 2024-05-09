@@ -112,12 +112,13 @@
                         <Tooltip text="Add directory"/>
                     </tooltip>
                 </Button>
-                <Label text="Directories"/>
+                <Label text="Directories &amp; Track files"/>
             </HBox>
-            <ScrollPane fx:id="directoryScrollPane" minWidth="50" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
-                <VBox fx:id="directoriesListVBox" VBox.vgrow="ALWAYS"/>
+            <ScrollPane fx:id="directoriesScrollPane" minWidth="50" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
+                <VBox fx:id="directoriesVBox" VBox.vgrow="ALWAYS"/>
             </ScrollPane>
         </VBox>
+<!--        todo delete -->
         <VBox>
             <Label text="Track files"/>
             <ScrollPane fx:id="trackScrollPane" minWidth="50" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
@@ -134,10 +135,11 @@
                     </Button>
                     <Label fx:id="playlistsLabel" text="Playlists"/>
                 </HBox>
-                <ScrollPane fx:id="playlistNamesScrollPane" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
-                    <VBox fx:id="playlistNamesVBox"/>
+                <ScrollPane fx:id="playlistsScrollPane" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
+                    <VBox fx:id="playlistsVBox"/>
                 </ScrollPane>
             </VBox>
+<!--            todo delete-->
             <VBox>
                 <Label text="Track"/>
                 <ScrollPane fx:id="playlistTrackScrollPane" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">

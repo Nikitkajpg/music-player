@@ -26,7 +26,7 @@ public class Player extends Application {
         stage.show();
 
         Controller controller = fxmlLoader.getController();
-        controller.dragStage(stage);
+        controller.getViewController().dragStage(stage);
 
         Player.stage = stage;
     }

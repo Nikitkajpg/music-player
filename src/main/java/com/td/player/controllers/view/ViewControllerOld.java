@@ -1,9 +1,11 @@
-package com.td.player.controllers;
+package com.td.player.controllers.view;
 
+import com.td.player.controllers.Controller;
 import com.td.player.elements.Directory;
 import com.td.player.elements.Playlist;
 import com.td.player.elements.Track;
 import com.td.player.util.Actions;
+import com.td.player.util.Mode;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -12,23 +14,27 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 /**
  * Класс для управления отображаемыми объектами
  */
 @SuppressWarnings("FieldMayBeFinal")
-public class ViewController {
+public class ViewControllerOld {
     private Button currentPlaylistButton = new Button();
 
     private Controller controller;
-    private ContextMenuController contextMenuController;
+    private ContextMenuControllerOld contextMenuControllerOld;
+
+    private double xOffset = 0;
+    private double yOffset = 0;
 
     /**
      * Конструктор отображает все списки {@link Directory}, {@link Track} и {@link Playlist}.
      */
-    public ViewController(Controller controller) {
+    public ViewControllerOld(Controller controller) {
         this.controller = controller;
-        contextMenuController = new ContextMenuController(controller);
+        contextMenuControllerOld = new ContextMenuControllerOld(controller);
         showLists();
     }
 
@@ -39,9 +45,9 @@ public class ViewController {
     }
 
     public void showDirectories() {
-        controller.directoriesListVBox.getChildren().clear();
+        controller.directoriesVBox.getChildren().clear();
         for (Directory directory : controller.getDirectoryManager().getDirectoryArray()) {
-            controller.directoriesListVBox.getChildren().add(getDirButton(directory));
+            controller.directoriesVBox.getChildren().add(getDirButton(directory));
         }
     }
 
@@ -53,18 +59,18 @@ public class ViewController {
     }
 
     public void showPlaylists() {
-        controller.playlistNamesVBox.getChildren().clear();
+        controller.playlistsVBox.getChildren().clear();
         controller.playlistTrackVBox.getChildren().clear();
 
         for (Playlist playlist : controller.getPlaylistManager().getPlaylistArray()) {
             Button button = new Button(playlist.getName());
             button.setOnMouseClicked(mouseEvent -> {
                 if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                    contextMenuController.showPlaylistButtonCM(playlist, button, mouseEvent);
+                    contextMenuControllerOld.showPlaylistButtonCM(playlist, button, mouseEvent);
                 }
             });
             button.setOnAction(actionEvent -> actionForShowingPlaylist(button, playlist));
-            controller.playlistNamesVBox.getChildren().add(button);
+            controller.playlistsVBox.getChildren().add(button);
         }
     }
 
@@ -76,7 +82,7 @@ public class ViewController {
         button.setOnAction(actionEvent -> Actions.openDirectory(button));
         button.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                contextMenuController.showDirCM(currentDirectory, button, mouseEvent);
+                contextMenuControllerOld.showDirCM(currentDirectory, button, mouseEvent);
             }
         });
         return button;
@@ -92,39 +98,61 @@ public class ViewController {
                 controller.getMediaController().playTrackInPlaylist(track, controller.getPlaylistManager().getDefaultPlaylist()));
         button.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                contextMenuController.showTrackCM(button, mouseEvent, track);
+                contextMenuControllerOld.showTrackCM(button, mouseEvent, track);
             }
         });
         button.setOnDragDetected(mouseEvent -> Actions.onDragDetected(mouseEvent, button));
         return button;
     }
 
-    /**
-     * Метод создает кнопку для отображения названия {@link Track}.
-     */
-    public Button getCurrentPlaylistButtonTrackTitleButton(Track track, Playlist playlist) {
-        Button titleButton = new Button(track.getTitle());
-        titleButton.setOnAction(actionEvent -> controller.getMediaController().playTrackInPlaylist(track, playlist));
-        titleButton.setOnMouseClicked(mouseEvent -> {
-            if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                contextMenuController.showPlaylistTrackButtonCM(playlist, titleButton, track, mouseEvent);
+    public void addPlaylist() {
+        controller.addPlaylistHBox.getChildren().remove(controller.addPlaylistHBox.getChildren().size() - 1);
+        TextField textField = new TextField();
+        textField.setPromptText("Playlist name...");
+        textField.setOnKeyPressed(keyEvent -> {
+            if (keyEvent.getCode().equals(KeyCode.ENTER)) {
+                String playlistName = textField.getText();
+                if (playlistName != null && !playlistName.equals("") && controller.getPlaylistManager().isUnique(playlistName)) {
+                    controller.getViewController().createPlaylistNameButton(playlistName);
+                    controller.addPlaylistHBox.getChildren().remove(textField);
+                    controller.addPlaylistHBox.getChildren().add(controller.playlistsLabel);
+                }
             }
         });
-        return titleButton;
+        controller.addPlaylistHBox.getChildren().add(textField);
     }
 
-    /**
-     * Метод создает кнопку для отображения исполнителя {@link Track}.
-     */
-    public Button getPlaylistTrackArtistButton(Playlist playlist, Track track) {
-        Button artistButton = new Button(track.getArtist());
-        artistButton.setOnAction(actionEvent -> controller.getMediaController().playTrackInPlaylist(track, playlist));
-        artistButton.setOnMouseClicked(mouseEvent -> {
-            if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                contextMenuController.showPlaylistTrackButtonCM(playlist, artistButton, track, mouseEvent);
-            }
+    public void clickingOnPreference() {
+        if (controller.preferenceToggleButton.isSelected()) {
+            enableMode(true, Mode.PREFERENCE);
+        } else {
+            enableMode(false, Mode.DEFAULT);
+        }
+    }
+
+    public void clickingOnRandom() {
+        if (controller.randomToggleButton.isSelected()) {
+            enableMode(true, Mode.RANDOM);
+        } else {
+            enableMode(false, Mode.DEFAULT);
+        }
+    }
+
+    private void enableMode(boolean disable, Mode newMode) {
+        controller.splitPane.setDisable(disable);
+        controller.getMediaController().setCurrentMode(newMode);
+        controller.getMediaController().playInMode();
+    }
+
+    public void dragStage(Stage stage) {
+        controller.topMenuBorderPane.setOnMousePressed(mouseEvent -> {
+            xOffset = mouseEvent.getSceneX();
+            yOffset = mouseEvent.getSceneY();
         });
-        return artistButton;
+        controller.topMenuBorderPane.setOnMouseDragged(mouseEvent -> {
+            stage.setX(mouseEvent.getScreenX() - xOffset);
+            stage.setY(mouseEvent.getScreenY() - yOffset);
+        });
     }
 
     /**
@@ -153,7 +181,7 @@ public class ViewController {
         button.setOnAction(actionEvent -> controller.getMediaController().playTrackInPlaylist(track, playlist));
         button.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                contextMenuController.showPlaylistTrackButtonCM(playlist, button, track, mouseEvent);
+                contextMenuControllerOld.showPlaylistTrackButtonCM(playlist, button, track, mouseEvent);
             }
         });
         return button;
@@ -173,10 +201,10 @@ public class ViewController {
      * Метод для удаления плейлиста. Если отображаются песни этого плейлиста, они будут очищены.
      */
     public void removePlaylist(Playlist playlistToDelete, Button pressedPlaylistButton) {
-        for (int i = 0; i < controller.playlistNamesVBox.getChildren().size(); i++) {
-            Button buttonToRemove = (Button) controller.playlistNamesVBox.getChildren().get(i);
+        for (int i = 0; i < controller.playlistsVBox.getChildren().size(); i++) {
+            Button buttonToRemove = (Button) controller.playlistsVBox.getChildren().get(i);
             if (buttonToRemove.getText().equals(playlistToDelete.getName())) {
-                controller.playlistNamesVBox.getChildren().remove(buttonToRemove);
+                controller.playlistsVBox.getChildren().remove(buttonToRemove);
                 if (pressedPlaylistButton == currentPlaylistButton) {
                     controller.playlistTrackVBox.getChildren().clear();
                 }
@@ -192,12 +220,12 @@ public class ViewController {
         Playlist playlist = controller.getPlaylistManager().createAndGetPlaylist(playlistName);
         button.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                contextMenuController.showPlaylistButtonCM(playlist, button, mouseEvent);
+                contextMenuControllerOld.showPlaylistButtonCM(playlist, button, mouseEvent);
             }
         });
         actionForShowingPlaylist(button, playlist);
-        button.prefWidthProperty().bind(controller.playlistNamesScrollPane.widthProperty().subtract(17));
-        controller.playlistNamesVBox.getChildren().add(button);
+        button.prefWidthProperty().bind(controller.playlistsScrollPane.widthProperty().subtract(17));
+        controller.playlistsVBox.getChildren().add(button);
     }
 
     /**
@@ -229,17 +257,17 @@ public class ViewController {
         TextField textField = new TextField();
         textField.setTooltip(new Tooltip("Press \"Enter\" to rename"));
         textField.setText(buttonToRename.getText());
-        int index = controller.playlistNamesVBox.getChildren().indexOf(buttonToRename);
-        controller.playlistNamesVBox.getChildren().remove(buttonToRename);
-        controller.playlistNamesVBox.getChildren().add(index, textField);
+        int index = controller.playlistsVBox.getChildren().indexOf(buttonToRename);
+        controller.playlistsVBox.getChildren().remove(buttonToRename);
+        controller.playlistsVBox.getChildren().add(index, textField);
         textField.setOnKeyPressed(keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ENTER) {
                 String newPlaylistName = textField.getText();
                 if (newPlaylistName != null && !newPlaylistName.equals("") && controller.getPlaylistManager().isUnique(newPlaylistName)) {
                     renamePlaylist(newPlaylistName);
                     buttonToRename.setText(newPlaylistName);
-                    controller.playlistNamesVBox.getChildren().remove(textField);
-                    controller.playlistNamesVBox.getChildren().add(index, buttonToRename);
+                    controller.playlistsVBox.getChildren().remove(textField);
+                    controller.playlistsVBox.getChildren().add(index, buttonToRename);
                 }
             }
         });

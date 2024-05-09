@@ -1,25 +1,20 @@
 package com.td.player.controllers;
 
 import com.td.player.Player;
+import com.td.player.controllers.view.ViewControllerOld;
 import com.td.player.managers.DirectoryManager;
 import com.td.player.managers.TrackManager;
 import com.td.player.managers.PlaylistManager;
-import com.td.player.util.Mode;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-
-import java.util.Objects;
 
 public class Controller {
+    //todo delete trackListVBox, playlistTrackVBox
     @FXML
-    public VBox trackListVBox, directoriesListVBox, playlistNamesVBox, playlistTrackVBox;
+    public VBox trackListVBox, directoriesVBox, playlistsVBox, playlistTrackVBox;
 
     @FXML
     public HBox addPlaylistHBox;
@@ -30,11 +25,12 @@ public class Controller {
     @FXML
     public Button playButton, addDirectoryButton, addPlaylistButton;
 
+    //todo delete trackScrollPane, playlistTrackScrollPane
     @FXML
-    public ScrollPane directoryScrollPane, trackScrollPane, playlistNamesScrollPane, playlistTrackScrollPane;
+    public ScrollPane directoriesScrollPane, trackScrollPane, playlistsScrollPane, playlistTrackScrollPane;
 
     @FXML
-    private SplitPane splitPane;
+    public SplitPane splitPane;
 
     @FXML
     public Slider timeSlider, volumeSlider;
@@ -50,11 +46,7 @@ public class Controller {
     private PlaylistManager playlistManager;
     private FileController fileController;
     private MediaController mediaController;
-    private ViewController viewController;
-    public Mode mode = Mode.DEFAULT;
-
-    private double xOffset = 0;
-    private double yOffset = 0;
+    private ViewControllerOld viewControllerOld;
 
     @FXML
     private void initialize() {
@@ -68,13 +60,13 @@ public class Controller {
         playlistManager = new PlaylistManager(this);
         fileController = new FileController(this);
         mediaController = new MediaController(this);
-        viewController = new ViewController(this);
+        viewControllerOld = new ViewControllerOld(this);
     }
 
     private void setWidthProperties() {
-        widthPropertyForLists(directoriesListVBox, directoryScrollPane);
+        widthPropertyForLists(directoriesVBox, directoriesScrollPane);
         widthPropertyForLists(trackListVBox, trackScrollPane);
-        widthPropertyForLists(playlistNamesVBox, playlistNamesScrollPane);
+        widthPropertyForLists(playlistsVBox, playlistsScrollPane);
     }
 
     private void widthPropertyForLists(VBox vBox, ScrollPane scrollPane) {
@@ -87,37 +79,16 @@ public class Controller {
     @FXML
     private void onAddDirectoryButtonClick() {
         fileController.selectDirectory();
-        playlistManager.updateDefaultPlaylist();
-        viewController.showLists();
     }
 
     @FXML
     private void onAddPlaylistButtonClick() {
-        addPlaylistHBox.getChildren().remove(addPlaylistHBox.getChildren().size() - 1);
-        TextField textField = new TextField();
-        textField.setPromptText("Playlist name...");
-        textField.setOnKeyPressed(keyEvent -> {
-            if (keyEvent.getCode().equals(KeyCode.ENTER)) {
-                String playlistName = textField.getText();
-                if (playlistName != null && !playlistName.equals("") && playlistManager.isUnique(playlistName)) {
-                    viewController.createPlaylistNameButton(playlistName);
-                    addPlaylistHBox.getChildren().remove(textField);
-                    addPlaylistHBox.getChildren().add(playlistsLabel);
-                }
-            }
-        });
-        addPlaylistHBox.getChildren().add(textField);
+        viewControllerOld.addPlaylist();
     }
 
     @FXML
     private void onPlayButtonClick() {
-        if (mediaController.isPaused()) {
-            mediaController.playInMode();
-            playButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(Player.class.getResource("img/pause.png")).toExternalForm())));
-        } else {
-            mediaController.pause();
-            playButton.setGraphic(new ImageView(new Image(Objects.requireNonNull(Player.class.getResource("img/play.png")).toExternalForm())));
-        }
+        mediaController.play();
     }
 
     @FXML
@@ -148,37 +119,12 @@ public class Controller {
 
     @FXML
     private void onPreferenceToggleButtonClick() {
-        if (preferenceToggleButton.isSelected()) {
-            enableMode(true, Mode.PREFERENCE);
-        } else {
-            enableMode(false, Mode.DEFAULT);
-        }
+        viewControllerOld.clickingOnPreference();
     }
 
     @FXML
     private void onRandomToggleButtonClick() {
-        if (randomToggleButton.isSelected()) {
-            enableMode(true, Mode.RANDOM);
-        } else {
-            enableMode(false, Mode.DEFAULT);
-        }
-    }
-
-    private void enableMode(boolean disable, Mode newMode) {
-        splitPane.setDisable(disable);
-        mode = newMode;
-        mediaController.playInMode();
-    }
-
-    public void dragStage(Stage stage) {
-        topMenuBorderPane.setOnMousePressed(mouseEvent -> {
-            xOffset = mouseEvent.getSceneX();
-            yOffset = mouseEvent.getSceneY();
-        });
-        topMenuBorderPane.setOnMouseDragged(mouseEvent -> {
-            stage.setX(mouseEvent.getScreenX() - xOffset);
-            stage.setY(mouseEvent.getScreenY() - yOffset);
-        });
+        viewControllerOld.clickingOnRandom();
     }
 
     public DirectoryManager getDirectoryManager() {
@@ -197,7 +143,7 @@ public class Controller {
         return mediaController;
     }
 
-    public ViewController getViewController() {
-        return viewController;
+    public ViewControllerOld getViewController() {
+        return viewControllerOld;
     }
 }

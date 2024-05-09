@@ -1,5 +1,6 @@
-package com.td.player.controllers;
+package com.td.player.controllers.view;
 
+import com.td.player.controllers.Controller;
 import com.td.player.elements.Directory;
 import com.td.player.elements.Playlist;
 import com.td.player.elements.Track;
@@ -14,12 +15,12 @@ import javafx.scene.input.MouseEvent;
  */
 
 @SuppressWarnings("FieldMayBeFinal")
-public class ContextMenuController {
+public class ContextMenuControllerOld {
     private Controller controller;
 
     private ContextMenu currentContextMenu = new ContextMenu();
 
-    public ContextMenuController(Controller controller) {
+    public ContextMenuControllerOld(Controller controller) {
         this.controller = controller;
     }
 

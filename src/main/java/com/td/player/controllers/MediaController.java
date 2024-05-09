@@ -1,10 +1,16 @@
 package com.td.player.controllers;
 
+import com.td.player.Player;
 import com.td.player.elements.Playlist;
 import com.td.player.elements.Track;
+import com.td.player.util.Mode;
 import com.td.player.util.TrackTimer;
 import javafx.application.Platform;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.util.Duration;
+
+import java.util.Objects;
 
 /**
  * Класс для управления воспроизведением музыки
@@ -18,6 +24,8 @@ public class MediaController {
 
     private Duration duration;
     private boolean paused = true;
+
+    private Mode currentMode = Mode.DEFAULT;
 
     /**
      * Конструктор создает текущий плейлист {@link Playlist} и текущую песню {@link Track}
@@ -34,7 +42,9 @@ public class MediaController {
     }
 
     public void playInMode() {
-        switch (controller.mode) {
+        controller.playButton.setGraphic(new ImageView(
+                new Image(Objects.requireNonNull(Player.class.getResource("img/pause.png")).toExternalForm())));
+        switch (currentMode) {
             case DEFAULT -> playInDefault();
             case PREFERENCE -> playInPreference();
             case RANDOM -> playInRandom();
@@ -78,6 +88,8 @@ public class MediaController {
     }
 
     public void pause() {
+        controller.playButton.setGraphic(new ImageView(
+                new Image(Objects.requireNonNull(Player.class.getResource("img/play.png")).toExternalForm())));
         TrackTimer.setFlag(false, currentTrack);
         currentTrack.getMediaPlayer().pause();
         paused = true;
@@ -110,6 +122,14 @@ public class MediaController {
         controller.titleLabel.setText(currentTrack.getTitle() + " - " + currentTrack.getArtist());
 
         addMediaPlayerListener();
+    }
+
+    public void play() {
+        if (isPaused()) {
+            playInMode();
+        } else {
+            pause();
+        }
     }
 
     private String getTotalTrackTime(Duration duration) {
@@ -174,5 +194,9 @@ public class MediaController {
 
     public boolean isPaused() {
         return paused;
+    }
+
+    public void setCurrentMode(Mode currentMode) {
+        this.currentMode = currentMode;
     }
 }
