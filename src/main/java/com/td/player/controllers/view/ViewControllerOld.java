@@ -6,7 +6,6 @@ import com.td.player.elements.Playlist;
 import com.td.player.elements.Track;
 import com.td.player.util.Mode;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.DragEvent;
@@ -25,8 +24,6 @@ public class ViewControllerOld {
     private Controller controller;
     private ContextMenuController contextMenuControllerOld;
 
-    private double xOffset = 0;
-    private double yOffset = 0;
 
     /**
      * Конструктор отображает все списки {@link Directory}, {@link Track} и {@link Playlist}.
@@ -44,64 +41,15 @@ public class ViewControllerOld {
     }
 
     public void showDirectories() {
-        controller.directoriesVBox.getChildren().clear();
-//        for (Directory directory : controller.getDirectoryManager().getDirectoryArray()) {
-//            controller.directoriesVBox.getChildren().add(getDirButton(directory));
-//        }
+
     }
 
     public void showTrack() {
-//        controller.trackListVBox.getChildren().clear();
-//        for (Track track : controller.getTrackManager().getTrackArray()) {
-//            controller.trackListVBox.getChildren().add(getTrackHBox(track));
-//        }
+//
     }
 
     public void showPlaylists() {
-        controller.playlistsVBox.getChildren().clear();
-//        controller.playlistTrackVBox.getChildren().clear();
 
-//        for (Playlist playlist : controller.getPlaylistManager().getPlaylistArray()) {
-//            Button button = new Button(playlist.getName());
-//            button.setOnMouseClicked(mouseEvent -> {
-//                if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-//                    contextMenuControllerOld.showPlaylistButtonCM(playlist, button, mouseEvent);
-//                }
-//            });
-//            button.setOnAction(actionEvent -> actionForShowingPlaylist(button, playlist));
-//            controller.playlistsVBox.getChildren().add(button);
-//        }
-    }
-
-    /**
-     * Метод создает кнопку для отображения {@link Directory}.
-     */
-    private Button getDirButton(Directory currentDirectory) {
-        Button button = new Button(currentDirectory.getPath());
-//        button.setOnAction(actionEvent -> Actions.openDirectory(button));
-        button.setOnMouseClicked(mouseEvent -> {
-            if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                contextMenuControllerOld.showDirCM(currentDirectory, button, mouseEvent);
-            }
-        });
-        return button;
-    }
-
-    /**
-     * Метод создает кнопку для отображения {@link Track}.
-     * <p>Содержит метод, обнаруживающий {@link DragEvent}
-     */
-    private Button getTrackButton(Track track) {
-        Button button = new Button(track.getFileName());
-        button.setOnAction(actionEvent ->
-                controller.getMediaController().playTrackInPlaylist(track, controller.getPlaylistManager().getDefaultPlaylist()));
-        button.setOnMouseClicked(mouseEvent -> {
-            if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                contextMenuControllerOld.showTrackCM(button, mouseEvent, track);
-            }
-        });
-//        button.setOnDragDetected(mouseEvent -> Actions.onDragDetected(mouseEvent, button));
-        return button;
     }
 
 //    public void addPlaylist() {
@@ -120,71 +68,6 @@ public class ViewControllerOld {
 //        });
 //        controller.addPlaylistHBox.getChildren().add(textField);
 //    }
-
-    public void clickingOnPreference() {
-        if (controller.preferenceToggleButton.isSelected()) {
-            enableMode(true, Mode.PREFERENCE);
-        } else {
-            enableMode(false, Mode.DEFAULT);
-        }
-    }
-
-    public void clickingOnRandom() {
-        if (controller.randomToggleButton.isSelected()) {
-            enableMode(true, Mode.RANDOM);
-        } else {
-            enableMode(false, Mode.DEFAULT);
-        }
-    }
-
-    private void enableMode(boolean disable, Mode newMode) {
-        controller.splitPane.setDisable(disable);
-        controller.getMediaController().setCurrentMode(newMode);
-        controller.getMediaController().playInMode();
-    }
-
-    public void dragStage(Stage stage) {
-        controller.topMenuBorderPane.setOnMousePressed(mouseEvent -> {
-            xOffset = mouseEvent.getSceneX();
-            yOffset = mouseEvent.getSceneY();
-        });
-        controller.topMenuBorderPane.setOnMouseDragged(mouseEvent -> {
-            stage.setX(mouseEvent.getScreenX() - xOffset);
-            stage.setY(mouseEvent.getScreenY() - yOffset);
-        });
-    }
-
-    /**
-     * Метод при нажатии на плейлист отображает его список музыки.
-     * <p> Содержит метод для {@link DragEvent}. Список музыки {@link VBox} очищается при каждом вызове.
-     */
-    private void actionForShowingPlaylist(Button pressedPlaylistButton, Playlist currentPlaylist) {
-        currentPlaylistButton = pressedPlaylistButton;
-        dragAndDrop(currentPlaylist);
-//        controller.playlistTrackVBox.getChildren().clear();
-//        for (Track track : currentPlaylist.getTrackArray()) {
-//            Button nameButton = getNameButton(track, currentPlaylist);
-//            controller.playlistTrackVBox.getChildren().add(nameButton);
-//            nameButton.prefWidthProperty().bind(controller.playlistTrackScrollPane.widthProperty().subtract(17));
-//        }
-//        if (!currentPlaylist.getName().equals("All tracks")) {
-//            controller.playlistTrackVBox.getChildren().add(new Label("Put song here..."));
-//        }
-    }
-
-    /**
-     * Метод создает кнопку для отображения названия и исполнителя песни {@link Track}
-     */
-    public Button getNameButton(Track track, Playlist playlist) {
-        Button button = new Button(track.getTitle() + "\n" + track.getArtist());
-        button.setOnAction(actionEvent -> controller.getMediaController().playTrackInPlaylist(track, playlist));
-        button.setOnMouseClicked(mouseEvent -> {
-            if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                contextMenuControllerOld.showPlaylistTrackButtonCM(playlist, button, track, mouseEvent);
-            }
-        });
-        return button;
-    }
 
     public void removeTrackFromPlaylist(Track track) {
 //        for (int i = 0; i < controller.playlistTrackVBox.getChildren().size() - 1; i++) {
@@ -212,39 +95,12 @@ public class ViewControllerOld {
     }
 
     /**
-     * Метод для создания кнопки плейлиста.
-     */
-//    public void createPlaylistNameButton(String playlistName) {
-//        Button button = new Button(playlistName);
-//        Playlist playlist = controller.getPlaylistManager().getNewPlaylist(playlistName);
-//        button.setOnMouseClicked(mouseEvent -> {
-//            if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-//                contextMenuControllerOld.showPlaylistButtonCM(playlist, button, mouseEvent);
-//            }
-//        });
-//        actionForShowingPlaylist(button, playlist);
-//        button.prefWidthProperty().bind(controller.playlistsScrollPane.widthProperty().subtract(17));
-//        controller.playlistsVBox.getChildren().add(button);
-//    }
-
-    /**
      * Метод для присвоения нового названия плейлиста при переименовании
      */
     public void renamePlaylist(String playlistName) {
         controller.getPlaylistManager().renamePlaylist(currentPlaylistButton.getText(), playlistName);
         currentPlaylistButton.setText(playlistName);
         controller.addPlaylistButton.setDisable(false);
-    }
-
-    private void dragAndDrop(Playlist playlist) {
-//        controller.playlistTrackVBox.setOnDragOver(dragEvent ->
-//                Actions.onDragOver(dragEvent, controller.playlistTrackVBox, playlist));
-//        controller.playlistTrackVBox.setOnDragEntered(dragEvent ->
-//                Actions.onDragEntered(dragEvent, controller.playlistTrackVBox, playlist));
-//        controller.playlistTrackVBox.setOnDragExited(dragEvent ->
-//                Actions.onDragExited(dragEvent, controller.playlistTrackVBox, playlist));
-//        controller.playlistTrackVBox.setOnDragDropped(dragEvent ->
-//                Actions.onDragDropped(controller, dragEvent, playlist, controller.playlistTrackVBox, controller.playlistTrackScrollPane));
     }
 
     /**

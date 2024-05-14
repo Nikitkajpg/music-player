@@ -1,6 +1,7 @@
 package com.td.player.controllers;
 
 import com.td.player.Player;
+import com.td.player.controllers.view.ParentElementView;
 import com.td.player.controllers.view.ViewController;
 import com.td.player.managers.DirectoryManager;
 import com.td.player.managers.PlaylistManager;
@@ -71,8 +72,8 @@ public class Controller {
 
     private void widthPropertyForLists(VBox vBox, ScrollPane scrollPane) {
         for (int i = 0; i < vBox.getChildren().size(); i++) {
-            Button button = (Button) vBox.getChildren().get(i);
-            button.prefWidthProperty().bind(scrollPane.widthProperty().subtract(17));
+            ParentElementView parentElementView = (ParentElementView) vBox.getChildren().get(i);
+            parentElementView.prefWidthProperty().bind(scrollPane.widthProperty().subtract(17));
         }
     }
 

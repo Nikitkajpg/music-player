@@ -6,24 +6,20 @@ import com.td.player.elements.Directory;
 import com.td.player.elements.ParentElement;
 import com.td.player.elements.Playlist;
 import com.td.player.elements.Track;
-import com.td.player.util.DragEventUtil;
 import com.td.player.util.Mode;
-import javafx.scene.control.Button;
+import com.td.player.util.Util;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
 import java.util.Objects;
 
+@SuppressWarnings("FieldMayBeFinal")
 public class ViewController {
     private Controller controller;
     protected ContextMenuController contextMenuController;
@@ -44,53 +40,41 @@ public class ViewController {
     private void updateDirectories() {
         controller.directoriesVBox.getChildren().clear();
         for (Directory directory : controller.getDirectoryManager().getDirectories()) {
-            controller.directoriesVBox.getChildren().add(getDirectoryButton(directory));
+            controller.directoriesVBox.getChildren().add(getDirectoryView(directory));
         }
     }
 
-    private Button getDirectoryButton(Directory directory) {
-        Button button = new Button(directory.getName());
-        button.setOnMouseClicked(mouseEvent -> {
+    private ParentElementView getDirectoryView(Directory directory) {
+        ParentElementView parentElementView = new ParentElementView(2, directory.getName(), false);
+        parentElementView.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-//                contextMenuController.showDirectoryCM(directory, button, mouseEvent);
-//                openDirectoryInExplorer(button);
+                Util.openDirectoryInExplorer(directory.getPath());
             } else if (mouseEvent.getButton() == MouseButton.PRIMARY) {
-                showTracks(controller.directoriesVBox, button, directory);
+                showTracks(controller.directoriesVBox, parentElementView, directory);
             }
         });
-        return button;
-    }
-
-    public void openDirectoryInExplorer(Button pressedButtonWithDirectoryPath) {
-        File directory = new File(pressedButtonWithDirectoryPath.getText());
-        try {
-            Desktop.getDesktop().open(directory);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        return parentElementView;
     }
 
     private void updatePlaylists() {
         controller.playlistsVBox.getChildren().clear();
         for (Playlist playlist : controller.getPlaylistManager().getPlaylists()) {
-            controller.playlistsVBox.getChildren().add(getPlaylistButton(playlist));
+            controller.playlistsVBox.getChildren().add(getPlaylistView(playlist));
         }
     }
 
-    private Button getPlaylistButton(Playlist playlist) {
-        Button button = new Button(playlist.getName());
-        button.setOnMouseClicked(mouseEvent -> {
-            if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                contextMenuController.showPlaylistButtonCM(playlist, button, mouseEvent);
-            } else if (mouseEvent.getButton() == MouseButton.PRIMARY) {
-                showTracks(controller.playlistsVBox, button, playlist);
+    private ParentElementView getPlaylistView(Playlist playlist) {
+        ParentElementView parentElementView = new ParentElementView(3, playlist.getName(), true);
+        parentElementView.setOnMouseClicked(mouseEvent -> {
+            if (mouseEvent.getButton() == MouseButton.PRIMARY) {
+                showTracks(controller.playlistsVBox, parentElementView, playlist);
             }
         });
-        return button;
+        return parentElementView;
     }
 
-    private void showTracks(VBox parentElementsVBox, Button pressedButton, ParentElement currentParentElement) {
-        int buttonId = parentElementsVBox.getChildren().indexOf(pressedButton);
+    private void showTracks(VBox parentElementsVBox, ParentElementView parentElementView, ParentElement currentParentElement) {
+        int buttonId = parentElementsVBox.getChildren().indexOf(parentElementView);
         int vBoxId = getVBoxId(parentElementsVBox);
         parentElementsVBox.getChildren().removeIf(node -> node.getClass().equals(VBox.class));
         if (vBoxId != -1 && vBoxId != buttonId + 1) {
@@ -113,10 +97,7 @@ public class ViewController {
     private void showTracksWithId(VBox parentElementVBox, ParentElement currentParentElement, int buttonId) {
         parentElementVBox.getChildren().removeIf(node -> node.getClass().equals(VBox.class));
         VBox tracksVBox = new VBox();
-        if (currentParentElement instanceof Playlist) {
-            dragAndDrop(tracksVBox, (Playlist) currentParentElement);
-        }
-        addTrackButtons(currentParentElement, tracksVBox);
+        addTrackView(currentParentElement, tracksVBox);
         if (parentElementVBox.getChildren().size() <= buttonId + 1
                 && parentElementVBox.getChildren().size() != 1) {
             parentElementVBox.getChildren().add(buttonId, tracksVBox);
@@ -125,44 +106,27 @@ public class ViewController {
         }
     }
 
-    private void addTrackButtons(ParentElement currentParentElement, VBox tracksVBox) {
+    private void addTrackView(ParentElement currentParentElement, VBox tracksVBox) {
         for (Track track : currentParentElement.getTracks()) {
-            HBox trackHBox = new HBox();
-            Button trackButton = new Button(track.getArtist() + " - " + track.getTitle());
-            trackButton.setOnMouseClicked(mouseEvent -> actionWithTrackButton(currentParentElement, mouseEvent, trackButton, track));
-            if (currentParentElement instanceof Directory) {
-                trackButton.setOnDragDetected(mouseEvent -> DragEventUtil.onDragDetected(mouseEvent, trackButton));
-            }
-            trackHBox.getChildren().add(trackButton);
-            tracksVBox.getChildren().add(trackHBox);
+            TrackView trackView = new TrackView(0, track.getArtist() + "\n" + track.getTitle(), track.getTime());
+            trackView.setOnMouseClicked(mouseEvent -> actionWithTrackView(currentParentElement, mouseEvent, trackView, track));
+            tracksVBox.getChildren().add(trackView);
         }
     }
 
-    public void actionWithTrackButton(ParentElement currentParentElement, MouseEvent mouseEvent, Button trackButton, Track track) {
+    public void actionWithTrackView(ParentElement currentParentElement, MouseEvent mouseEvent, TrackView trackView, Track track) {
         if (currentParentElement instanceof Directory) {
-            if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                contextMenuController.showDirectoryTrackButtonCM((Directory) currentParentElement, trackButton, track, mouseEvent);
-            } else {
+            if (mouseEvent.getButton() == MouseButton.PRIMARY) {
                 controller.getMediaController().playTrack(track);
             }
         } else if (currentParentElement instanceof Playlist) {
-            if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                contextMenuController.showPlaylistTrackButtonCM((Playlist) currentParentElement, trackButton, track, mouseEvent);
-            } else {
+            if (mouseEvent.getButton() == MouseButton.PRIMARY) {
                 controller.getMediaController().playTrackInPlaylist(track, (Playlist) currentParentElement);
             }
         }
-    }
-
-    private void dragAndDrop(VBox trackVBox, Playlist playlist) {
-        trackVBox.setOnDragOver(dragEvent ->
-                DragEventUtil.onDragOver(dragEvent, trackVBox, playlist));
-        trackVBox.setOnDragEntered(dragEvent ->
-                DragEventUtil.onDragEntered(dragEvent, trackVBox, playlist));
-        trackVBox.setOnDragExited(dragEvent ->
-                DragEventUtil.onDragExited(dragEvent, trackVBox, playlist));
-        trackVBox.setOnDragDropped(dragEvent ->
-                DragEventUtil.onDragDropped(controller, dragEvent, playlist, trackVBox));
+        if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+            contextMenuController.showTrackCM(trackView, track, mouseEvent);
+        }
     }
 
     public void clickingOnPreference() {
@@ -226,17 +190,15 @@ public class ViewController {
     }
 
     public void createPlaylistNameButton(String playlistName) {
-        Button button = new Button(playlistName);
+        ParentElementView parentElementView = new ParentElementView(5, playlistName, true);
         Playlist playlist = controller.getPlaylistManager().getNewPlaylist(playlistName);
-        button.setOnMouseClicked(mouseEvent -> {
-            if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-//                contextMenuController.showPlaylistButtonCM(playlist, button, mouseEvent);
-            } else if (mouseEvent.getButton() == MouseButton.PRIMARY) {
-                showTracks(controller.playlistsVBox, button, playlist);
+        parentElementView.setOnMouseClicked(mouseEvent -> {
+            if (mouseEvent.getButton() == MouseButton.PRIMARY) {
+                showTracks(controller.playlistsVBox, parentElementView, playlist);
             }
         });
 //        actionForShowingPlaylist(button, playlist);
-        button.prefWidthProperty().bind(controller.playlistsScrollPane.widthProperty().subtract(17));
-        controller.playlistsVBox.getChildren().add(button);
+        parentElementView.prefWidthProperty().bind(controller.playlistsScrollPane.widthProperty().subtract(17));
+        controller.playlistsVBox.getChildren().add(parentElementView);
     }
 }

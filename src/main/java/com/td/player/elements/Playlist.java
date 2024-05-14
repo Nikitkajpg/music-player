@@ -1,20 +1,9 @@
 package com.td.player.elements;
 
-import com.td.player.managers.TrackManager;
-
 @SuppressWarnings("FieldMayBeFinal")
 public class Playlist extends ParentElement {
     public Playlist(String name) {
         super(name);
-    }
-
-    public void addTrackByFilename(String trackFileName, TrackManager trackManager) {
-        for (Track track : trackManager.getTracks()) {
-            if (track.getFileName().equals(trackFileName)) {
-                tracks.add(track);
-                break;
-            }
-        }
     }
 
     public Track getNextTrack(Track currentTrack) {

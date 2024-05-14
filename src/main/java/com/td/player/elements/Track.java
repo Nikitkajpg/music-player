@@ -9,6 +9,7 @@ import java.io.File;
 public class Track {
     private String title;
     private String artist;
+    private String time;
     private int level;
     private String absolutePath;
     private String fileName;
@@ -38,6 +39,7 @@ public class Track {
         mediaPlayer.setOnReady(() -> {
             setTitle((String) mediaPlayer.getMedia().getMetadata().get("title"));
             setArtist((String) mediaPlayer.getMedia().getMetadata().get("artist"));
+            setTime(mediaPlayer.getMedia().getDuration().toSeconds());
         });
     }
 
@@ -83,6 +85,21 @@ public class Track {
 
     public void setArtist(String artist) {
         this.artist = artist;
+    }
+
+    private void setTime(double duration) {
+        int seconds = (int) duration;
+        String time;
+        if (seconds / 3600 < 1) {
+            time = String.format("%02d:%02d", (seconds % 3600) / 60, seconds % 60);
+        } else {
+            time = String.format("%2d:%02d:%02d", seconds / 3600, (seconds % 3600) / 60, seconds % 60);
+        }
+        this.time = time;
+    }
+
+    public String getTime() {
+        return time;
     }
 
     public void upgradeLevel() {
