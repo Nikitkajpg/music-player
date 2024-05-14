@@ -1,16 +1,11 @@
 package com.td.player.controllers;
 
-import com.td.player.Player;
 import com.td.player.elements.Playlist;
 import com.td.player.elements.Track;
 import com.td.player.util.Mode;
 import com.td.player.util.TrackTimer;
 import javafx.application.Platform;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.util.Duration;
-
-import java.util.Objects;
 
 /**
  * Класс для управления воспроизведением музыки
@@ -22,28 +17,26 @@ public class MediaController {
     private Track currentTrack;
     private Playlist currentPlayList;
 
+    private Mode currentMode = Mode.DEFAULT;
     private Duration duration;
     private boolean paused = true;
 
-    private Mode currentMode = Mode.DEFAULT;
-
-    /**
-     * Конструктор создает текущий плейлист {@link Playlist} и текущую песню {@link Track}
-     */
     public MediaController(Controller controller) {
         this.controller = controller;
         addTimeSliderListener();
         addVolumeSliderListener();
+        defineDefaultPlaylist();
+    }
 
+    private void defineDefaultPlaylist() {
         currentPlayList = controller.getPlaylistManager().getDefaultPlaylist();
-        if (currentPlayList.getTrackArray().size() > 0) {
-            currentTrack = currentPlayList.getTrackArray().get(0);
+        if (currentPlayList.getTracks().size() > 0) {
+            currentTrack = currentPlayList.getTracks().get(0);
         }
     }
 
     public void playInMode() {
-        controller.playButton.setGraphic(new ImageView(
-                new Image(Objects.requireNonNull(Player.class.getResource("img/pause.png")).toExternalForm())));
+        controller.getViewController().changeToPause();
         switch (currentMode) {
             case DEFAULT -> playInDefault();
             case PREFERENCE -> playInPreference();
@@ -62,20 +55,20 @@ public class MediaController {
             playTrack(false, currentTrack);
         } else {
             Playlist defaultPlaylist = controller.getPlaylistManager().getDefaultPlaylist();
-            playTrackInPlaylist(defaultPlaylist.getTrackArray().get(0), defaultPlaylist);
+            playTrackInPlaylist(defaultPlaylist.getTracks().get(0), defaultPlaylist);
         }
         paused = false;
     }
 
     private void playInPreference() {
         Playlist preferencePlaylist = controller.getPlaylistManager().createPreferencePlaylist();
-        playTrackInPlaylist(preferencePlaylist.getTrackArray().get(0), preferencePlaylist);
+        playTrackInPlaylist(preferencePlaylist.getTracks().get(0), preferencePlaylist);
         paused = false;
     }
 
     private void playInRandom() {
         Playlist randomPlaylist = controller.getPlaylistManager().getRandomPlaylist();
-        playTrackInPlaylist(randomPlaylist.getTrackArray().get(0), randomPlaylist);
+        playTrackInPlaylist(randomPlaylist.getTracks().get(0), randomPlaylist);
         paused = false;
     }
 
@@ -87,9 +80,12 @@ public class MediaController {
         playTrack(true, previousTrack);
     }
 
+    public void playTrack(Track track) {
+
+    }
+
     public void pause() {
-        controller.playButton.setGraphic(new ImageView(
-                new Image(Objects.requireNonNull(Player.class.getResource("img/play.png")).toExternalForm())));
+        controller.getViewController().changeToPlay();
         TrackTimer.setFlag(false, currentTrack);
         currentTrack.getMediaPlayer().pause();
         paused = true;
@@ -99,9 +95,9 @@ public class MediaController {
         Track previousTrack = currentTrack;
         currentTrack.getMediaPlayer().stop();
         if (nextTrack) {
-            currentTrack = currentPlayList.getNext(currentTrack);
+            currentTrack = currentPlayList.getNextTrack(currentTrack);
         } else {
-            currentTrack = currentPlayList.getPrevious(currentTrack);
+            currentTrack = currentPlayList.getPreviousTrack(currentTrack);
         }
         playTrack(true, previousTrack);
     }
@@ -119,7 +115,7 @@ public class MediaController {
 
         duration = currentTrack.getMediaPlayer().getMedia().getDuration();
         controller.endTimeLabel.setText(getTotalTrackTime(duration));
-        controller.titleLabel.setText(currentTrack.getTitle() + " - " + currentTrack.getArtist());
+        controller.titleLabel.setText(currentTrack.getArtist() + " - " + currentTrack.getTitle());
 
         addMediaPlayerListener();
     }

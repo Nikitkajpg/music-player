@@ -1,20 +1,22 @@
 package com.td.player.controllers;
 
 import com.td.player.Player;
-import com.td.player.controllers.view.ViewControllerOld;
+import com.td.player.controllers.view.ViewController;
 import com.td.player.managers.DirectoryManager;
-import com.td.player.managers.TrackManager;
 import com.td.player.managers.PlaylistManager;
+import com.td.player.managers.TrackManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+//TODO: сделать дефолтный плейлист
+// написать возможные нажатия на кнопки запуска музыки
+
 public class Controller {
-    //todo delete trackListVBox, playlistTrackVBox
     @FXML
-    public VBox trackListVBox, directoriesVBox, playlistsVBox, playlistTrackVBox;
+    public VBox directoriesVBox, playlistsVBox;
 
     @FXML
     public HBox addPlaylistHBox;
@@ -25,9 +27,8 @@ public class Controller {
     @FXML
     public Button playButton, addDirectoryButton, addPlaylistButton;
 
-    //todo delete trackScrollPane, playlistTrackScrollPane
     @FXML
-    public ScrollPane directoriesScrollPane, trackScrollPane, playlistsScrollPane, playlistTrackScrollPane;
+    public ScrollPane directoriesScrollPane, playlistsScrollPane;
 
     @FXML
     public SplitPane splitPane;
@@ -46,7 +47,7 @@ public class Controller {
     private PlaylistManager playlistManager;
     private FileController fileController;
     private MediaController mediaController;
-    private ViewControllerOld viewControllerOld;
+    private ViewController viewController;
 
     @FXML
     private void initialize() {
@@ -60,12 +61,11 @@ public class Controller {
         playlistManager = new PlaylistManager(this);
         fileController = new FileController(this);
         mediaController = new MediaController(this);
-        viewControllerOld = new ViewControllerOld(this);
+        viewController = new ViewController(this);
     }
 
     private void setWidthProperties() {
         widthPropertyForLists(directoriesVBox, directoriesScrollPane);
-        widthPropertyForLists(trackListVBox, trackScrollPane);
         widthPropertyForLists(playlistsVBox, playlistsScrollPane);
     }
 
@@ -83,7 +83,7 @@ public class Controller {
 
     @FXML
     private void onAddPlaylistButtonClick() {
-        viewControllerOld.addPlaylist();
+        viewController.addPlaylist();
     }
 
     @FXML
@@ -103,7 +103,7 @@ public class Controller {
 
     @FXML
     private void onExitButtonClick() {
-        fileController.writeAllInf();
+        fileController.writeToFile();
         Player.stage.close();
     }
 
@@ -119,12 +119,12 @@ public class Controller {
 
     @FXML
     private void onPreferenceToggleButtonClick() {
-        viewControllerOld.clickingOnPreference();
+        viewController.clickingOnPreference();
     }
 
     @FXML
     private void onRandomToggleButtonClick() {
-        viewControllerOld.clickingOnRandom();
+        viewController.clickingOnRandom();
     }
 
     public DirectoryManager getDirectoryManager() {
@@ -143,7 +143,7 @@ public class Controller {
         return mediaController;
     }
 
-    public ViewControllerOld getViewController() {
-        return viewControllerOld;
+    public ViewController getViewController() {
+        return viewController;
     }
 }

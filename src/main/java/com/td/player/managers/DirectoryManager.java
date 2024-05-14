@@ -1,6 +1,7 @@
 package com.td.player.managers;
 
 import com.td.player.elements.Directory;
+import com.td.player.elements.ParentElement;
 
 import java.util.ArrayList;
 
@@ -8,25 +9,26 @@ import java.util.ArrayList;
  * Класс для управления списком папок
  */
 @SuppressWarnings("FieldMayBeFinal")
-public class DirectoryManager {
-    private ArrayList<Directory> directoryArray = new ArrayList<>();
+public class DirectoryManager implements ParentElementManager {
+    private ArrayList<Directory> directories = new ArrayList<>();
 
-    public void add(String path) {
-        Directory directory = new Directory(path);
-        directoryArray.add(directory);
+    @Override
+    public void add(ParentElement parentElement) {
+        directories.add((Directory) parentElement);
     }
 
-    public void delete(Directory directory) {
-        directoryArray.remove(directory);
+    @Override
+    public void delete(ParentElement parentElement) {
+        directories.remove((Directory) parentElement);
     }
 
-    public ArrayList<Directory> getDirectoryArray() {
-        return directoryArray;
+    public ArrayList<Directory> getDirectories() {
+        return directories;
     }
 
     public boolean pathIsUnique(String path) {
         boolean unique = true;
-        for (Directory directory : directoryArray) {
+        for (Directory directory : directories) {
             if (directory.getPath().equals(path)) {
                 unique = false;
                 break;

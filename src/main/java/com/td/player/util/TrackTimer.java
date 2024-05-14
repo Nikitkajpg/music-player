@@ -7,13 +7,13 @@ import java.util.ArrayList;
 /**
  * Класс является частью "системы предпочтений", отвечает за подсчет времени прослушивания песни.
  * <p>{@link #flags} - массив временных отметок
- * <p>{@link #n} - подсчет количества временных отметок
+ * <p>{@link #countFlags} - подсчет количества временных отметок
  */
 @SuppressWarnings("FieldMayBeFinal")
 public class TrackTimer {
     private static long totalTime;
     private static ArrayList<Long> flags = new ArrayList<>();
-    private static int n = 0;
+    private static int countFlags = 0;
 
     /**
      * Метод для установки временной отметки.
@@ -36,10 +36,10 @@ public class TrackTimer {
 
     // TODO: 02.09.2023 most likely to remove this method
     private static void incrementN() {
-        if (n + 1 != 40) {
-            n++;
+        if (countFlags + 1 != 40) {
+            countFlags++;
         } else {
-            n = 0;
+            countFlags = 0;
             flags.clear();
         }
     }
@@ -78,7 +78,7 @@ public class TrackTimer {
 
     private static void resetFlags() {
         flags.clear();
-        n = 0;
+        countFlags = 0;
         totalTime = 0;
     }
 }

@@ -1,10 +1,11 @@
 package com.td.player.elements;
 
 @SuppressWarnings("FieldMayBeFinal")
-public class Directory {
+public class Directory extends ParentElement {
     private String path;
 
-    public Directory(String pathToDirectory) {
+    public Directory(String name, String pathToDirectory) {
+        super(name);
         this.path = pathToDirectory;
     }
 

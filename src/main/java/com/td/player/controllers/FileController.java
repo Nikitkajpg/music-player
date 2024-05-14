@@ -4,10 +4,11 @@ import com.td.player.Player;
 import com.td.player.elements.Directory;
 import com.td.player.elements.Playlist;
 import com.td.player.elements.Track;
-import com.td.player.managers.DirectoryManager;
+import com.td.player.util.Util;
 import javafx.stage.DirectoryChooser;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Objects;
 
 /**
@@ -21,18 +22,20 @@ public class FileController {
     private File playlistFile;
     private File levelsFile;
 
-    /**
-     * Конструктор создает файлы и заполняет все необходимые массивы
-     * <p>Создается плейлист по умолчанию, содержащий все песни
-     */
+    private ArrayList<String> directories = new ArrayList<>();
+    private ArrayList<String> levels = new ArrayList<>();
+    private ArrayList<String> playlists = new ArrayList<>();
+
     public FileController(Controller controller) {
         this.controller = controller;
         initFiles();
 
-        fillDirectoryArray();
-        fillTrackArray();
-        fillTrackWithLevels();
-        fillPlaylistArray();
+        readFile(directories, directoriesFile);
+        readFile(levels, levelsFile);
+        readFile(playlists, playlistFile);
+
+        fillDirectories();
+        fillPlaylists();
     }
 
     private void initFiles() {
@@ -58,110 +61,85 @@ public class FileController {
         return new File(System.getProperty("user.dir") + pathEnd);
     }
 
-    private void fillDirectoryArray() {
+    private void readFile(ArrayList<String> lines, File file) {
         try {
-            String path;
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(directoriesFile)));
+            String line;
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
 
-            while ((path = bufferedReader.readLine()) != null) {
-                controller.getDirectoryManager().add(path);
+            while ((line = bufferedReader.readLine()) != null) {
+                lines.add(line);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    /**
-     * Метод выполняется при запуске программы
-     */
-    private void fillTrackArray() {
-        for (Directory directory : controller.getDirectoryManager().getDirectoryArray()) {
-            fillCommon(directory.getPath());
+    private void fillDirectories() {
+        for (String directoryPath : directories) {
+            Directory directory = new Directory(Util.getDirectoryName(directoryPath), directoryPath);
+            addTracksToDirectory(directory);
+            controller.getDirectoryManager().add(directory);
         }
     }
 
     /**
-     * Метод выполняется при выборе папки с музыкой
+     * mediaPath переделывается для корректной передачи в {@link javafx.scene.media.Media}
      */
-    private void fillTrackArray(String pathToTrackDirectory) {
-        fillCommon(pathToTrackDirectory);
-    }
+    private void addTracksToDirectory(Directory directory) {
+        File[] trackFileList = new File(directory.getPath()).listFiles(file -> file.getName().endsWith("mp3"));
 
-    /**
-     * Метод заполняет массив песен.
-     * <p>Поле fileList получает список музыкальных файлов в папке.
-     * Пробел в пути заменяется "%20" для корректной передачи в {@link javafx.scene.media.Media}
-     */
-    private void fillCommon(String pathToTrackDirectory) {
-        File[] fileList = new File(pathToTrackDirectory).listFiles(file -> file.getName().endsWith("mp3"));
-
-        for (File trackFile : Objects.requireNonNull(fileList)) {
+        for (File trackFile : Objects.requireNonNull(trackFileList)) {
             String mediaPath = "file:///" + trackFile.getAbsolutePath().
                     replace("\\", "/").
                     replace(" ", "%20");
-            controller.getTrackManager().add("", "", trackFile, mediaPath);
+            directory.addTrack(new Track("", "", trackFile, mediaPath, getLevel(trackFile.getAbsolutePath())));
         }
     }
 
-    private void fillTrackWithLevels() {
-        String level;
-        int count = 0;
-        try {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(levelsFile)));
-            while ((level = bufferedReader.readLine()) != null) {
-                controller.getTrackManager().getTrackArray().get(count).setLevel(Integer.parseInt(level));
-                count++;
+    private int getLevel(String trackPath) {
+        for (String line : levels) {
+            String[] splitLine = line.split("::");
+            if (splitLine[0].equals(trackPath)) {
+                return Integer.parseInt(splitLine[1]);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-        controller.getPlaylistManager().createDefaultPlaylist();
+        return 5;
     }
 
-    private void fillPlaylistArray() {
-        try {
-            String line;
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(playlistFile)));
-            String playlistName = "";
-            while ((line = bufferedReader.readLine()) != null) {
-                if (line.startsWith("::") && line.endsWith("::")) {
-                    line = line.replace("::", "");
-                    controller.getPlaylistManager().add(line);
-                    playlistName = line;
-                } else {
-                    for (Track track : controller.getTrackManager().getTrackArray()) {
+    private void fillPlaylists() {
+        Playlist playlist = null;
+        for (String line : playlists) {
+            if (line.startsWith("::") && line.endsWith("::")) {
+                line = line.replace("::", "");
+                playlist = new Playlist(line);
+                controller.getPlaylistManager().add(playlist);
+            } else {
+                for (Directory directory : controller.getDirectoryManager().getDirectories()) {
+                    for (Track track : directory.getTracks()) {
                         if (track.getFileName().equals(line)) {
-                            controller.getPlaylistManager().addTrackToPlaylist(playlistName, track);
+                            Objects.requireNonNull(playlist).addTrack(track);
                             break;
                         }
                     }
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
-    /**
-     * Метод добавляет выбранную папку в массив папок {@link DirectoryManager#add(String)}
-     */
     public void selectDirectory() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Directory selection");
-        File directory = directoryChooser.showDialog(Player.stage);
-        String path = directory.getAbsolutePath();
-        if (controller.getDirectoryManager().pathIsUnique(path)) {
-            controller.getDirectoryManager().add(path);
-            fillTrackArray(path);
+        File directoryFile = directoryChooser.showDialog(Player.stage);
+        String directoryPath = directoryFile.getAbsolutePath();
+        if (controller.getDirectoryManager().pathIsUnique(directoryPath)) {
+            Directory directory = new Directory(Util.getDirectoryName(directoryPath), directoryPath);
+            addTracksToDirectory(directory);
+            controller.getDirectoryManager().add(directory);
         }
-        controller.getPlaylistManager().updateDefaultPlaylist();
-        controller.getViewController().showLists();
+        controller.getViewController().updateView();
     }
 
-    /**
-     * Метод записывает все данные в {@link #directoriesFile}, {@link #playlistFile}, {@link #levelsFile}
-     */
-    public void writeAllInf() {
+    public void writeToFile() {
         writeDirectories();
         writePlaylists();
         writeLevels();
@@ -170,7 +148,7 @@ public class FileController {
     private void writeDirectories() {
         try {
             FileWriter fileWriter = new FileWriter(directoriesFile);
-            for (Directory directory : controller.getDirectoryManager().getDirectoryArray()) {
+            for (Directory directory : controller.getDirectoryManager().getDirectories()) {
                 fileWriter.write(directory.getPath() + "\n");
             }
             fileWriter.flush();
@@ -183,10 +161,10 @@ public class FileController {
     private void writePlaylists() {
         try {
             FileWriter fileWriter = new FileWriter(playlistFile);
-            for (Playlist playlist : controller.getPlaylistManager().getPlaylistArray()) {
+            for (Playlist playlist : controller.getPlaylistManager().getPlaylists()) {
                 if (!playlist.getName().equals("All tracks")) {
                     fileWriter.write("::" + playlist.getName() + "::" + "\n");
-                    for (Track track : playlist.getTrackArray()) {
+                    for (Track track : playlist.getTracks()) {
                         fileWriter.write(track.getFileName() + "\n");
                     }
                 }
@@ -201,8 +179,8 @@ public class FileController {
     private void writeLevels() {
         try {
             FileWriter fileWriter = new FileWriter(levelsFile);
-            for (Track track : controller.getTrackManager().getTrackArray()) {
-                fileWriter.write(track.getLevel() + "\n");
+            for (Track track : controller.getTrackManager().getTracks()) {
+                fileWriter.write(track.getFileName() + "::" + track.getLevel() + "\n");
             }
             fileWriter.flush();
             fileWriter.close();

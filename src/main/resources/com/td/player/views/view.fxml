@@ -118,13 +118,6 @@
                 <VBox fx:id="directoriesVBox" VBox.vgrow="ALWAYS"/>
             </ScrollPane>
         </VBox>
-<!--        todo delete -->
-        <VBox>
-            <Label text="Track files"/>
-            <ScrollPane fx:id="trackScrollPane" minWidth="50" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
-                <VBox fx:id="trackListVBox"/>
-            </ScrollPane>
-        </VBox>
         <SplitPane VBox.vgrow="ALWAYS">
             <VBox>
                 <HBox fx:id="addPlaylistHBox">
@@ -133,17 +126,10 @@
                             <Tooltip text="Add new playlist"/>
                         </tooltip>
                     </Button>
-                    <Label fx:id="playlistsLabel" text="Playlists"/>
+                    <Label fx:id="playlistsLabel" text="Playlists &amp; Tracks"/>
                 </HBox>
                 <ScrollPane fx:id="playlistsScrollPane" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
                     <VBox fx:id="playlistsVBox"/>
-                </ScrollPane>
-            </VBox>
-<!--            todo delete-->
-            <VBox>
-                <Label text="Track"/>
-                <ScrollPane fx:id="playlistTrackScrollPane" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
-                    <VBox fx:id="playlistTrackVBox"/>
                 </ScrollPane>
             </VBox>
         </SplitPane>

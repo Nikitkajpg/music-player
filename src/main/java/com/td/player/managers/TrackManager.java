@@ -10,19 +10,20 @@ import java.util.ArrayList;
  */
 @SuppressWarnings("FieldMayBeFinal")
 public class TrackManager {
-    private ArrayList<Track> trackArray = new ArrayList<>();
+    private ArrayList<Track> tracks = new ArrayList<>();
 
+    //todo usages???
     public void add(String title, String artist, File file, String mediaPath) {
-        Track track = new Track(title, artist, file, mediaPath);
-        trackArray.add(track);
+        Track track = new Track(title, artist, file, mediaPath, 5);// todo level????
+        tracks.add(track);
     }
 
     public void deleteByPath(String path) {
-        trackArray.removeIf(track -> (path + "\\" + track.getFileName()).equals(track.getAbsolutePath()));
+        tracks.removeIf(track -> (path + "\\" + track.getFileName()).equals(track.getAbsolutePath()));
     }
 
     public Track get(String name) {
-        for (Track track : trackArray) {
+        for (Track track : tracks) {
             if (track.getFileName().equals(name)) {
                 return track;
             }
@@ -31,7 +32,7 @@ public class TrackManager {
     }
 
     public String getTitleByFileName(String filename) {
-        for (Track track : trackArray) {
+        for (Track track : tracks) {
             if (track.getFileName().equals(filename)) {
                 return track.getTitle();
             }
@@ -40,7 +41,7 @@ public class TrackManager {
     }
 
     public Track getTrackByFileName(String fileName) {
-        for (Track track : trackArray) {
+        for (Track track : tracks) {
             if (track.getFileName().equals(fileName)) {
                 return track;
             }
@@ -48,7 +49,7 @@ public class TrackManager {
         return null;
     }
 
-    public ArrayList<Track> getTrackArray() {
-        return trackArray;
+    public ArrayList<Track> getTracks() {
+        return tracks;
     }
 }

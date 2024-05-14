@@ -20,7 +20,7 @@ public class Track {
      * Конструктор для создания нового объекта.
      * <p>Создает {@link MediaPlayer}. Заполняет поля {@link #title} и {@link #artist} метаданными.
      */
-    public Track(String title, String artist, File file, String mediaPath) {
+    public Track(String title, String artist, File file, String mediaPath, int level) {
         this.title = title;
         this.artist = artist;
         this.level = 5;
