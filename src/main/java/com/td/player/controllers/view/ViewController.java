@@ -45,7 +45,7 @@ public class ViewController {
     }
 
     private ParentElementView getDirectoryView(Directory directory) {
-        ParentElementView parentElementView = new ParentElementView(directory.getId(), directory.getName(), false);
+        ParentElementView parentElementView = new ParentElementView(directory.getId(), directory.getName(), false, controller);
         parentElementView.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
                 Util.openDirectoryInExplorer(directory.getPath());
@@ -64,7 +64,7 @@ public class ViewController {
     }
 
     private ParentElementView getPlaylistView(Playlist playlist) {
-        ParentElementView parentElementView = new ParentElementView(playlist.getId(), playlist.getName(), true);
+        ParentElementView parentElementView = new ParentElementView(playlist.getId(), playlist.getName(), true, controller);
         parentElementView.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.PRIMARY) {
                 showTracks(controller.playlistsVBox, parentElementView, playlist);
@@ -108,7 +108,7 @@ public class ViewController {
 
     private void addTrackView(ParentElement currentParentElement, VBox tracksVBox) {
         for (Track track : currentParentElement.getTracks()) {
-            TrackView trackView = new TrackView(track.getId(), track.getArtist() + "\n" + track.getTitle(), track.getTime(), this);
+            TrackView trackView = new TrackView(track.getId(), track.getArtist() + "\n" + track.getTitle(), track.getTime(), currentParentElement, controller);
             trackView.setOnMouseClicked(mouseEvent -> actionWithTrackView(currentParentElement, mouseEvent, trackView, track));
             tracksVBox.getChildren().add(trackView);
         }
@@ -191,7 +191,7 @@ public class ViewController {
 
     public void createPlaylistNameButton(String playlistName) {
         Playlist playlist = controller.getPlaylistManager().getNewPlaylist(playlistName);
-        ParentElementView parentElementView = new ParentElementView(playlist.getId(), playlistName, true);
+        ParentElementView parentElementView = new ParentElementView(playlist.getId(), playlistName, true, controller);
         parentElementView.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.PRIMARY) {
                 showTracks(controller.playlistsVBox, parentElementView, playlist);

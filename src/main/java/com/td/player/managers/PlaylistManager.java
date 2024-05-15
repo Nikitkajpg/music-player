@@ -133,8 +133,8 @@ public class PlaylistManager implements ParentElementManager {
     }
 
     @Override
-    public void delete(ParentElement parentElement) {
-        playlists.remove((Playlist) parentElement);
+    public void delete(int id) {
+        playlists.removeIf(playlist -> playlist.getId() == id);
     }
 
     @Override
@@ -144,5 +144,13 @@ public class PlaylistManager implements ParentElementManager {
 
     public ArrayList<Playlist> getPlaylists() {
         return playlists;
+    }
+
+    public void deleteTrack(int id, int playlistId) {
+        for (Playlist playlist : playlists) {
+            if (playlist.getId() == playlistId) {
+                playlist.getTracks().removeIf(track -> track.getId() == id);
+            }
+        }
     }
 }

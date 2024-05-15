@@ -18,8 +18,8 @@ public class DirectoryManager implements ParentElementManager {
     }
 
     @Override
-    public void delete(ParentElement parentElement) {
-        directories.remove((Directory) parentElement);
+    public void delete(int id) {
+        directories.removeIf(directory -> directory.getId() == id);
     }
 
     public ArrayList<Directory> getDirectories() {
