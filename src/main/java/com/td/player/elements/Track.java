@@ -1,5 +1,6 @@
 package com.td.player.elements;
 
+import com.td.player.util.Util;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
@@ -7,6 +8,7 @@ import java.io.File;
 
 @SuppressWarnings("FieldMayBeFinal")
 public class Track {
+    private int id;
     private String title;
     private String artist;
     private String time;
@@ -21,7 +23,8 @@ public class Track {
      * Конструктор для создания нового объекта.
      * <p>Создает {@link MediaPlayer}. Заполняет поля {@link #title} и {@link #artist} метаданными.
      */
-    public Track(String title, String artist, File file, String mediaPath, int level) {
+    public Track(int id, String title, String artist, File file, String mediaPath, int level) {
+        this.id = id;
         this.title = title;
         this.artist = artist;
         this.level = 5;
@@ -88,14 +91,7 @@ public class Track {
     }
 
     private void setTime(double duration) {
-        int seconds = (int) duration;
-        String time;
-        if (seconds / 3600 < 1) {
-            time = String.format("%02d:%02d", (seconds % 3600) / 60, seconds % 60);
-        } else {
-            time = String.format("%2d:%02d:%02d", seconds / 3600, (seconds % 3600) / 60, seconds % 60);
-        }
-        this.time = time;
+        this.time = Util.getTime((int) duration);
     }
 
     public String getTime() {
@@ -116,6 +112,10 @@ public class Track {
         } else {
             level = 0;
         }
+    }
+
+    public int getId() {
+        return id;
     }
 }
 

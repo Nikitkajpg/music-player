@@ -1,6 +1,7 @@
 package com.td.player.managers;
 
 import com.td.player.elements.Track;
+import com.td.player.util.Util;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -14,8 +15,8 @@ public class TrackManager {
 
     //todo usages???
     public void add(String title, String artist, File file, String mediaPath) {
-        Track track = new Track(title, artist, file, mediaPath, 5);// todo level????
-        tracks.add(track);
+//        Track track = new Track(title, artist, file, mediaPath, 5);// todo level????
+//        tracks.add(track);
     }
 
     public void deleteByPath(String path) {

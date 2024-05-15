@@ -12,8 +12,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-//TODO: сделать дефолтный плейлист
-// написать возможные нажатия на кнопки запуска музыки
+//TODO: add id to tracks, directories and playlists
 
 public class Controller {
     @FXML

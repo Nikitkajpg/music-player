@@ -22,7 +22,7 @@ public class PlaylistManager implements ParentElementManager {
     }
 
     public void add(String name) {
-        playlists.add(new Playlist(name));
+        playlists.add(new Playlist(controller.getPlaylistManager().getPlaylists().size() + 1, name));
     }
 
     public void deleteByPath(String path) {
@@ -46,7 +46,7 @@ public class PlaylistManager implements ParentElementManager {
      * <p>В начале плейлиста находится музыка с самым высоким уровнем (приоритетом), далее по убыванию
      */
     public Playlist createPreferencePlaylist() {
-        Playlist preferencePlaylist = new Playlist("Preference");
+        Playlist preferencePlaylist = new Playlist(controller.getPlaylistManager().getPlaylists().size() + 1, "Preference");
         for (int i = 10; i >= 0; i--) {
             for (Track track : controller.getTrackManager().getTracks()) {
                 if (track.getLevel() == i) {
@@ -58,7 +58,7 @@ public class PlaylistManager implements ParentElementManager {
     }
 
     public void createDefaultPlaylist() {
-        Playlist playlist = new Playlist("All tracks");
+        Playlist playlist = new Playlist(controller.getPlaylistManager().getPlaylists().size() + 1, "All tracks");
         for (Track track : controller.getTrackManager().getTracks()) {
             playlist.addTrack(track);
         }
@@ -74,7 +74,7 @@ public class PlaylistManager implements ParentElementManager {
     }
 
     public Playlist getNewPlaylist(String playlistName) {
-        Playlist playlist = new Playlist(playlistName);
+        Playlist playlist = new Playlist(controller.getPlaylistManager().getPlaylists().size() + 1, playlistName);
         playlists.add(playlist);
         return playlist;
     }
@@ -107,7 +107,7 @@ public class PlaylistManager implements ParentElementManager {
     }
 
     public Playlist getDefaultPlaylist() {
-        Playlist defaultPlaylist = new Playlist("All tracks");
+        Playlist defaultPlaylist = new Playlist(controller.getPlaylistManager().getPlaylists().size() + 1, "All tracks");
         for (Directory directory : controller.getDirectoryManager().getDirectories()) {
             for (Track track : directory.getTracks()) {
                 defaultPlaylist.addTrack(track);

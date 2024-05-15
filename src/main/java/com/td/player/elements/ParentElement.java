@@ -3,21 +3,13 @@ package com.td.player.elements;
 import java.util.ArrayList;
 
 public abstract class ParentElement {
+    protected int id;
     protected ArrayList<Track> tracks = new ArrayList<>();
     protected String name;
 
-    public ParentElement(String name) {
+    public ParentElement(int id, String name) {
+        this.id = id;
         this.name = name;
-    }
-
-    public Track getTrackByProperties(String propertiesBase) {
-        String[] properties = propertiesBase.split(" - ");
-        for (Track track : tracks) {
-            if (track.getArtist().equals(properties[0]) && track.getTitle().equals(properties[1])) {
-                return track;
-            }
-        }
-        return null;
     }
 
     public void addTrack(Track track) {
@@ -38,5 +30,9 @@ public abstract class ParentElement {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getId() {
+        return id;
     }
 }

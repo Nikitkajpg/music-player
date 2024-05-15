@@ -4,6 +4,7 @@ import com.td.player.elements.Playlist;
 import com.td.player.elements.Track;
 import com.td.player.util.Mode;
 import com.td.player.util.TrackTimer;
+import com.td.player.util.Util;
 import javafx.application.Platform;
 import javafx.util.Duration;
 
@@ -36,7 +37,6 @@ public class MediaController {
     }
 
     public void playInMode() {
-        controller.getViewController().changeToPause();
         switch (currentMode) {
             case DEFAULT -> playInDefault();
             case PREFERENCE -> playInPreference();
@@ -80,10 +80,6 @@ public class MediaController {
         playTrack(true, previousTrack);
     }
 
-    public void playTrack(Track track) {
-
-    }
-
     public void pause() {
         controller.getViewController().changeToPlay();
         TrackTimer.setFlag(false, currentTrack);
@@ -109,6 +105,7 @@ public class MediaController {
      * @param turningNewTrack флаг, true - была включена новая песня, false - снята с паузы текущая песня
      */
     private void playTrack(boolean turningNewTrack, Track previousTrack) {
+        controller.getViewController().changeToPause();
         TrackTimer.setFlag(turningNewTrack, previousTrack);
         currentTrack.getMediaPlayer().play();
         currentTrack.getMediaPlayer().setOnEndOfMedia(() -> switchTrack(true));
@@ -129,14 +126,7 @@ public class MediaController {
     }
 
     private String getTotalTrackTime(Duration duration) {
-        int seconds = (int) duration.toSeconds();
-        String time;
-        if (seconds / 3600 < 1) {
-            time = String.format("%02d:%02d", (seconds % 3600) / 60, seconds % 60);
-        } else {
-            time = String.format("%2d:%02d:%02d", seconds / 3600, (seconds % 3600) / 60, seconds % 60);
-        }
-        return time;
+        return Util.getTime((int) duration.toSeconds());
     }
 
     /**

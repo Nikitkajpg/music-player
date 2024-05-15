@@ -10,18 +10,13 @@ import java.util.Objects;
 
 @SuppressWarnings("FieldMayBeFinal")
 public class ParentElementView extends HBox {
-    private Label idLabel;
-    private Label nameLabel;
-    private Button renameButton;
-    private Button deleteButton;
-    private boolean isPlaylist;
-
+    //todo rename button
+    // delete button
     public ParentElementView(int id, String name, boolean isPlaylist) {
-        this.isPlaylist = isPlaylist;
-        idLabel = new Label(String.valueOf(id));
-        nameLabel = new Label(name);
-        renameButton = new Button();
-        deleteButton = new Button();
+        Label idLabel = new Label(String.valueOf(id));
+        Label nameLabel = new Label(name);
+        Button renameButton = new Button();
+        Button deleteButton = new Button();
         nameLabel.setOnMouseEntered(mouseEvent -> setCursor(Cursor.HAND));
         renameButton.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/td/player/img/rename.png")).toExternalForm()));
         deleteButton.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/td/player/img/delete.png")).toExternalForm()));

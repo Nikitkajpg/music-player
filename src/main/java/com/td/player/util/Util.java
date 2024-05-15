@@ -1,10 +1,14 @@
 package com.td.player.util;
 
+import com.td.player.elements.Directory;
+import com.td.player.elements.ParentElement;
+import com.td.player.elements.Playlist;
 import com.td.player.elements.Track;
 
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class Util {
     public static String getDirectoryName(String directoryPath) {
@@ -36,5 +40,23 @@ public class Util {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static String getTime(int seconds) {
+        String time;
+        if (seconds / 3600 < 1) {
+            time = String.format("%02d:%02d", (seconds % 3600) / 60, seconds % 60);
+        } else {
+            time = String.format("%2d:%02d:%02d", seconds / 3600, (seconds % 3600) / 60, seconds % 60);
+        }
+        return time;
+    }
+
+    public static int getNextTrackId(ArrayList<Directory> directories) {
+        int trackAmount = 0;
+        for (Directory directory : directories) {
+            trackAmount += directory.getTracks().size();
+        }
+        return trackAmount + 1;
     }
 }

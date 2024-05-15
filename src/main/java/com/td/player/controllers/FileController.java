@@ -76,9 +76,9 @@ public class FileController {
 
     private void fillDirectories() {
         for (String directoryPath : directories) {
-            Directory directory = new Directory(Util.getDirectoryName(directoryPath), directoryPath);
-            addTracksToDirectory(directory);
+            Directory directory = new Directory(controller.getDirectoryManager().getDirectories().size() + 1, Util.getDirectoryName(directoryPath), directoryPath);
             controller.getDirectoryManager().add(directory);
+            addTracksToDirectory(directory);
         }
     }
 
@@ -92,7 +92,7 @@ public class FileController {
             String mediaPath = "file:///" + trackFile.getAbsolutePath().
                     replace("\\", "/").
                     replace(" ", "%20");
-            directory.addTrack(new Track("", "", trackFile, mediaPath, getLevel(trackFile.getAbsolutePath())));
+            directory.addTrack(new Track(Util.getNextTrackId(controller.getDirectoryManager().getDirectories()), "", "", trackFile, mediaPath, getLevel(trackFile.getAbsolutePath())));
         }
     }
 
@@ -111,7 +111,7 @@ public class FileController {
         for (String line : playlists) {
             if (line.startsWith("::") && line.endsWith("::")) {
                 line = line.replace("::", "");
-                playlist = new Playlist(line);
+                playlist = new Playlist(controller.getPlaylistManager().getPlaylists().size() + 1, line);
                 controller.getPlaylistManager().add(playlist);
             } else {
                 for (Directory directory : controller.getDirectoryManager().getDirectories()) {
@@ -132,7 +132,7 @@ public class FileController {
         File directoryFile = directoryChooser.showDialog(Player.stage);
         String directoryPath = directoryFile.getAbsolutePath();
         if (controller.getDirectoryManager().pathIsUnique(directoryPath)) {
-            Directory directory = new Directory(Util.getDirectoryName(directoryPath), directoryPath);
+            Directory directory = new Directory(controller.getDirectoryManager().getDirectories().size() + 1, Util.getDirectoryName(directoryPath), directoryPath);
             addTracksToDirectory(directory);
             controller.getDirectoryManager().add(directory);
         }

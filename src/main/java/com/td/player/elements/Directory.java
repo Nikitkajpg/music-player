@@ -4,8 +4,8 @@ package com.td.player.elements;
 public class Directory extends ParentElement {
     private String path;
 
-    public Directory(String name, String pathToDirectory) {
-        super(name);
+    public Directory(int id, String name, String pathToDirectory) {
+        super(id, name);
         this.path = pathToDirectory;
     }
 
