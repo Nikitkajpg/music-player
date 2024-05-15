@@ -2,6 +2,7 @@ package com.td.player.managers;
 
 import com.td.player.elements.Directory;
 import com.td.player.elements.ParentElement;
+import com.td.player.elements.Track;
 
 import java.util.ArrayList;
 
@@ -35,5 +36,16 @@ public class DirectoryManager implements ParentElementManager {
             }
         }
         return unique;
+    }
+
+    public Track getTrackById(int id) {
+        for (Directory directory : directories) {
+            for (Track track : directory.getTracks()) {
+                if (track.getId() == id) {
+                    return track;
+                }
+            }
+        }
+        return null;
     }
 }

@@ -7,6 +7,8 @@ import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -20,8 +22,6 @@ public class TrackView extends HBox {
     private Button addToPlaylistButton;
     private Button deleteButton;
 
-    //todo add to playlist button
-    // delete button
     public TrackView(int id, String single, String time, ParentElement parentElement, Controller controller) {
         init(id, single, time);
         addProperties(id, parentElement, controller);
@@ -39,8 +39,15 @@ public class TrackView extends HBox {
     private void addProperties(int id, ParentElement parentElement, Controller controller) {
         singleLabel.setOnMouseEntered(mouseEvent -> setCursor(Cursor.HAND));
         addToPlaylistButton.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/td/player/img/add.png")).toExternalForm()));
+        addToPlaylistButton.setOnMouseClicked(mouseEvent -> addToPlaylistAction(id, mouseEvent, controller));
         deleteButton.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/td/player/img/delete.png")).toExternalForm()));
         deleteButton.setOnAction(actionEvent -> deleteAction(id, parentElement, controller));
+    }
+
+    private void addToPlaylistAction(int id, MouseEvent mouseEvent, Controller controller) {
+        if (mouseEvent.getButton() == MouseButton.PRIMARY) {
+            controller.getViewController().contextMenuController.showAddToPlaylistCM(id, this, mouseEvent);
+        }
     }
 
     private void deleteAction(int id, ParentElement parentElement, Controller controller) {
