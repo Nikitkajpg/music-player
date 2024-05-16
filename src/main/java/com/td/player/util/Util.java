@@ -1,8 +1,6 @@
 package com.td.player.util;
 
 import com.td.player.elements.Directory;
-import com.td.player.elements.ParentElement;
-import com.td.player.elements.Playlist;
 import com.td.player.elements.Track;
 
 import java.awt.*;
@@ -58,5 +56,16 @@ public class Util {
             trackAmount += directory.getTracks().size();
         }
         return trackAmount + 1;
+    }
+
+    public static String getSingleText(String single) {
+        String[] strings = single.split("\n");
+        if (strings[0].length() > 30) {
+            strings[0] = strings[0].substring(0, 30) + "...";
+        }
+        if (strings[1].length() > 30) {
+            strings[1] = strings[1].substring(0, 30) + "...";
+        }
+        return strings[0] + "\n" + strings[1];
     }
 }

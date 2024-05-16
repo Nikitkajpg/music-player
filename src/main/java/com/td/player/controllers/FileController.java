@@ -107,6 +107,7 @@ public class FileController {
     }
 
     private void fillPlaylists() {
+        Playlist defaultPlaylist = new Playlist(controller.getPlaylistManager().getPlaylists().size() + 1, "All tracks");
         Playlist playlist = null;
         for (String line : playlists) {
             if (line.startsWith("::") && line.endsWith("::")) {
@@ -179,8 +180,10 @@ public class FileController {
     private void writeLevels() {
         try {
             FileWriter fileWriter = new FileWriter(levelsFile);
-            for (Track track : controller.getTrackManager().getTracks()) {
-                fileWriter.write(track.getFileName() + "::" + track.getLevel() + "\n");
+            for (Directory directory : controller.getDirectoryManager().getDirectories()) {
+                for (Track track : directory.getTracks()) {
+                    fileWriter.write(track.getFileName() + "::" + track.getLevel() + "\n");
+                }
             }
             fileWriter.flush();
             fileWriter.close();

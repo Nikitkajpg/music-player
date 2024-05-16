@@ -106,13 +106,13 @@
 
     <SplitPane fx:id="splitPane" VBox.vgrow="ALWAYS" stylesheets="@../css/bottom.css" dividerPositions="0.1">
         <VBox>
-            <HBox>
+            <HBox alignment="CENTER_LEFT">
                 <Button fx:id="addDirectoryButton" onAction="#onAddDirectoryButtonClick">
                     <tooltip>
                         <Tooltip text="Add directory"/>
                     </tooltip>
                 </Button>
-                <Label text="Directories &amp; Track files"/>
+                <Label fx:id="directoriesLabel" text="Directories &amp; Track files"/>
             </HBox>
             <ScrollPane fx:id="directoriesScrollPane" minWidth="50" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
                 <VBox fx:id="directoriesVBox" VBox.vgrow="ALWAYS"/>
@@ -120,7 +120,7 @@
         </VBox>
         <SplitPane VBox.vgrow="ALWAYS">
             <VBox>
-                <HBox fx:id="addPlaylistHBox">
+                <HBox fx:id="addPlaylistHBox" alignment="CENTER_LEFT">
                     <Button fx:id="addPlaylistButton" onMouseClicked="#onAddPlaylistButtonClick">
                         <tooltip>
                             <Tooltip text="Add new playlist"/>

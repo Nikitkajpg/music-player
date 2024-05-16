@@ -1,12 +1,16 @@
 package com.td.player.controllers.view;
 
 import com.td.player.controllers.Controller;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
 import java.util.Objects;
 
@@ -22,7 +26,7 @@ public class ParentElementView extends HBox {
         init(id, name);
         addProperties(isPlaylist, id, controller);
         fillParent(isPlaylist);
-
+        applyStyle();
     }
 
     private void init(int id, String name) {
@@ -56,5 +60,16 @@ public class ParentElementView extends HBox {
         } else {
             this.getChildren().addAll(idLabel, nameLabel, deleteButton);
         }
+    }
+
+    private void applyStyle() {
+        setPadding(new Insets(0, 0, 0, 5));
+        setSpacing(5);
+        setAlignment(Pos.CENTER);
+        setHgrow(nameLabel, Priority.ALWAYS);
+        nameLabel.setMaxWidth(Double.MAX_VALUE);
+
+        idLabel.setStyle("-fx-text-fill: #858585; -fx-font-size: 10; -fx-font-family: Verdana");
+        nameLabel.setStyle("-fx-text-fill: #FFF2C2; -fx-font-size: 14; -fx-font-family: Verdana; -fx-font-weight: 500");
     }
 }

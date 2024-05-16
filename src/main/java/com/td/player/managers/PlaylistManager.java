@@ -48,9 +48,11 @@ public class PlaylistManager implements ParentElementManager {
     public Playlist createPreferencePlaylist() {
         Playlist preferencePlaylist = new Playlist(controller.getPlaylistManager().getPlaylists().size() + 1, "Preference");
         for (int i = 10; i >= 0; i--) {
-            for (Track track : controller.getTrackManager().getTracks()) {
-                if (track.getLevel() == i) {
-                    preferencePlaylist.addTrack(track);
+            for (Directory directory : controller.getDirectoryManager().getDirectories()) {
+                for (Track track : directory.getTracks()) {
+                    if (track.getLevel() == i) {
+                        preferencePlaylist.addTrack(track);
+                    }
                 }
             }
         }
@@ -59,8 +61,10 @@ public class PlaylistManager implements ParentElementManager {
 
     public void createDefaultPlaylist() {
         Playlist playlist = new Playlist(controller.getPlaylistManager().getPlaylists().size() + 1, "All tracks");
-        for (Track track : controller.getTrackManager().getTracks()) {
-            playlist.addTrack(track);
+        for (Directory directory : controller.getDirectoryManager().getDirectories()) {
+            for (Track track : directory.getTracks()) {
+                playlist.addTrack(track);
+            }
         }
         playlists.add(playlist);
     }
@@ -68,8 +72,10 @@ public class PlaylistManager implements ParentElementManager {
     public void updateDefaultPlaylist() {
         Playlist defaultPlaylist = playlists.get(0);
         defaultPlaylist.getTracks().clear();
-        for (Track track : controller.getTrackManager().getTracks()) {
-            defaultPlaylist.addTrack(track);
+        for (Directory directory : controller.getDirectoryManager().getDirectories()) {
+            for (Track track : directory.getTracks()) {
+                defaultPlaylist.addTrack(track);
+            }
         }
     }
 

@@ -97,6 +97,7 @@ public class ViewController {
     private void showTracksWithId(VBox parentElementVBox, ParentElement currentParentElement, int buttonId) {
         parentElementVBox.getChildren().removeIf(node -> node.getClass().equals(VBox.class));
         VBox tracksVBox = new VBox();
+        tracksVBox.setSpacing(10);
         addTrackView(currentParentElement, tracksVBox);
         if (parentElementVBox.getChildren().size() <= buttonId + 1
                 && parentElementVBox.getChildren().size() != 1) {

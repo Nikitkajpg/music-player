@@ -5,7 +5,6 @@ import com.td.player.controllers.view.ParentElementView;
 import com.td.player.controllers.view.ViewController;
 import com.td.player.managers.DirectoryManager;
 import com.td.player.managers.PlaylistManager;
-import com.td.player.managers.TrackManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
@@ -43,7 +42,6 @@ public class Controller {
     public ToggleButton preferenceToggleButton, randomToggleButton;
 
     private DirectoryManager directoryManager;
-    private TrackManager trackManager;
     private PlaylistManager playlistManager;
     private FileController fileController;
     private MediaController mediaController;
@@ -56,7 +54,6 @@ public class Controller {
     }
 
     private void init() {
-        trackManager = new TrackManager();
         directoryManager = new DirectoryManager();
         playlistManager = new PlaylistManager(this);
         fileController = new FileController(this);
@@ -129,10 +126,6 @@ public class Controller {
 
     public DirectoryManager getDirectoryManager() {
         return directoryManager;
-    }
-
-    public TrackManager getTrackManager() {
-        return trackManager;
     }
 
     public PlaylistManager getPlaylistManager() {
