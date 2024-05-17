@@ -1,6 +1,9 @@
 package com.td.player.util;
 
+import com.td.player.controllers.Controller;
 import com.td.player.elements.Directory;
+import com.td.player.elements.ParentElement;
+import com.td.player.elements.Playlist;
 import com.td.player.elements.Track;
 
 import java.awt.*;
@@ -67,5 +70,18 @@ public class Util {
             strings[1] = strings[1].substring(0, 30) + "...";
         }
         return strings[0] + "\n" + strings[1];
+    }
+
+    public static String getNumberOfTracks(String id, Controller controller) {
+        for (Playlist playlist : controller.getPlaylistManager().getPlaylists()) {
+            if (Integer.parseInt(id) == playlist.getId()) {
+                return ": " + playlist.getTracks().size() + " tracks";
+            }
+        }
+        return ": " + -1 + " tracks";
+    }
+
+    public static String getNumberOfTracks(ParentElement parentElement) {
+        return ": " + parentElement.getTracks().size() + " tracks";
     }
 }

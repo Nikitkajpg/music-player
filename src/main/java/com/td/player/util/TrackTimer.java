@@ -34,7 +34,6 @@ public class TrackTimer {
         incrementN();
     }
 
-    // TODO: 02.09.2023 most likely to remove this method
     private static void incrementN() {
         if (countFlags + 1 != 40) {
             countFlags++;

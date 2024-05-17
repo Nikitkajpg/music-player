@@ -11,8 +11,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-//TODO: add id to tracks, directories and playlists
-
 public class Controller {
     @FXML
     public VBox directoriesVBox, playlistsVBox;

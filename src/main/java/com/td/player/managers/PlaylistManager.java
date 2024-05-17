@@ -85,9 +85,9 @@ public class PlaylistManager implements ParentElementManager {
         return playlist;
     }
 
-    public void renamePlaylist(String oldName, String newName) {
+    public void renamePlaylist(String id, String newName) {
         for (Playlist playlist : playlists) {
-            if (playlist.getName().equals(oldName)) {
+            if (Integer.parseInt(id) == playlist.getId()) {
                 playlist.setName(newName);
                 break;
             }

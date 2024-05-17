@@ -43,10 +43,7 @@ public class TrackView extends HBox {
     }
 
     private void addProperties(int id, ParentElement parentElement, Controller controller) {
-        singleLabel.setOnMouseEntered(mouseEvent -> setCursor(Cursor.HAND));
-        addToPlaylistButton.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/td/player/img/add.png")).toExternalForm()));
         addToPlaylistButton.setOnMouseClicked(mouseEvent -> addToPlaylistAction(id, mouseEvent, controller));
-        deleteButton.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/td/player/img/delete.png")).toExternalForm()));
         deleteButton.setOnAction(actionEvent -> deleteAction(id, parentElement, controller));
     }
 
@@ -74,6 +71,7 @@ public class TrackView extends HBox {
     }
 
     private void applyStyle() {
+        setCursor(Cursor.HAND);
         setPadding(new Insets(0, 0, 0, 5));
         setSpacing(5);
         setAlignment(Pos.CENTER_LEFT);
@@ -84,5 +82,21 @@ public class TrackView extends HBox {
         idLabel.setStyle("-fx-text-fill: #858585; -fx-font-size: 10; -fx-font-family: Verdana");
         singleLabel.setStyle("-fx-text-fill: #FFF2C2; -fx-font-size: 12; -fx-font-family: Verdana; -fx-font-weight: 500");
         timeLabel.setStyle("-fx-text-fill: #FFF2C2; -fx-font-size: 10; -fx-font-family: Verdana; -fx-font-weight: 500");
+
+        singleLabel.setOnMouseEntered(mouseEvent -> {
+            setStyle("-fx-background-color: #333333");
+            addToPlaylistButton.setStyle("-fx-background-color: #333333");
+            deleteButton.setStyle("-fx-background-color: #333333");
+        });
+        singleLabel.setOnMouseExited(mouseEvent -> {
+            setStyle("-fx-background-color: #222222");
+            addToPlaylistButton.setStyle("-fx-background-color: #222222");
+            deleteButton.setStyle("-fx-background-color: #222222");
+        });
+
+        addToPlaylistButton.setGraphic(new ImageView(Objects.requireNonNull(getClass()
+                .getResource("/com/td/player/img/add.png")).toExternalForm()));
+        deleteButton.setGraphic(new ImageView(Objects.requireNonNull(getClass()
+                .getResource("/com/td/player/img/delete.png")).toExternalForm()));
     }
 }
