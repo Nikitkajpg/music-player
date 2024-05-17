@@ -1,6 +1,7 @@
 package com.td.player.util;
 
 import com.td.player.controllers.Controller;
+import com.td.player.controllers.view.TrackView;
 import com.td.player.elements.Directory;
 import com.td.player.elements.ParentElement;
 import com.td.player.elements.Playlist;
@@ -12,6 +13,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Util {
+    public static TrackView currentTrackView;
+
     public static String getDirectoryName(String directoryPath) {
         String[] strings = directoryPath.split("\\\\");
         String name = directoryPath;

@@ -27,6 +27,8 @@ public class TrackView extends HBox {
     private Button addToPlaylistButton;
     private Button deleteButton;
 
+    private boolean isHighlighted = false;
+
     public TrackView(int id, String single, String time, ParentElement parentElement, Controller controller) {
         init(id, single, time);
         addProperties(id, parentElement, controller);
@@ -84,19 +86,34 @@ public class TrackView extends HBox {
         timeLabel.setStyle("-fx-text-fill: #FFF2C2; -fx-font-size: 10; -fx-font-family: Verdana; -fx-font-weight: 500");
 
         singleLabel.setOnMouseEntered(mouseEvent -> {
-            setStyle("-fx-background-color: #333333");
-            addToPlaylistButton.setStyle("-fx-background-color: #333333");
-            deleteButton.setStyle("-fx-background-color: #333333");
+            if (!isHighlighted) {
+                setColor("#333333");
+            }
         });
         singleLabel.setOnMouseExited(mouseEvent -> {
-            setStyle("-fx-background-color: #222222");
-            addToPlaylistButton.setStyle("-fx-background-color: #222222");
-            deleteButton.setStyle("-fx-background-color: #222222");
+            if (!isHighlighted) {
+                setColor("#222222");
+            }
         });
 
         addToPlaylistButton.setGraphic(new ImageView(Objects.requireNonNull(getClass()
                 .getResource("/com/td/player/img/add.png")).toExternalForm()));
         deleteButton.setGraphic(new ImageView(Objects.requireNonNull(getClass()
                 .getResource("/com/td/player/img/delete.png")).toExternalForm()));
+    }
+
+    public void setHighlighted(boolean highlighted) {
+        isHighlighted = highlighted;
+        if (highlighted) {
+            setColor("#7A3100");
+        } else {
+            setColor("#222222");
+        }
+    }
+
+    private void setColor(String color) {
+        setStyle("-fx-background-color: " + color);
+        addToPlaylistButton.setStyle("-fx-background-color: " + color);
+        deleteButton.setStyle("-fx-background-color: " + color);
     }
 }

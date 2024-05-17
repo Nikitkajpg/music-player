@@ -118,6 +118,11 @@ public class ViewController {
     }
 
     public void actionWithTrackView(ParentElement currentParentElement, MouseEvent mouseEvent, TrackView trackView, Track track) {
+        if (Util.currentTrackView != null) {
+            Util.currentTrackView.setHighlighted(false);
+        }
+        Util.currentTrackView = trackView;
+        Util.currentTrackView.setHighlighted(true);
         if (currentParentElement instanceof Directory) {
             if (mouseEvent.getButton() == MouseButton.PRIMARY) {
                 controller.getMediaController().playTrackInPlaylist(track, controller.getPlaylistManager().getPlaylists().get(0));
