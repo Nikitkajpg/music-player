@@ -76,13 +76,10 @@ public class ViewController {
     }
 
     private void showTracks(VBox parentElementsVBox, ParentElementView parentElementView, ParentElement currentParentElement) {
-        int buttonId = parentElementsVBox.getChildren().indexOf(parentElementView);
         int vBoxId = getVBoxId(parentElementsVBox);
         parentElementsVBox.getChildren().removeIf(node -> node.getClass().equals(VBox.class));
-        if (vBoxId != -1 && vBoxId != buttonId + 1) {
-            showTracksWithId(parentElementsVBox, currentParentElement, buttonId);
-        } else if (vBoxId != -1 && vBoxId == buttonId + 1) {
-        } else {
+        int buttonId = parentElementsVBox.getChildren().indexOf(parentElementView);
+        if (vBoxId - 1 != buttonId) {
             showTracksWithId(parentElementsVBox, currentParentElement, buttonId);
         }
     }
@@ -101,12 +98,7 @@ public class ViewController {
         VBox tracksVBox = new VBox();
         tracksVBox.setSpacing(10);
         addTrackView(currentParentElement, tracksVBox);
-        if (parentElementVBox.getChildren().size() <= buttonId + 1
-                && parentElementVBox.getChildren().size() != 1) {
-            parentElementVBox.getChildren().add(buttonId, tracksVBox);
-        } else {
-            parentElementVBox.getChildren().add(buttonId + 1, tracksVBox);
-        }
+        parentElementVBox.getChildren().add(buttonId + 1, tracksVBox);
     }
 
     private void addTrackView(ParentElement currentParentElement, VBox tracksVBox) {
