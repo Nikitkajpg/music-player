@@ -87,4 +87,11 @@ public class Util {
     public static String getNumberOfTracks(ParentElement parentElement) {
         return ": " + parentElement.getTracks().size() + " tracks";
     }
+
+    public static String getTrackFilename(String single) {
+        if (single.length() > 30) {
+            return single.substring(0, 30) + "...";
+        }
+        return single;
+    }
 }

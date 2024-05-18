@@ -56,7 +56,7 @@ public class ContextMenuController {
         VBox tracksVBox = (VBox) controller.playlistsVBox.getChildren().stream().filter(node -> node.getClass().equals(VBox.class)).findAny().orElse(null);
         tracksVBox.setSpacing(10);
 
-        TrackView trackView = new TrackView(id, track.getArtist() + "\n" + track.getTitle(), track.getTime(), playlist, controller);
+        TrackView trackView = new TrackView(id, track, playlist, controller);
         trackView.setOnMouseClicked(mouseEvent -> controller.getViewController().actionWithTrackView(playlist, mouseEvent, trackView, track));
         tracksVBox.getChildren().add(trackView);
     }

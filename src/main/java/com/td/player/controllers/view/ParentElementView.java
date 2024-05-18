@@ -1,6 +1,8 @@
 package com.td.player.controllers.view;
 
 import com.td.player.controllers.Controller;
+import com.td.player.elements.Directory;
+import com.td.player.elements.ParentElement;
 import com.td.player.util.Util;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -24,23 +26,26 @@ public class ParentElementView extends HBox {
     private Button renameButton;
     private Button deleteButton;
 
-    public ParentElementView(int id, String name, boolean isPlaylist, Controller controller) {
-        init(id, name);
-        addProperties(isPlaylist, id, controller);
+    private ParentElement parentElement;
+
+    public ParentElementView(ParentElement parentElement, boolean isPlaylist, Controller controller) {
+        this.parentElement = parentElement;
+        init();
+        addProperties(isPlaylist, controller);
         fillParent(isPlaylist);
         applyStyle();
     }
 
-    private void init(int id, String name) {
-        idLabel = new Label(String.valueOf(id));
-        nameLabel = new Label(name);
+    private void init() {
+        idLabel = new Label(String.valueOf(parentElement.getId()));
+        nameLabel = new Label(parentElement.getName() + Util.getNumberOfTracks(parentElement));
         renameButton = new Button();
         deleteButton = new Button();
     }
 
-    private void addProperties(boolean isPlaylist, int id, Controller controller) {
+    private void addProperties(boolean isPlaylist, Controller controller) {
         renameButton.setOnAction(actionEvent -> renameAction(controller));
-        deleteButton.setOnAction(actionEvent -> deleteAction(isPlaylist, id, controller));
+        deleteButton.setOnAction(actionEvent -> deleteAction(isPlaylist, parentElement.getId(), controller));
     }
 
     private void renameAction(Controller controller) {
@@ -107,10 +112,22 @@ public class ParentElementView extends HBox {
             renameButton.setStyle("-fx-background-color: #222222");
             deleteButton.setStyle("-fx-background-color: #222222");
         });
+        renameButton.setOnMouseEntered(mouseEvent -> renameButton.setStyle("-fx-background-color: #333333"));
+        renameButton.setOnMouseExited(mouseEvent -> renameButton.setStyle("-fx-background-color: #222222"));
+        deleteButton.setOnMouseEntered(mouseEvent -> deleteButton.setStyle("-fx-background-color: #333333"));
+        deleteButton.setOnMouseExited(mouseEvent -> deleteButton.setStyle("-fx-background-color: #222222"));
 
         renameButton.setGraphic(new ImageView(Objects.requireNonNull(getClass()
                 .getResource("/com/td/player/img/rename.png")).toExternalForm()));
         deleteButton.setGraphic(new ImageView(Objects.requireNonNull(getClass()
                 .getResource("/com/td/player/img/delete.png")).toExternalForm()));
+
+        if (parentElement instanceof Directory) {
+            nameLabel.setTooltip(new Tooltip(((Directory) parentElement).getPath()));
+        } else {
+            nameLabel.setTooltip(new Tooltip(parentElement.getName()));
+        }
+        renameButton.setTooltip(new Tooltip("Rename playlist"));
+        deleteButton.setTooltip(new Tooltip("Delete"));
     }
 }

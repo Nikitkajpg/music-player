@@ -7,9 +7,19 @@ import com.td.player.managers.DirectoryManager;
 import com.td.player.managers.PlaylistManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+
+import java.util.Objects;
+
+//todo вместо двух нопок режимов напротив каждого плейлиста расположить эти кнопки
+// окно с настройками
+// смена языка
+// светлая тема
+// оформление контекстного меню при нажатии на кнопку добавления песни в плейлист
+// сделать кнопку обратную maximize
 
 public class Controller {
     @FXML
@@ -22,7 +32,7 @@ public class Controller {
     public BorderPane topMenuBorderPane, controlsBorderPane;
 
     @FXML
-    public Button playButton, addDirectoryButton, addPlaylistButton;
+    public Button playButton, addDirectoryButton, addPlaylistButton, maximizeButton;
 
     @FXML
     public ScrollPane directoriesScrollPane, playlistsScrollPane;
@@ -109,7 +119,15 @@ public class Controller {
 
     @FXML
     private void onMaximizeButtonClick() {
-        Player.stage.setMaximized(!Player.stage.isMaximized());
+        if (Player.stage.isMaximized()) {
+            maximizeButton.setGraphic(new ImageView(Objects.requireNonNull(getClass()
+                    .getResource("/com/td/player/img/maximize.png")).toExternalForm()));
+            Player.stage.setMaximized(false);
+        } else {
+            maximizeButton.setGraphic(new ImageView(Objects.requireNonNull(getClass()
+                    .getResource("/com/td/player/img/downsize.png")).toExternalForm()));
+            Player.stage.setMaximized(true);
+        }
     }
 
     @FXML

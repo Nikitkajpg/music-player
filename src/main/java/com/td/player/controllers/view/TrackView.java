@@ -4,12 +4,14 @@ import com.td.player.controllers.Controller;
 import com.td.player.elements.Directory;
 import com.td.player.elements.ParentElement;
 import com.td.player.elements.Playlist;
+import com.td.player.elements.Track;
 import com.td.player.util.Util;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -28,18 +30,24 @@ public class TrackView extends HBox {
     private Button deleteButton;
 
     private boolean isHighlighted = false;
+    private Track track;
 
-    public TrackView(int id, String single, String time, ParentElement parentElement, Controller controller) {
-        init(id, single, time);
+    public TrackView(int id, Track track, ParentElement parentElement, Controller controller) {
+        this.track = track;
+        init(id, parentElement);
         addProperties(id, parentElement, controller);
         fillParent(parentElement);
-        applyStyle();
+        applyStyle(parentElement);
     }
 
-    private void init(int id, String single, String time) {
+    private void init(int id, ParentElement parentElement) {
         idLabel = new Label(String.valueOf(id));
-        singleLabel = new Label(Util.getSingleText(single));
-        timeLabel = new Label(time);
+        if (parentElement instanceof Playlist) {
+            singleLabel = new Label(Util.getSingleText(track.getArtist() + "\n" + track.getTitle()));
+        } else {
+            singleLabel = new Label(Util.getTrackFilename(track.getFileName()));
+        }
+        timeLabel = new Label(track.getTime());
         addToPlaylistButton = new Button();
         deleteButton = new Button();
     }
@@ -72,7 +80,7 @@ public class TrackView extends HBox {
         }
     }
 
-    private void applyStyle() {
+    private void applyStyle(ParentElement parentElement) {
         setCursor(Cursor.HAND);
         setPadding(new Insets(0, 0, 0, 5));
         setSpacing(5);
@@ -95,11 +103,23 @@ public class TrackView extends HBox {
                 setColor("#222222");
             }
         });
+        addToPlaylistButton.setOnMouseEntered(mouseEvent -> addToPlaylistButton.setStyle("-fx-background-color: #333333"));
+        addToPlaylistButton.setOnMouseExited(mouseEvent -> addToPlaylistButton.setStyle("-fx-background-color: #222222"));
+        deleteButton.setOnMouseEntered(mouseEvent -> deleteButton.setStyle("-fx-background-color: #333333"));
+        deleteButton.setOnMouseExited(mouseEvent -> deleteButton.setStyle("-fx-background-color: #222222"));
 
         addToPlaylistButton.setGraphic(new ImageView(Objects.requireNonNull(getClass()
                 .getResource("/com/td/player/img/add.png")).toExternalForm()));
         deleteButton.setGraphic(new ImageView(Objects.requireNonNull(getClass()
                 .getResource("/com/td/player/img/delete.png")).toExternalForm()));
+
+        if (parentElement instanceof Directory) {
+            singleLabel.setTooltip(new Tooltip(track.getFileName()));
+        } else {
+            singleLabel.setTooltip(new Tooltip(track.getArtist() + " - " + track.getTitle()));
+        }
+        addToPlaylistButton.setTooltip(new Tooltip("Add track to playlist"));
+        deleteButton.setTooltip(new Tooltip("Delete track"));
     }
 
     public void setHighlighted(boolean highlighted) {

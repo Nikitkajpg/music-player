@@ -70,14 +70,13 @@
                 </HBox>
             </top>
             <right>
-                <HBox>
-                    <ToggleButton fx:id="preferenceToggleButton" text="Preference"
-                                  onAction="#onPreferenceToggleButtonClick">
+                <HBox fx:id="rightHBox">
+                    <ToggleButton fx:id="preferenceToggleButton" onAction="#onPreferenceToggleButtonClick">
                         <tooltip>
                             <Tooltip text="Play songs in preference mode"/>
                         </tooltip>
                     </ToggleButton>
-                    <ToggleButton fx:id="randomToggleButton" text="Random" onAction="#onRandomToggleButtonClick">
+                    <ToggleButton fx:id="randomToggleButton" onAction="#onRandomToggleButtonClick">
                         <tooltip>
                             <Tooltip text="Play song in random mode"/>
                         </tooltip>
@@ -85,14 +84,14 @@
                 </HBox>
             </right>
             <bottom>
-                <HBox>
+                <HBox fx:id="bottomHBox" spacing="10" alignment="CENTER">
                     <Label fx:id="currentTimeLabel" text="00.00"/>
                     <Slider fx:id="timeSlider" HBox.hgrow="ALWAYS"/>
                     <Label fx:id="endTimeLabel" text="00.00"/>
                 </HBox>
             </bottom>
             <left>
-                <HBox BorderPane.alignment="CENTER">
+                <HBox fx:id="leftHBox" BorderPane.alignment="CENTER" alignment="CENTER">
                     <Button fx:id="muteButton">
                         <tooltip>
                             <Tooltip text="Turn on/off sound"/>
