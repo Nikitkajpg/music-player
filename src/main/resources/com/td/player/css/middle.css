@@ -82,7 +82,7 @@ VBox {
 }
 
 .toggle-button:selected {
-    -fx-background-color: #ffc600;
+    -fx-background-color: #7A3100;
 }
 
 .toggle-button:hover {

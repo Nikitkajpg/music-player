@@ -16,8 +16,6 @@ public class Track {
     private String absolutePath;
     private String fileName;
     private MediaPlayer mediaPlayer;
-//    AudioEqualizer
-//    AudioSpectrumListener
 
     /**
      * Конструктор для создания нового объекта.
@@ -27,7 +25,7 @@ public class Track {
         this.id = id;
         this.title = title;
         this.artist = artist;
-        this.level = 5;
+        this.level = level;
         this.absolutePath = file.getAbsolutePath();
         this.fileName = file.getName();
         mediaPlayer = new MediaPlayer(new Media(mediaPath));

@@ -93,6 +93,13 @@ public class TrackView extends HBox {
         singleLabel.setStyle("-fx-text-fill: #FFF2C2; -fx-font-size: 12; -fx-font-family: Verdana; -fx-font-weight: 500");
         timeLabel.setStyle("-fx-text-fill: #FFF2C2; -fx-font-size: 10; -fx-font-family: Verdana; -fx-font-weight: 500");
 
+
+        addStyleWhileActionPerform();
+        addImages();
+        addTooltips(parentElement);
+    }
+
+    private void addStyleWhileActionPerform() {
         singleLabel.setOnMouseEntered(mouseEvent -> {
             if (!isHighlighted) {
                 setColor("#333333");
@@ -107,12 +114,16 @@ public class TrackView extends HBox {
         addToPlaylistButton.setOnMouseExited(mouseEvent -> addToPlaylistButton.setStyle("-fx-background-color: #222222"));
         deleteButton.setOnMouseEntered(mouseEvent -> deleteButton.setStyle("-fx-background-color: #333333"));
         deleteButton.setOnMouseExited(mouseEvent -> deleteButton.setStyle("-fx-background-color: #222222"));
+    }
 
+    private void addImages() {
         addToPlaylistButton.setGraphic(new ImageView(Objects.requireNonNull(getClass()
                 .getResource("/com/td/player/img/add.png")).toExternalForm()));
         deleteButton.setGraphic(new ImageView(Objects.requireNonNull(getClass()
                 .getResource("/com/td/player/img/delete.png")).toExternalForm()));
+    }
 
+    private void addTooltips(ParentElement parentElement) {
         if (parentElement instanceof Directory) {
             singleLabel.setTooltip(new Tooltip(track.getFileName()));
         } else {

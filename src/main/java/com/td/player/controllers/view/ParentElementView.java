@@ -102,6 +102,12 @@ public class ParentElementView extends HBox {
         idLabel.setStyle("-fx-text-fill: #858585; -fx-font-size: 10; -fx-font-family: Verdana");
         nameLabel.setStyle("-fx-text-fill: #FFF2C2; -fx-font-size: 14; -fx-font-family: Verdana; -fx-font-weight: 500");
 
+        addStyleWhileActionPerform();
+        addImages();
+        addTooltips();
+    }
+
+    private void addStyleWhileActionPerform() {
         nameLabel.setOnMouseEntered(mouseEvent -> {
             setStyle("-fx-background-color: #333333");
             renameButton.setStyle("-fx-background-color: #333333");
@@ -116,12 +122,16 @@ public class ParentElementView extends HBox {
         renameButton.setOnMouseExited(mouseEvent -> renameButton.setStyle("-fx-background-color: #222222"));
         deleteButton.setOnMouseEntered(mouseEvent -> deleteButton.setStyle("-fx-background-color: #333333"));
         deleteButton.setOnMouseExited(mouseEvent -> deleteButton.setStyle("-fx-background-color: #222222"));
+    }
 
+    private void addImages() {
         renameButton.setGraphic(new ImageView(Objects.requireNonNull(getClass()
                 .getResource("/com/td/player/img/rename.png")).toExternalForm()));
         deleteButton.setGraphic(new ImageView(Objects.requireNonNull(getClass()
                 .getResource("/com/td/player/img/delete.png")).toExternalForm()));
+    }
 
+    private void addTooltips() {
         if (parentElement instanceof Directory) {
             nameLabel.setTooltip(new Tooltip(((Directory) parentElement).getPath()));
         } else {

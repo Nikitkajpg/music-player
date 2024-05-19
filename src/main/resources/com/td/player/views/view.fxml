@@ -103,7 +103,7 @@
         </BorderPane>
     </VBox>
 
-    <SplitPane fx:id="splitPane" VBox.vgrow="ALWAYS" stylesheets="@../css/bottom.css" dividerPositions="0.1">
+    <SplitPane fx:id="splitPane" VBox.vgrow="ALWAYS" stylesheets="@../css/bottom.css" dividerPositions="0.4">
         <VBox>
             <HBox alignment="CENTER_LEFT">
                 <Button fx:id="addDirectoryButton" onAction="#onAddDirectoryButtonClick">

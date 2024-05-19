@@ -46,3 +46,14 @@
     -fx-graphic: url("../img/random.png");
 }
 
+.context-menu {
+    -fx-background-color: #333333;
+}
+
+.context-menu .label {
+    -fx-text-fill: #FFF2C2;
+}
+
+.menu-item:focused {
+    -fx-background-color: #7A3100;
+}
