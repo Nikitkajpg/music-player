@@ -37,6 +37,7 @@ public class ViewController {
     public void updateView() {
         updateDirectories();
         updatePlaylists();
+
     }
 
     private void updateDirectories() {

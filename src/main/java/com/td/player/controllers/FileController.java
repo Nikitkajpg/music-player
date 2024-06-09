@@ -22,17 +22,17 @@ public class FileController {
     private File playlistFile;
     private File levelsFile;
 
-    private ArrayList<String> directories = new ArrayList<>();
-    private ArrayList<String> levels = new ArrayList<>();
-    private ArrayList<String> playlists = new ArrayList<>();
+    private ArrayList<String> directoriesLines = new ArrayList<>();
+    private ArrayList<String> levelsLines = new ArrayList<>();
+    private ArrayList<String> playlistsLines = new ArrayList<>();
 
     public FileController(Controller controller) {
         this.controller = controller;
         initFiles();
 
-        readFile(directories, directoriesFile);
-        readFile(levels, levelsFile);
-        readFile(playlists, playlistFile);
+        readFile(directoriesLines, directoriesFile);
+        readFile(levelsLines, levelsFile);
+        readFile(playlistsLines, playlistFile);
 
         fillDirectories();
         fillPlaylists();
@@ -75,7 +75,7 @@ public class FileController {
     }
 
     private void fillDirectories() {
-        for (String directoryPath : directories) {
+        for (String directoryPath : directoriesLines) {
             Directory directory = new Directory(controller.getDirectoryManager().getDirectories().size() + 1, Util.getDirectoryName(directoryPath), directoryPath);
             controller.getDirectoryManager().add(directory);
             addTracksToDirectory(directory);
@@ -97,7 +97,7 @@ public class FileController {
     }
 
     private int getLevel(String trackPath) {
-        for (String line : levels) {
+        for (String line : levelsLines) {
             String[] splitLine = line.split("::");
             if (splitLine[0].equals(trackPath)) {
                 return Integer.parseInt(splitLine[1]);
@@ -107,9 +107,9 @@ public class FileController {
     }
 
     private void fillPlaylists() {
-        Playlist defaultPlaylist = new Playlist(controller.getPlaylistManager().getPlaylists().size() + 1, "All tracks");
+        controller.getPlaylistManager().createDefaultPlaylist();
         Playlist playlist = null;
-        for (String line : playlists) {
+        for (String line : playlistsLines) {
             if (line.startsWith("::") && line.endsWith("::")) {
                 line = line.replace("::", "");
                 playlist = new Playlist(controller.getPlaylistManager().getPlaylists().size() + 1, line);
@@ -137,6 +137,7 @@ public class FileController {
             addTracksToDirectory(directory);
             controller.getDirectoryManager().add(directory);
         }
+        controller.getPlaylistManager().updateDefaultPlaylist();
         controller.getViewController().updateView();
     }
 

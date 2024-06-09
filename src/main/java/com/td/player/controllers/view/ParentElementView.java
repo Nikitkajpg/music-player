@@ -77,6 +77,8 @@ public class ParentElementView extends HBox {
         } else {
             controller.getDirectoryManager().delete(id);
         }
+        controller.getPlaylistManager().updateDefaultPlaylist();
+        controller.getViewController().updateView();
     }
 
     private void fillParent(boolean isPlaylist) {

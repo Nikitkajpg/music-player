@@ -88,13 +88,6 @@ public class PlaylistManager implements ParentElementManager {
     }
 
     public Playlist getDefaultPlaylist() {
-        Playlist defaultPlaylist = new Playlist(controller.getPlaylistManager().getPlaylists().size() + 1, "All tracks");
-        for (Directory directory : controller.getDirectoryManager().getDirectories()) {
-            for (Track track : directory.getTracks()) {
-                defaultPlaylist.addTrack(track);
-            }
-        }
-        playlists.add(0, defaultPlaylist);
         return playlists.get(0);
     }
 
