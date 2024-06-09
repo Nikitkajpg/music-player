@@ -8,6 +8,7 @@ import com.td.player.elements.Playlist;
 import com.td.player.elements.Track;
 import com.td.player.util.Mode;
 import com.td.player.util.Util;
+import javafx.application.Platform;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -16,6 +17,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.util.Objects;
 
@@ -198,5 +200,64 @@ public class ViewController {
         });
         parentElementView.prefWidthProperty().bind(controller.playlistsScrollPane.widthProperty().subtract(17));
         controller.playlistsVBox.getChildren().add(parentElementView);
+    }
+
+    /**
+     * Метод для установки громкости музыки через перемещение ползунка
+     */
+    public void addVolumeSliderListener(Track currentTrack) {
+        controller.volumeSlider.setValue(controller.volumeSlider.getMax());
+        controller.volumeSlider.valueProperty().addListener(observable -> {
+            if (controller.volumeSlider.isValueChanging()) {
+                currentTrack.getMediaPlayer().setVolume(controller.volumeSlider.getValue() / 100);
+            }
+        });
+    }
+
+    /**
+     * Метод для перемотки музыки на положение курсора при удержании ползунка.
+     */
+    public void addTimeSliderListener(Track currentTrack, Duration duration) {
+        controller.timeSlider.valueProperty().addListener(observable -> {
+            if (controller.timeSlider.isValueChanging() && duration != null) {
+                controller.timeSlider.setOnMouseReleased(mouseEvent ->
+                        currentTrack.getMediaPlayer().seek(duration.multiply(controller.timeSlider.getValue() / 100)));
+            }
+        });
+    }
+
+    /**
+     * Метод для управления дорожкой музыки {@link Controller#timeSlider} и
+     * дорожкой громкости {@link Controller#volumeSlider}.
+     * <p>1. При нажатии на {@link Controller#timeSlider} музыка воспроизводится с точки нажатия,
+     * при нажатии на {@link Controller#volumeSlider} громкость устанавливается согласно ползунку.
+     * <p>2. Создается отдельный поток для положения ползунка на музыкальной дорожке и дорожке громкости,
+     * ведется подсчет текущего времени.
+     */
+    public void addMediaPlayerListener(Track currentTrack, Duration duration) {
+        controller.timeSlider.setOnMousePressed(mouseEvent ->
+                currentTrack.getMediaPlayer().seek(duration.multiply(controller.timeSlider.getValue() / 100)));
+        controller.volumeSlider.setOnMousePressed(mouseEvent ->
+                currentTrack.getMediaPlayer().setVolume(controller.volumeSlider.getValue() / 100));
+        currentTrack.getMediaPlayer().currentTimeProperty().addListener(observable -> Platform.runLater(() -> {
+            Duration currentTime = currentTrack.getMediaPlayer().getCurrentTime();
+            if (!controller.timeSlider.isValueChanging()) {
+                controller.timeSlider.setValue(currentTime.divide(duration.toMillis()).toMillis() * 100.0);
+                controller.currentTimeLabel.setText(controller.getMediaController().getTotalTrackTime(currentTime));
+            }
+            if (!controller.volumeSlider.isValueChanging()) {
+                controller.volumeSlider.setValue((int) Math.round(currentTrack.getMediaPlayer().getVolume() * 100));
+            }
+        }));
+    }
+
+    public void maximize() {
+        if (Player.stage.isMaximized()) {
+            controller.maximizeButton.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/td/player/img/maximize.png")).toExternalForm()));
+            Player.stage.setMaximized(false);
+        } else {
+            controller.maximizeButton.setGraphic(new ImageView(Objects.requireNonNull(getClass().getResource("/com/td/player/img/downsize.png")).toExternalForm()));
+            Player.stage.setMaximized(true);
+        }
     }
 }

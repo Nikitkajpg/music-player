@@ -62,8 +62,8 @@ public class Controller {
         directoryManager = new DirectoryManager();
         playlistManager = new PlaylistManager(this);
         fileController = new FileController(this);
-        mediaController = new MediaController(this);
         viewController = new ViewController(this);
+        mediaController = new MediaController(this);
     }
 
     private void setWidthProperties() {
@@ -116,15 +116,7 @@ public class Controller {
 
     @FXML
     private void onMaximizeButtonClick() {
-        if (Player.stage.isMaximized()) {
-            maximizeButton.setGraphic(new ImageView(Objects.requireNonNull(getClass()
-                    .getResource("/com/td/player/img/maximize.png")).toExternalForm()));
-            Player.stage.setMaximized(false);
-        } else {
-            maximizeButton.setGraphic(new ImageView(Objects.requireNonNull(getClass()
-                    .getResource("/com/td/player/img/downsize.png")).toExternalForm()));
-            Player.stage.setMaximized(true);
-        }
+        viewController.maximize();
     }
 
     @FXML

@@ -48,4 +48,15 @@ public class DirectoryManager implements ParentElementManager {
         }
         return null;
     }
+
+    public boolean noTracks() {
+        boolean empty = true;
+        for (Directory directory : directories) {
+            if (directory.getTracks().size() != 0) {
+                empty = false;
+                break;
+            }
+        }
+        return empty;
+    }
 }

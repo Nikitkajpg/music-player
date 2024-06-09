@@ -25,22 +25,6 @@ public class PlaylistManager implements ParentElementManager {
         playlists.add(new Playlist(controller.getPlaylistManager().getPlaylists().size() + 1, name));
     }
 
-    public void deleteByPath(String path) {
-        for (Playlist playlist : playlists) {
-            ArrayList<Track> trackArray = playlist.getTracks();
-            trackArray.removeIf(track -> (path + "\\" + track.getFileName()).equals(track.getAbsolutePath()));
-        }
-    }
-
-    public void addTrackToPlaylist(String playlistName, Track track) {
-        for (Playlist playlist : playlists) {
-            if (playlist.getName().equals(playlistName)) {
-                playlist.addTrack(track);
-                break;
-            }
-        }
-    }
-
     /**
      * Метод создает плейлист для "системы предпочтений".
      * <p>В начале плейлиста находится музыка с самым высоким уровнем (приоритетом), далее по убыванию
@@ -103,15 +87,6 @@ public class PlaylistManager implements ParentElementManager {
         return true;
     }
 
-    public boolean isUniqueInPlaylist(Playlist playlist, Track newTrack) {
-        for (Track track : playlist.getTracks()) {
-            if (track.equals(newTrack)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public Playlist getDefaultPlaylist() {
         Playlist defaultPlaylist = new Playlist(controller.getPlaylistManager().getPlaylists().size() + 1, "All tracks");
         for (Directory directory : controller.getDirectoryManager().getDirectories()) {
@@ -121,15 +96,6 @@ public class PlaylistManager implements ParentElementManager {
         }
         playlists.add(0, defaultPlaylist);
         return playlists.get(0);
-    }
-
-    public Playlist getPlaylistByName(String name) {
-        for (Playlist playlist : playlists) {
-            if (playlist.getName().equals(name)) {
-                return playlist;
-            }
-        }
-        return getDefaultPlaylist();
     }
 
     public Playlist getRandomPlaylist() {

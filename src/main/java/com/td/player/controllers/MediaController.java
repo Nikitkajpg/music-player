@@ -24,8 +24,8 @@ public class MediaController {
 
     public MediaController(Controller controller) {
         this.controller = controller;
-        addTimeSliderListener();
-        addVolumeSliderListener();
+        controller.getViewController().addTimeSliderListener(currentTrack, duration);
+        controller.getViewController().addVolumeSliderListener(currentTrack);
         defineDefaultPlaylist();
     }
 
@@ -33,6 +33,16 @@ public class MediaController {
         currentPlayList = controller.getPlaylistManager().getDefaultPlaylist();
         if (currentPlayList.getTracks().size() > 0) {
             currentTrack = currentPlayList.getTracks().get(0);
+        }
+    }
+
+    public void play() {
+        if (!controller.getDirectoryManager().noTracks()) {
+            if (isPaused()) {
+                playInMode();
+            } else {
+                pause();
+            }
         }
     }
 
@@ -105,6 +115,9 @@ public class MediaController {
      * @param turningNewTrack флаг, true - была включена новая песня, false - снята с паузы текущая песня
      */
     private void playTrack(boolean turningNewTrack, Track previousTrack) {
+        if (currentTrack == null) {
+            currentTrack = controller.getDirectoryManager().getTrackById(1);
+        }
         controller.getViewController().changeToPause();
         TrackTimer.setFlag(turningNewTrack, previousTrack);
         currentTrack.getMediaPlayer().play();
@@ -114,68 +127,11 @@ public class MediaController {
         controller.endTimeLabel.setText(getTotalTrackTime(duration));
         controller.titleLabel.setText(currentTrack.getArtist() + " - " + currentTrack.getTitle());
 
-        addMediaPlayerListener();
+        controller.getViewController().addMediaPlayerListener(currentTrack, duration);
     }
 
-    public void play() {
-        if (isPaused()) {
-            playInMode();
-        } else {
-            pause();
-        }
-    }
-
-    private String getTotalTrackTime(Duration duration) {
+    public String getTotalTrackTime(Duration duration) {
         return Util.getTime((int) duration.toSeconds());
-    }
-
-    /**
-     * Метод для управления дорожкой музыки {@link Controller#timeSlider} и
-     * дорожкой громкости {@link Controller#volumeSlider}.
-     * <p>1. При нажатии на {@link Controller#timeSlider} музыка воспроизводится с точки нажатия,
-     * при нажатии на {@link Controller#volumeSlider} громкость устанавливается согласно ползунку.
-     * <p>2. Создается отдельный поток для положения ползунка на музыкальной дорожке и дорожке громкости,
-     * ведется подсчет текущего времени.
-     */
-    private void addMediaPlayerListener() {
-        controller.timeSlider.setOnMousePressed(mouseEvent ->
-                currentTrack.getMediaPlayer().seek(duration.multiply(controller.timeSlider.getValue() / 100)));
-        controller.volumeSlider.setOnMousePressed(mouseEvent ->
-                currentTrack.getMediaPlayer().setVolume(controller.volumeSlider.getValue() / 100));
-        currentTrack.getMediaPlayer().currentTimeProperty().addListener(observable -> Platform.runLater(() -> {
-            Duration currentTime = currentTrack.getMediaPlayer().getCurrentTime();
-            if (!controller.timeSlider.isValueChanging()) {
-                controller.timeSlider.setValue(currentTime.divide(duration.toMillis()).toMillis() * 100.0);
-                controller.currentTimeLabel.setText(getTotalTrackTime(currentTime));
-            }
-            if (!controller.volumeSlider.isValueChanging()) {
-                controller.volumeSlider.setValue((int) Math.round(currentTrack.getMediaPlayer().getVolume() * 100));
-            }
-        }));
-    }
-
-    /**
-     * Метод для перемотки музыки на положение курсора при удержании ползунка.
-     */
-    private void addTimeSliderListener() {
-        controller.timeSlider.valueProperty().addListener(observable -> {
-            if (controller.timeSlider.isValueChanging() && duration != null) {
-                controller.timeSlider.setOnMouseReleased(mouseEvent ->
-                        currentTrack.getMediaPlayer().seek(duration.multiply(controller.timeSlider.getValue() / 100)));
-            }
-        });
-    }
-
-    /**
-     * Метод для установки громкости музыки через перемещение ползунка
-     */
-    private void addVolumeSliderListener() {
-        controller.volumeSlider.setValue(controller.volumeSlider.getMax());
-        controller.volumeSlider.valueProperty().addListener(observable -> {
-            if (controller.volumeSlider.isValueChanging()) {
-                currentTrack.getMediaPlayer().setVolume(controller.volumeSlider.getValue() / 100);
-            }
-        });
     }
 
     public boolean isPaused() {
